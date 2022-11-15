@@ -17,7 +17,9 @@ type tasksController struct {
 }
 
 type NewTaskDTO struct {
-	Points int `json:"points"`
+	Points     int    `json:"points"`
+	Title      string `json:"title"`
+	AssigneeID int    `json:"assigneeID"`
 }
 
 func (tc tasksController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -38,17 +40,18 @@ func (tc tasksController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 	case http.MethodPost:
-		taskDTO := decodeBody(r)
-		newTask := tc.tm.CreateTask(taskDTO.Points)
+		var taskDTO NewTaskDTO
+		DecodeBody(r, &taskDTO)
+		newTask := tc.tm.CreateTask(taskDTO.Points, taskDTO.Title, taskDTO.AssigneeID)
 		encodeResponseAsJson(newTask, w)
 	default:
 		w.WriteHeader(http.StatusNotImplemented)
 	}
 }
 
-func newTasksController() *tasksController {
+func newTasksController(um *db.UserManager) *tasksController {
 	return &tasksController{
-		tm:            db.NewTaskManager(),
+		tm:            db.NewTaskManager(um),
 		taskIDPattern: regexp.MustCompile(`^/tasks/(\d+)`),
 	}
 }
@@ -56,10 +59,4 @@ func newTasksController() *tasksController {
 func encodeResponseAsJson(data interface{}, w io.Writer) {
 	enc := json.NewEncoder(w)
 	enc.Encode(data)
-}
-
-func decodeBody(r *http.Request) *NewTaskDTO {
-	var taskDTO NewTaskDTO
-	json.NewDecoder(r.Body).Decode(&taskDTO)
-	return &taskDTO
 }
