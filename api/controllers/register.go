@@ -1,19 +1,18 @@
 package controllers
 
 import (
-	"net/http"
-
+	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/db"
 )
 
-func RegisterControllers() {
+func RegisterControllers(router *gin.Engine) {
 	um := db.NewUserManager()
 	tc := newTasksController(um)
 	uc := newUserController(um)
 
-	http.Handle("/tasks", *tc)
-	http.Handle("/tasks/", *tc)
-
-	http.Handle("/users", *uc)
+	router.GET("/tasks", tc.getAllTasks)
+	router.GET("/tasks/:id", tc.getTaskByID)
+	router.POST("/tasks", tc.createNewTask)
+	router.POST("/users", uc.createNewUser)
 
 }

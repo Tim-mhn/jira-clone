@@ -1,13 +1,11 @@
 package controllers
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"regexp"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/db"
 )
 
@@ -22,33 +20,6 @@ type NewTaskDTO struct {
 	AssigneeID int    `json:"assigneeID"`
 }
 
-func (tc tasksController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	matches := tc.taskIDPattern.FindStringSubmatch(r.URL.Path)
-	isSingleTaskRoute := len(matches) > 0
-
-	switch r.Method {
-	case http.MethodGet:
-		if isSingleTaskRoute {
-			fmt.Println("calling single task route")
-			taskID, _ := strconv.Atoi(matches[1])
-			task := tc.tm.GetTaskById(taskID)
-			encodeResponseAsJson(task, w)
-		} else {
-			tasks := tc.tm.GetAllTasks()
-			encodeResponseAsJson(tasks, w)
-		}
-
-	case http.MethodPost:
-		var taskDTO NewTaskDTO
-		DecodeBody(r, &taskDTO)
-		newTask := tc.tm.CreateTask(taskDTO.Points, taskDTO.Title, taskDTO.AssigneeID)
-		encodeResponseAsJson(newTask, w)
-	default:
-		w.WriteHeader(http.StatusNotImplemented)
-	}
-}
-
 func newTasksController(um *db.UserManager) *tasksController {
 	return &tasksController{
 		tm:            db.NewTaskManager(um),
@@ -56,7 +27,29 @@ func newTasksController(um *db.UserManager) *tasksController {
 	}
 }
 
-func encodeResponseAsJson(data interface{}, w io.Writer) {
-	enc := json.NewEncoder(w)
-	enc.Encode(data)
+func (tc *tasksController) getAllTasks(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, tc.tm.GetAllTasks())
+}
+
+func (tc *tasksController) getTaskByID(c *gin.Context) {
+	taskIDStr := c.Param("id")
+	taskID, err := strconv.Atoi(taskIDStr)
+
+	if err != nil {
+		return
+	}
+
+	task := tc.tm.GetTaskById(taskID)
+
+	c.IndentedJSON(http.StatusFound, task)
+}
+
+func (tc *tasksController) createNewTask(c *gin.Context) {
+	var taskDTO NewTaskDTO
+	if err := c.BindJSON(&taskDTO); err != nil {
+		return
+	}
+	newTask := tc.tm.CreateTask(taskDTO.Points, taskDTO.Title, taskDTO.AssigneeID)
+
+	c.IndentedJSON(http.StatusCreated, newTask)
 }

@@ -1,6 +1,8 @@
 package db
 
-import "github.com/tim-mhn/figma-clone/models"
+import (
+	"github.com/tim-mhn/figma-clone/models"
+)
 
 type TaskManager struct {
 	lastTaskID int
@@ -23,7 +25,6 @@ func (tm *TaskManager) incrementTaskID() {
 
 func (tm TaskManager) GetAllTasks() []models.Task {
 	return tm.tasks
-
 }
 
 func (tm *TaskManager) GetTaskById(id int) *models.Task {
