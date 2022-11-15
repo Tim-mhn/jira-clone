@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-	"regexp"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -10,20 +9,19 @@ import (
 )
 
 type tasksController struct {
-	tm            *db.TaskManager
-	taskIDPattern *regexp.Regexp
+	tm *db.TaskManager
 }
 
 type NewTaskDTO struct {
 	Points     int    `json:"points"`
 	Title      string `json:"title"`
 	AssigneeID int    `json:"assigneeID"`
+	ProjectID  int    `json:"projectID"`
 }
 
-func newTasksController(um *db.UserManager) *tasksController {
+func newTasksController(um *db.UserManager, pm *db.ProjectManager) *tasksController {
 	return &tasksController{
-		tm:            db.NewTaskManager(um),
-		taskIDPattern: regexp.MustCompile(`^/tasks/(\d+)`),
+		tm: db.NewTaskManager(um, pm),
 	}
 }
 
@@ -49,7 +47,13 @@ func (tc *tasksController) createNewTask(c *gin.Context) {
 	if err := c.BindJSON(&taskDTO); err != nil {
 		return
 	}
-	newTask := tc.tm.CreateTask(taskDTO.Points, taskDTO.Title, taskDTO.AssigneeID)
+	newTask, newTaskErr := tc.tm.CreateTask(taskDTO.Points, taskDTO.Title, taskDTO.AssigneeID, taskDTO.ProjectID)
+
+	if newTaskErr != nil {
+		c.IndentedJSON(http.StatusUnprocessableEntity, newTaskErr.Error())
+		return
+	}
 
 	c.IndentedJSON(http.StatusCreated, newTask)
+
 }

@@ -5,4 +5,5 @@ type Task struct {
 	Assignee   User
 	Title      string
 	Status     Status
+	Project    Project
 }
