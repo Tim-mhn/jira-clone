@@ -19,7 +19,7 @@ type NewTaskDTO struct {
 	ProjectID  int    `json:"projectID"`
 }
 
-func newTasksController(um *db.UserManager, pm *db.ProjectManager) *tasksController {
+func newTasksController(um *db.UserRepository, pm *db.ProjectManager) *tasksController {
 	return &tasksController{
 		tm: db.NewTaskManager(um, pm),
 	}

@@ -8,14 +8,16 @@ import (
 )
 
 type userController struct {
-	um *db.UserManager
+	um *db.UserRepository
 }
 
 type NewUserDTO struct {
-	Name string `json:"name"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
-func newUserController(um *db.UserManager) *userController {
+func newUserController(um *db.UserRepository) *userController {
 	return &userController{
 		um: um,
 	}
@@ -24,9 +26,15 @@ func newUserController(um *db.UserManager) *userController {
 func (uc *userController) createNewUser(c *gin.Context) {
 	var userDTO NewUserDTO
 	if err := c.BindJSON(&userDTO); err != nil {
+		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
-	newUser := uc.um.CreateUser(userDTO.Name)
+	userId, dbError := uc.um.CreateUser(userDTO.Name, userDTO.Email, userDTO.Password)
 
-	c.IndentedJSON(http.StatusCreated, newUser)
+	if dbError != nil {
+		c.IndentedJSON(http.StatusUnprocessableEntity, dbError.Error())
+		return
+
+	}
+	c.IndentedJSON(http.StatusCreated, userId)
 }

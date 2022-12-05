@@ -7,11 +7,11 @@ import (
 type TaskManager struct {
 	lastTaskID int
 	tasks      []models.Task
-	um         *UserManager
+	um         *UserRepository
 	pm         *ProjectManager
 }
 
-func NewTaskManager(um *UserManager, pm *ProjectManager) *TaskManager {
+func NewTaskManager(um *UserRepository, pm *ProjectManager) *TaskManager {
 	tm := TaskManager{}
 	tm.um = um
 	tm.pm = pm

@@ -9,10 +9,10 @@ import (
 type ProjectManager struct {
 	lastProjectID int
 	projects      []models.Project
-	um            *UserManager
+	um            *UserRepository
 }
 
-func NewProjectManager(um *UserManager) *ProjectManager {
+func NewProjectManager(um *UserRepository) *ProjectManager {
 	return &ProjectManager{
 		lastProjectID: 0,
 		projects:      []models.Project{},
