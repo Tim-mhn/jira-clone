@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/tim-mhn/figma-clone/models"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository struct {
@@ -20,7 +21,8 @@ func NewUserRepository(conn *sql.DB) *UserRepository {
 
 func (um *UserRepository) CreateUser(username string, email string, password string) (string, error) {
 
-	query := fmt.Sprintf(`INSERT INTO "user" (name, email, password) VALUES ('%s', '%s', '%s') RETURNING id, name, email;`, username, email, password)
+	hashedPwd, _ := hashAndSalt(password)
+	query := fmt.Sprintf(`INSERT INTO "user" (name, email, password) VALUES ('%s', '%s', '%s') RETURNING id, name, email;`, username, email, hashedPwd)
 	var newUser models.User
 	rows, err := um.conn.Query(query)
 
@@ -99,9 +101,34 @@ func (um *UserRepository) SignInByEmail(email string, password string) error {
 		return err
 	}
 
-	if userPwd != password {
+	if passwordIsCorrect(password, userPwd) {
 		return fmt.Errorf("invalid password")
 	}
 
 	return nil
+}
+
+func hashAndSalt(pwd string) (string, error) {
+
+	// Use GenerateFromPassword to hash & salt pwd.
+	// MinCost is just an integer constant provided by the bcrypt
+	// package along with DefaultCost & MaxCost.
+	// The cost can be any value you want provided it isn't lower
+	// than the MinCost (4)
+	bytesPwd := []byte(pwd)
+
+	hash, err := bcrypt.GenerateFromPassword(bytesPwd, bcrypt.MinCost)
+
+	if err != nil {
+		return "", err
+	} // GenerateFromPassword returns a byte slice so we need to
+	// convert the bytes to a string and return it
+	return string(hash), nil
+}
+
+func passwordIsCorrect(unhashedPwd string, userPwd string) bool {
+	hashedPwd, _ := hashAndSalt(unhashedPwd)
+
+	return hashedPwd == userPwd
+
 }
