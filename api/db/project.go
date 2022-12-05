@@ -48,7 +48,7 @@ func (pm *ProjectManager) getProjectByID(projectID int) (models.Project, error) 
 
 }
 
-func (pm *ProjectManager) memberIsInProject(project models.Project, memberID int) bool {
+func (pm *ProjectManager) memberIsInProject(project models.Project, memberID string) bool {
 	for _, member := range project.Members {
 		if member.Id == memberID {
 			return true
@@ -58,7 +58,7 @@ func (pm *ProjectManager) memberIsInProject(project models.Project, memberID int
 	return false
 }
 
-func (pm *ProjectManager) AddMemberToProject(projectID int, userID int) (models.Project, error) {
+func (pm *ProjectManager) AddMemberToProject(projectID int, userID string) (models.Project, error) {
 
 	project, getProjectErr := pm.getProjectByID(projectID)
 

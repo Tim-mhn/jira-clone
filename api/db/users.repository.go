@@ -8,22 +8,11 @@ import (
 )
 
 type UserRepository struct {
-	lastUserID int
-	users      []models.User
-	conn       *sql.DB
-}
-
-type NewUserResult struct {
-	id    string
-	name  string
-	email string
+	conn *sql.DB
 }
 
 func NewUserRepository(conn *sql.DB) *UserRepository {
 	um := UserRepository{}
-
-	um.users = []models.User{}
-	um.lastUserID = 0
 	um.conn = conn
 
 	return &um
@@ -32,7 +21,7 @@ func NewUserRepository(conn *sql.DB) *UserRepository {
 func (um *UserRepository) CreateUser(username string, email string, password string) (string, error) {
 
 	query := fmt.Sprintf(`INSERT INTO "user" (name, email, password) VALUES ('%s', '%s', '%s') RETURNING id, name, email;`, username, email, password)
-	var newUser NewUserResult
+	var newUser models.User
 	rows, err := um.conn.Query(query)
 
 	if err != nil {
@@ -42,7 +31,7 @@ func (um *UserRepository) CreateUser(username string, email string, password str
 	defer rows.Close()
 
 	if rows.Next() {
-		err := rows.Scan(&newUser.id, &newUser.name, &newUser.email)
+		err := rows.Scan(&newUser.Id, &newUser.Name, &newUser.Email)
 
 		if err != nil {
 			return "", err
@@ -51,15 +40,29 @@ func (um *UserRepository) CreateUser(username string, email string, password str
 
 	}
 
-	return newUser.id, err
+	return newUser.Id, err
 }
 
-func (um *UserRepository) GetUserByID(userID int) (models.User, error) {
-	for _, u := range um.users {
-		if u.Id == userID {
-			return u, nil
-		}
+func (um *UserRepository) GetUserByID(userID string) (models.User, error) {
+
+	var user models.User
+	query := fmt.Sprintf(`SELECT id, name, email FROM "user" WHERE id='%s' LIMIT 1;`, userID)
+	rows, err := um.conn.Query(query)
+
+	if err != nil {
+		return user, err
 	}
 
-	return models.User{}, fmt.Errorf("user not found")
+	defer rows.Close()
+
+	if rows.Next() {
+		err := rows.Scan(&user.Id, &user.Name, &user.Email)
+
+		if err != nil {
+			return user, err
+		}
+
+	}
+
+	return user, nil
 }

@@ -43,7 +43,7 @@ func (tm *TaskManager) saveTask(t models.Task) {
 	tm.tasks = append(tm.tasks, t)
 }
 
-func (tm *TaskManager) CreateTask(points int, title string, assigneeID int, projectID int) (models.Task, error) {
+func (tm *TaskManager) CreateTask(points int, title string, assigneeID string, projectID int) (models.Task, error) {
 	newTaskID := tm.lastTaskID + 1
 	userAssigned, getUserErr := tm.um.GetUserByID(assigneeID)
 	if getUserErr != nil {

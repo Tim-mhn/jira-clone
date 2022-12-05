@@ -15,7 +15,7 @@ type tasksController struct {
 type NewTaskDTO struct {
 	Points     int    `json:"points"`
 	Title      string `json:"title"`
-	AssigneeID int    `json:"assigneeID"`
+	AssigneeID string `json:"assigneeID"`
 	ProjectID  int    `json:"projectID"`
 }
 
