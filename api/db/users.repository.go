@@ -66,3 +66,42 @@ func (um *UserRepository) GetUserByID(userID string) (models.User, error) {
 
 	return user, nil
 }
+
+func (um *UserRepository) getUserPasswordByEmail(email string) (string, error) {
+
+	var password string
+	query := fmt.Sprintf(`SELECT password FROM "user" WHERE email='%s' LIMIT 1;`, email)
+	rows, err := um.conn.Query(query)
+
+	if err != nil {
+		return password, err
+	}
+
+	defer rows.Close()
+
+	if rows.Next() {
+		err := rows.Scan(&password)
+
+		if err != nil {
+			return password, err
+		}
+
+	}
+
+	return password, nil
+}
+
+func (um *UserRepository) SignInByEmail(email string, password string) error {
+
+	userPwd, err := um.getUserPasswordByEmail(email)
+
+	if err != nil {
+		return err
+	}
+
+	if userPwd != password {
+		return fmt.Errorf("invalid password")
+	}
+
+	return nil
+}

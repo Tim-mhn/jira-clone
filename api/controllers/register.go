@@ -17,7 +17,8 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 	router.GET("/tasks", tc.getAllTasks)
 	router.GET("/tasks/:id", tc.getTaskByID)
 	router.POST("/tasks", tc.createNewTask)
-	router.POST("/users", uc.createNewUser)
+	router.POST("/sign-up", uc.signUp)
+	router.POST("/sign-in", uc.signIn)
 	router.POST("/projects", pc.createProject)
 
 }

@@ -17,13 +17,18 @@ type NewUserDTO struct {
 	Password string `json:"password"`
 }
 
+type SignInDTO struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func newUserController(um *db.UserRepository) *userController {
 	return &userController{
 		um: um,
 	}
 }
 
-func (uc *userController) createNewUser(c *gin.Context) {
+func (uc *userController) signUp(c *gin.Context) {
 	var userDTO NewUserDTO
 	if err := c.BindJSON(&userDTO); err != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
@@ -37,4 +42,22 @@ func (uc *userController) createNewUser(c *gin.Context) {
 
 	}
 	c.IndentedJSON(http.StatusCreated, userId)
+}
+
+func (uc *userController) signIn(c *gin.Context) {
+	var signInDTO SignInDTO
+	if err := c.BindJSON(&signInDTO); err != nil {
+		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	signInErr := uc.um.SignInByEmail(signInDTO.Email, signInDTO.Password)
+
+	if signInErr != nil {
+		c.IndentedJSON(http.StatusForbidden, signInErr.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusAccepted, nil)
+
 }
