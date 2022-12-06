@@ -16,10 +16,10 @@ type NewTaskDTO struct {
 	Points     int    `json:"points"`
 	Title      string `json:"title"`
 	AssigneeID string `json:"assigneeID"`
-	ProjectID  int    `json:"projectID"`
+	ProjectID  string `json:"projectID"`
 }
 
-func newTasksController(um *db.UserRepository, pm *db.ProjectManager) *tasksController {
+func newTasksController(um *db.UserRepository, pm *db.ProjectRepository) *tasksController {
 	return &tasksController{
 		tm: db.NewTaskManager(um, pm),
 	}

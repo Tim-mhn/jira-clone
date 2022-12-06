@@ -8,14 +8,18 @@ import (
 )
 
 type projectController struct {
-	pm *db.ProjectManager
+	pm *db.ProjectRepository
 }
 
 type NewProjectDTO struct {
 	Name string `json:"name"`
 }
 
-func newProjectController(pm *db.ProjectManager) *projectController {
+type AddMemberToProjectDTO struct {
+	MemberID string `json:"memberID"`
+}
+
+func newProjectController(pm *db.ProjectRepository) *projectController {
 	return &projectController{
 		pm: pm,
 	}
@@ -24,9 +28,31 @@ func newProjectController(pm *db.ProjectManager) *projectController {
 func (pc *projectController) createProject(c *gin.Context) {
 	var newProjectDTO NewProjectDTO
 	if err := c.BindJSON(&newProjectDTO); err != nil {
+		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
-	newProject := pc.pm.CreateProject(newProjectDTO.Name)
+	newProject, err := pc.pm.CreateProject(newProjectDTO.Name)
 
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 	c.IndentedJSON(http.StatusCreated, newProject)
+}
+
+func (pc *projectController) addMemberToProject(c *gin.Context) {
+	projectID := c.Param("id")
+	var addMemberToProjectDTO AddMemberToProjectDTO
+
+	c.BindJSON(&addMemberToProjectDTO)
+
+	err := pc.pm.AddMemberToProject(projectID, addMemberToProjectDTO.MemberID)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusAccepted, nil)
+
 }

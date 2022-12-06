@@ -9,7 +9,7 @@ import (
 
 func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 	um := db.NewUserRepository(conn)
-	pm := db.NewProjectManager(um)
+	pm := db.NewProjectRepository(um, conn)
 	tc := newTasksController(um, pm)
 	uc := newUserController(um)
 	pc := newProjectController(pm)
@@ -20,5 +20,6 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 	router.POST("/sign-up", uc.signUp)
 	router.POST("/sign-in", uc.signIn)
 	router.POST("/projects", pc.createProject)
+	router.POST("/projects/:id/members/add", pc.addMemberToProject)
 
 }

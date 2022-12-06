@@ -8,10 +8,10 @@ type TaskManager struct {
 	lastTaskID int
 	tasks      []models.Task
 	um         *UserRepository
-	pm         *ProjectManager
+	pm         *ProjectRepository
 }
 
-func NewTaskManager(um *UserRepository, pm *ProjectManager) *TaskManager {
+func NewTaskManager(um *UserRepository, pm *ProjectRepository) *TaskManager {
 	tm := TaskManager{}
 	tm.um = um
 	tm.pm = pm
@@ -43,7 +43,7 @@ func (tm *TaskManager) saveTask(t models.Task) {
 	tm.tasks = append(tm.tasks, t)
 }
 
-func (tm *TaskManager) CreateTask(points int, title string, assigneeID string, projectID int) (models.Task, error) {
+func (tm *TaskManager) CreateTask(points int, title string, assigneeID string, projectID string) (models.Task, error) {
 	newTaskID := tm.lastTaskID + 1
 	userAssigned, getUserErr := tm.um.GetUserByID(assigneeID)
 	if getUserErr != nil {
