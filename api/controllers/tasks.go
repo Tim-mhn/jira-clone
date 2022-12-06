@@ -1,15 +1,15 @@
 package controllers
 
 import (
+	"database/sql"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/db"
 )
 
 type tasksController struct {
-	tm *db.TaskManager
+	tm *db.TaskRepository
 }
 
 type NewTaskDTO struct {
@@ -19,9 +19,9 @@ type NewTaskDTO struct {
 	ProjectID  string `json:"projectID"`
 }
 
-func newTasksController(um *db.UserRepository, pm *db.ProjectRepository) *tasksController {
+func newTasksController(um *db.UserRepository, pm *db.ProjectRepository, conn *sql.DB) *tasksController {
 	return &tasksController{
-		tm: db.NewTaskManager(um, pm),
+		tm: db.NewTaskRepository(um, pm, conn),
 	}
 }
 
@@ -30,16 +30,15 @@ func (tc *tasksController) getAllTasks(c *gin.Context) {
 }
 
 func (tc *tasksController) getTaskByID(c *gin.Context) {
-	taskIDStr := c.Param("id")
-	taskID, err := strconv.Atoi(taskIDStr)
+	taskID := c.Param("id")
+
+	task, err := tc.tm.GetTaskById(taskID)
 
 	if err != nil {
+		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
-
-	task := tc.tm.GetTaskById(taskID)
-
-	c.IndentedJSON(http.StatusFound, task)
+	c.IndentedJSON(http.StatusOK, task)
 }
 
 func (tc *tasksController) createNewTask(c *gin.Context) {

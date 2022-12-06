@@ -58,6 +58,6 @@ func (uc *userController) signIn(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusAccepted, nil)
+	c.IndentedJSON(http.StatusOK, nil)
 
 }

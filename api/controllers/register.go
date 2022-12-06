@@ -10,7 +10,7 @@ import (
 func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 	um := db.NewUserRepository(conn)
 	pm := db.NewProjectRepository(um, conn)
-	tc := newTasksController(um, pm)
+	tc := newTasksController(um, pm, conn)
 	uc := newUserController(um)
 	pc := newProjectController(pm)
 

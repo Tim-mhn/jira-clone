@@ -53,7 +53,7 @@ func (pc *projectController) addMemberToProject(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusAccepted, nil)
+	c.IndentedJSON(http.StatusOK, nil)
 
 }
 
@@ -68,6 +68,6 @@ func (pc *projectController) getProject(c *gin.Context) {
 
 	}
 
-	c.IndentedJSON(http.StatusFound, project)
+	c.IndentedJSON(http.StatusOK, project)
 
 }

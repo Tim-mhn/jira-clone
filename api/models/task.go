@@ -1,9 +1,8 @@
 package models
 
 type Task struct {
-	Id, Points int
-	Assignee   User
-	Title      string
-	Status     Status
-	Project    Project
+	Points    int
+	Assignee  User
+	Id, Title string
+	Status    Status
 }
