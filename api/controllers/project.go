@@ -56,3 +56,18 @@ func (pc *projectController) addMemberToProject(c *gin.Context) {
 	c.IndentedJSON(http.StatusAccepted, nil)
 
 }
+
+func (pc *projectController) getProject(c *gin.Context) {
+	projectID := c.Param("id")
+
+	project, err := pc.pm.GetProjectMembers(projectID)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+
+	}
+
+	c.IndentedJSON(http.StatusFound, project)
+
+}

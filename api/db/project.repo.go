@@ -114,3 +114,43 @@ func (pm *ProjectRepository) AddMemberToProject(projectID string, userID string)
 	return nil
 
 }
+
+func (pm *ProjectRepository) GetProjectMembers(projectID string) (models.ProjectWithMembers, error) {
+	project, getProjectErr := pm.getProjectByID(projectID)
+
+	if getProjectErr != nil {
+		return models.ProjectWithMembers{}, getProjectErr
+	}
+
+	var projectMembers []models.User
+	getMembersQuery := fmt.Sprintf(`
+	SELECT user_id, "user".name as user_name, "user".email as user_email FROM project_user 
+	INNER JOIN project ON project.id=project_user.project_id 
+	INNER JOIN "user" ON "user".id=project_user.user_id
+	WHERE project.id=project_user.project_id
+	AND project.id='%s';`, projectID)
+
+	rows, err := pm.conn.Query(getMembersQuery)
+
+	if err != nil {
+		return models.ProjectWithMembers{}, err
+	}
+
+	defer rows.Close()
+
+	if rows.Next() {
+		var member models.User
+		rows.Scan(&member.Id, &member.Name, &member.Email)
+
+		projectMembers = append(projectMembers, member)
+	}
+
+	projectWithMembers := models.ProjectWithMembers{
+		Id:      project.Id,
+		Name:    project.Name,
+		Members: projectMembers,
+	}
+
+	return projectWithMembers, nil
+
+}
