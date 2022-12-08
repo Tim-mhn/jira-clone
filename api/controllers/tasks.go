@@ -12,11 +12,12 @@ type tasksController struct {
 	tm *db.TaskRepository
 }
 
+const TASK_ID_ROUTE_PARAM string = "taskID"
+
 type NewTaskDTO struct {
 	Points     int    `json:"points"`
 	Title      string `json:"title"`
 	AssigneeID string `json:"assigneeID"`
-	ProjectID  string `json:"projectID"`
 }
 
 func newTasksController(um *db.UserRepository, pm *db.ProjectRepository, conn *sql.DB) *tasksController {
@@ -25,12 +26,21 @@ func newTasksController(um *db.UserRepository, pm *db.ProjectRepository, conn *s
 	}
 }
 
-func (tc *tasksController) getAllTasks(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, tc.tm.GetAllTasks())
+func (tc *tasksController) getProjectTasks(c *gin.Context) {
+
+	projectID := c.Param(PROJECT_ID_ROUTE_PARAM)
+
+	tasks, err := tc.tm.GetProjectTasks(projectID)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.IndentedJSON(http.StatusOK, tasks)
 }
 
 func (tc *tasksController) getTaskByID(c *gin.Context) {
-	taskID := c.Param("id")
+	taskID := c.Param(TASK_ID_ROUTE_PARAM)
 
 	task, err := tc.tm.GetTaskById(taskID)
 
@@ -44,9 +54,12 @@ func (tc *tasksController) getTaskByID(c *gin.Context) {
 func (tc *tasksController) createNewTask(c *gin.Context) {
 	var taskDTO NewTaskDTO
 	if err := c.BindJSON(&taskDTO); err != nil {
+		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
-	newTask, newTaskErr := tc.tm.CreateTask(taskDTO.Points, taskDTO.Title, taskDTO.AssigneeID, taskDTO.ProjectID)
+
+	projectID := c.Param(PROJECT_ID_ROUTE_PARAM)
+	newTask, newTaskErr := tc.tm.CreateTask(taskDTO.Points, taskDTO.Title, taskDTO.AssigneeID, projectID)
 
 	if newTaskErr != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, newTaskErr.Error())

@@ -63,7 +63,7 @@ func (uc *userController) signIn(c *gin.Context) {
 
 	ss := utils.CreateJWTSignedString(user)
 
-	token, _ := utils.ParseStringToJWT(ss)
+	token, _ := utils.ParseTokenString(ss)
 
 	fmt.Println(token)
 	c.SetCookie("Authorization", ss, 365*24*60*60, "/", "localhost", true, true)

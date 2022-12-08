@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/db"
+	"github.com/tim-mhn/figma-clone/middlewares"
 )
 
 type projectController struct {
@@ -19,6 +20,8 @@ type AddMemberToProjectDTO struct {
 	MemberID string `json:"memberID"`
 }
 
+const PROJECT_ID_ROUTE_PARAM string = "projectID"
+
 func newProjectController(projectRepo *db.ProjectRepository) *projectController {
 	return &projectController{
 		projectRepo: projectRepo,
@@ -31,17 +34,27 @@ func (pc *projectController) createProject(c *gin.Context) {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
+
 	newProject, err := pc.projectRepo.CreateProject(newProjectDTO.Name)
+	user, _ := middlewares.GetUserFromRequestContext(c)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	err = pc.projectRepo.AddMemberToProject(newProject.Id, user.Id)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	c.IndentedJSON(http.StatusCreated, newProject)
 }
 
 func (pc *projectController) addMemberToProject(c *gin.Context) {
-	projectID := c.Param("id")
+	projectID := c.Param(PROJECT_ID_ROUTE_PARAM)
 	var addMemberToProjectDTO AddMemberToProjectDTO
 
 	c.BindJSON(&addMemberToProjectDTO)
@@ -58,7 +71,7 @@ func (pc *projectController) addMemberToProject(c *gin.Context) {
 }
 
 func (pc *projectController) getProject(c *gin.Context) {
-	projectID := c.Param("id")
+	projectID := c.Param(PROJECT_ID_ROUTE_PARAM)
 
 	project, err := pc.projectRepo.GetProjectMembers(projectID)
 

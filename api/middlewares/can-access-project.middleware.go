@@ -1,0 +1,26 @@
+package middlewares
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/tim-mhn/figma-clone/db"
+)
+
+func CanAccessProjectMiddleware(pm *db.ProjectRepository) gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		projectID := c.Param("projectID")
+		user, _ := GetUserFromRequestContext(c)
+
+		memberIsInProject := pm.MemberIsInProject(projectID, user.Id)
+
+		if !memberIsInProject {
+			c.AbortWithStatusJSON(http.StatusForbidden, fmt.Errorf("member is not in project"))
+			return
+		}
+
+		c.Next()
+	}
+}
