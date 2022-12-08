@@ -20,8 +20,6 @@ type AddMemberToProjectDTO struct {
 	MemberID string `json:"memberID"`
 }
 
-const PROJECT_ID_ROUTE_PARAM string = "projectID"
-
 func newProjectController(projectRepo *db.ProjectRepository) *projectController {
 	return &projectController{
 		projectRepo: projectRepo,

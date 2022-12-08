@@ -12,8 +12,6 @@ type tasksController struct {
 	tm *db.TaskRepository
 }
 
-const TASK_ID_ROUTE_PARAM string = "taskID"
-
 type NewTaskDTO struct {
 	Points     int    `json:"points"`
 	Title      string `json:"title"`

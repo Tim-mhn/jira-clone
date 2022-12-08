@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -65,7 +64,6 @@ func (uc *userController) signIn(c *gin.Context) {
 
 	token, _ := utils.ParseTokenString(ss)
 
-	fmt.Println(token)
 	c.SetCookie("Authorization", ss, 365*24*60*60, "/", "localhost", true, true)
 	c.IndentedJSON(http.StatusOK, token)
 
