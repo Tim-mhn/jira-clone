@@ -54,7 +54,7 @@ func (pc *projectController) createProject(c *gin.Context) {
 }
 
 func (pc *projectController) addMemberToProject(c *gin.Context) {
-	projectID := getProjectIDFromContext(c)
+	projectID := getProjectIDParam(c)
 	var addMemberToProjectDTO AddMemberToProjectDTO
 
 	c.BindJSON(&addMemberToProjectDTO)
@@ -71,7 +71,7 @@ func (pc *projectController) addMemberToProject(c *gin.Context) {
 }
 
 func (pc *projectController) getProject(c *gin.Context) {
-	projectID := getProjectIDFromContext(c)
+	projectID := getProjectIDParam(c)
 
 	project, err := pc.projectRepo.GetProjectMembers(projectID)
 

@@ -28,7 +28,7 @@ func newTasksController(um *db.UserRepository, pm *db.ProjectRepository, conn *s
 
 func (tc *tasksController) getProjectTasks(c *gin.Context) {
 
-	projectID := getProjectIDFromContext(c)
+	projectID := getProjectIDParam(c)
 
 	tasks, err := tc.tm.GetProjectTasks(projectID)
 
@@ -40,7 +40,7 @@ func (tc *tasksController) getProjectTasks(c *gin.Context) {
 }
 
 func (tc *tasksController) getTaskByID(c *gin.Context) {
-	taskID := getTaskIDFromContext(c)
+	taskID := getTaskIDParam(c)
 
 	task, err := tc.tm.GetTaskById(taskID)
 
@@ -58,7 +58,7 @@ func (tc *tasksController) createNewTask(c *gin.Context) {
 		return
 	}
 
-	projectID := getProjectIDFromContext(c)
+	projectID := getProjectIDParam(c)
 	newTask, newTaskErr := tc.tm.CreateTask(taskDTO.Points, taskDTO.Title, taskDTO.AssigneeID, projectID)
 
 	if newTaskErr != nil {
