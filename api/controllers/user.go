@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tim-mhn/figma-clone/db"
+	"github.com/tim-mhn/figma-clone/repositories"
 	"github.com/tim-mhn/figma-clone/utils"
 )
 
 type userController struct {
-	um *db.UserRepository
+	um *repositories.UserRepository
 }
 
 type NewUserDTO struct {
@@ -23,7 +23,7 @@ type SignInDTO struct {
 	Password string `json:"password"`
 }
 
-func newUserController(um *db.UserRepository) *userController {
+func newUserController(um *repositories.UserRepository) *userController {
 	return &userController{
 		um: um,
 	}

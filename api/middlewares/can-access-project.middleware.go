@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tim-mhn/figma-clone/db"
+	"github.com/tim-mhn/figma-clone/repositories"
 )
 
-func CanAccessProjectMiddleware(pm *db.ProjectRepository) gin.HandlerFunc {
+func CanAccessProjectMiddleware(pm *repositories.ProjectRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		projectID := c.Param("projectID")

@@ -1,4 +1,4 @@
-package db
+package repositories
 
 import (
 	"database/sql"
@@ -144,4 +144,8 @@ func (taskRepo *TaskRepository) CreateTask(projectID string, title string, assig
 	}
 
 	return taskID, nil
+}
+
+func (taskRepo *TaskRepository) UpdateTaskStatus(taskID string, newStatus models.Status) {
+
 }

@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tim-mhn/figma-clone/db"
+	"github.com/tim-mhn/figma-clone/repositories"
 )
 
 type tasksController struct {
-	tm *db.TaskRepository
+	tm *repositories.TaskRepository
 }
 
 type NewTaskDTO struct {
@@ -19,9 +19,9 @@ type NewTaskDTO struct {
 	Description string `json:"description"`
 }
 
-func newTasksController(um *db.UserRepository, pm *db.ProjectRepository, conn *sql.DB) *tasksController {
+func newTasksController(um *repositories.UserRepository, pm *repositories.ProjectRepository, conn *sql.DB) *tasksController {
 	return &tasksController{
-		tm: db.NewTaskRepository(um, pm, conn),
+		tm: repositories.NewTaskRepository(um, pm, conn),
 	}
 }
 

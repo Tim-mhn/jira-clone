@@ -5,13 +5,13 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tim-mhn/figma-clone/db"
 	"github.com/tim-mhn/figma-clone/middlewares"
+	"github.com/tim-mhn/figma-clone/repositories"
 )
 
 func RegisterControllers(router *gin.Engine, conn *sql.DB) {
-	um := db.NewUserRepository(conn)
-	pm := db.NewProjectRepository(um, conn)
+	um := repositories.NewUserRepository(conn)
+	pm := repositories.NewProjectRepository(um, conn)
 	tc := newTasksController(um, pm, conn)
 	uc := newUserController(um)
 	pc := newProjectController(pm)

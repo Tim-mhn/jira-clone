@@ -4,12 +4,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tim-mhn/figma-clone/db"
 	"github.com/tim-mhn/figma-clone/middlewares"
+	"github.com/tim-mhn/figma-clone/repositories"
 )
 
 type projectController struct {
-	projectRepo *db.ProjectRepository
+	projectRepo *repositories.ProjectRepository
 }
 
 type NewProjectDTO struct {
@@ -20,7 +20,7 @@ type AddMemberToProjectDTO struct {
 	MemberID string `json:"memberID"`
 }
 
-func newProjectController(projectRepo *db.ProjectRepository) *projectController {
+func newProjectController(projectRepo *repositories.ProjectRepository) *projectController {
 	return &projectController{
 		projectRepo: projectRepo,
 	}
