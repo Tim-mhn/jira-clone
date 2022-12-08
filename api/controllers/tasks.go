@@ -13,9 +13,10 @@ type tasksController struct {
 }
 
 type NewTaskDTO struct {
-	Points     int    `json:"points"`
-	Title      string `json:"title"`
-	AssigneeID string `json:"assigneeID"`
+	Points      int    `json:"points"`
+	Title       string `json:"title"`
+	AssigneeID  string `json:"assigneeID"`
+	Description string `json:"description"`
 }
 
 func newTasksController(um *db.UserRepository, pm *db.ProjectRepository, conn *sql.DB) *tasksController {
@@ -57,7 +58,7 @@ func (tc *tasksController) createNewTask(c *gin.Context) {
 	}
 
 	projectID := getProjectIDParam(c)
-	newTask, newTaskErr := tc.tm.CreateTask(taskDTO.Points, taskDTO.Title, taskDTO.AssigneeID, projectID)
+	newTask, newTaskErr := tc.tm.CreateTask(projectID, taskDTO.Title, taskDTO.AssigneeID, taskDTO.Points, taskDTO.Description)
 
 	if newTaskErr != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, newTaskErr.Error())

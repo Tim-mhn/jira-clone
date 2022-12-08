@@ -51,9 +51,8 @@ func (taskRepo TaskRepository) GetProjectTasks(projectID string) ([]models.Task,
 
 		var task models.Task
 		var assignee models.User
-		var dsc string
 		err := rows.Scan(
-			&task.Id, &task.Title, &task.Points, &dsc,
+			&task.Id, &task.Title, &task.Points, &task.Description,
 			&assignee.Id, &assignee.Name, &assignee.Email)
 
 		if err != nil {
@@ -93,10 +92,9 @@ func (taskRepo *TaskRepository) GetTaskById(taskID string) (models.Task, error) 
 
 	var task models.Task
 	var assignee models.User
-	var dsc string
 	if rows.Next() {
 		err := rows.Scan(
-			&task.Id, &task.Title, &task.Points, &dsc,
+			&task.Id, &task.Title, &task.Points, &task.Description,
 			&assignee.Id, &assignee.Name, &assignee.Email)
 
 		if err != nil {
@@ -110,7 +108,7 @@ func (taskRepo *TaskRepository) GetTaskById(taskID string) (models.Task, error) 
 
 }
 
-func (taskRepo *TaskRepository) CreateTask(points int, title string, assigneeID string, projectID string) (string, error) {
+func (taskRepo *TaskRepository) CreateTask(projectID string, title string, assigneeID string, points int, description string) (string, error) {
 	_, getUserErr := taskRepo.um.GetUserByID(assigneeID)
 	if getUserErr != nil {
 		return "", getUserErr
@@ -127,10 +125,10 @@ func (taskRepo *TaskRepository) CreateTask(points int, title string, assigneeID 
 	}
 
 	createTaskQuery := fmt.Sprintf(`
-		INSERT INTO task (title, points, project_id, assignee_id, description) 
-		VALUES ('%s', '%d', '%s', '%s', '')
+		INSERT INTO task (title, points, project_id, assignee_id, description, status) 
+		VALUES ('%s', '%d', '%s', '%s', '%s', %d)
 		RETURNING id
-	`, title, points, projectID, assigneeID)
+	`, title, points, projectID, assigneeID, description, models.New)
 
 	rows, err := taskRepo.conn.Query(createTaskQuery)
 

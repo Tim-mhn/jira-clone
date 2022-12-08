@@ -15,7 +15,7 @@ func getAuthSigningKey() []byte {
 func CreateJWTSignedString(user models.User) string {
 	claims := &jwt.MapClaims{
 		"iss":  "issuer",
-		"exp":  time.Now().Add(time.Hour).Unix(),
+		"exp":  time.Now().Add(24 * 365 * time.Hour).Unix(),
 		"data": user,
 	}
 
