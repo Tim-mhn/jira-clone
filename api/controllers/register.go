@@ -21,12 +21,17 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 
 	projectsRoutes := router.Group("/projects", middlewares.IsAuthenticatedMiddleware())
 
-	singleProjectRoutes := projectsRoutes.Group(fmt.Sprintf(`/:%s`, PROJECT_ID_ROUTE_PARAM), middlewares.CanAccessProjectMiddleware(pm))
+	singleProjectRoutes := projectsRoutes.Group(
+		fmt.Sprintf(`/:%s`, PROJECT_ID_ROUTE_PARAM),
+		middlewares.CanAccessProjectMiddleware(pm))
 
 	tasksRoutes := singleProjectRoutes.Group("/tasks")
 	tasksRoutes.GET("", tc.getProjectTasks)
 	tasksRoutes.POST("", tc.createNewTask)
-	tasksRoutes.GET(fmt.Sprintf(`/:%s`, TASK_ID_ROUTE_PARAM), tc.getTaskByID)
+
+	singleTaskRoutes := tasksRoutes.Group(fmt.Sprintf(`/:%s`, TASK_ID_ROUTE_PARAM))
+	singleTaskRoutes.GET("", tc.getTaskByID)
+	singleTaskRoutes.PATCH("", tc.updateTaskStatus)
 
 	projectsRoutes.POST("", pc.createProject)
 	singleProjectRoutes.GET("", pc.getProject)

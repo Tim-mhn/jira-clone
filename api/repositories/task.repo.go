@@ -146,6 +146,14 @@ func (taskRepo *TaskRepository) CreateTask(projectID string, title string, assig
 	return taskID, nil
 }
 
-func (taskRepo *TaskRepository) UpdateTaskStatus(taskID string, newStatus models.Status) {
+func (taskRepo *TaskRepository) UpdateTaskStatus(taskID string, newStatus models.Status) error {
+	queryStr := fmt.Sprintf(`
+		UPDATE task 
+		SET status=%d
+		WHERE id=%s`,
+		newStatus, taskID)
+	_, err := taskRepo.conn.Query(queryStr)
+
+	return err
 
 }

@@ -20,7 +20,7 @@ func IsAuthenticatedMiddleware() gin.HandlerFunc {
 
 		if tokenError != nil {
 			fmt.Println(tokenError.Error())
-			c.AbortWithStatusJSON(http.StatusForbidden, fmt.Errorf("invalid token"))
+			c.AbortWithStatusJSON(http.StatusForbidden, "invalid token")
 			return
 		}
 		setUserInRequestContext(c, user)
