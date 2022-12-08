@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/db"
+	"github.com/tim-mhn/figma-clone/utils"
 )
 
 type userController struct {
@@ -45,19 +47,26 @@ func (uc *userController) signUp(c *gin.Context) {
 }
 
 func (uc *userController) signIn(c *gin.Context) {
+
 	var signInDTO SignInDTO
 	if err := c.BindJSON(&signInDTO); err != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
 
-	signInErr := uc.um.SignInByEmail(signInDTO.Email, signInDTO.Password)
+	user, signInErr := uc.um.SignInByEmail(signInDTO.Email, signInDTO.Password)
 
 	if signInErr != nil {
 		c.IndentedJSON(http.StatusForbidden, signInErr.Error())
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, nil)
+	ss := utils.CreateJWTSignedString(user)
+
+	token, _ := utils.ParseStringToJWT(ss)
+
+	fmt.Println(token)
+	c.SetCookie("Authorization", ss, 365*24*60*60, "/", "localhost", true, true)
+	c.IndentedJSON(http.StatusOK, token)
 
 }

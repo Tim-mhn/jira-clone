@@ -69,43 +69,47 @@ func (um *UserRepository) GetUserByID(userID string) (models.User, error) {
 	return user, nil
 }
 
-func (um *UserRepository) getUserPasswordByEmail(email string) (string, error) {
+func (um *UserRepository) getUserInfoByEmail(email string) (models.UserWithPassword, error) {
 
-	var password string
-	query := fmt.Sprintf(`SELECT password FROM "user" WHERE email='%s' LIMIT 1;`, email)
+	var userWithPwd models.UserWithPassword
+	query := fmt.Sprintf(`SELECT password, email, id, name FROM "user" WHERE email='%s' LIMIT 1;`, email)
 	rows, err := um.conn.Query(query)
 
 	if err != nil {
-		return password, err
+		return models.UserWithPassword{}, err
 	}
 
 	defer rows.Close()
 
 	if rows.Next() {
-		err := rows.Scan(&password)
+		err := rows.Scan(&userWithPwd.Password, &userWithPwd.Email, &userWithPwd.Id, &userWithPwd.Name)
 
 		if err != nil {
-			return password, err
+			return models.UserWithPassword{}, err
 		}
 
 	}
 
-	return password, nil
+	return userWithPwd, nil
 }
 
-func (um *UserRepository) SignInByEmail(email string, password string) error {
+func (um *UserRepository) SignInByEmail(email string, password string) (models.User, error) {
 
-	userPwd, err := um.getUserPasswordByEmail(email)
+	userWithPwd, err := um.getUserInfoByEmail(email)
 
 	if err != nil {
-		return err
+		return models.User{}, err
 	}
 
-	if passwordIsCorrect(password, userPwd) {
-		return fmt.Errorf("invalid password")
+	if passwordIsCorrect(password, userWithPwd.Password) {
+		return models.User{}, fmt.Errorf("invalid password")
 	}
 
-	return nil
+	return models.User{
+		Id:    userWithPwd.Id,
+		Name:  userWithPwd.Name,
+		Email: userWithPwd.Email,
+	}, nil
 }
 
 func hashAndSalt(pwd string) (string, error) {
