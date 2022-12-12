@@ -82,3 +82,17 @@ func (pc *projectController) getProject(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, project)
 
 }
+
+func (pc *projectController) getUserProjects(c *gin.Context) {
+	user, _ := middlewares.GetUserFromRequestContext(c)
+
+	userProjects, err := pc.projectRepo.GetProjectsOfUser(user.Id)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, userProjects)
+
+}

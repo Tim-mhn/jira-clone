@@ -21,6 +21,8 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 
 	projectsRoutes := router.Group("/projects", middlewares.IsAuthenticatedMiddleware())
 
+	projectsRoutes.GET("", pc.getUserProjects)
+
 	singleProjectRoutes := projectsRoutes.Group(
 		fmt.Sprintf(`/:%s`, PROJECT_ID_ROUTE_PARAM),
 		middlewares.CanAccessProjectMiddleware(pm))

@@ -156,3 +156,29 @@ func (pm *ProjectRepository) GetProjectMembers(projectID string) (models.Project
 	return projectWithMembers, nil
 
 }
+
+func (pm *ProjectRepository) GetProjectsOfUser(userID string) ([]models.Project, error) {
+	fmt.Println(userID)
+	query := fmt.Sprintf(`SELECT project.id as project_id, project.name as project_name FROM project 
+JOIN  project_user ON project_user.project_id=project.id  
+WHERE project_user.user_id='%s'`, userID)
+
+	rows, err := pm.conn.Query(query)
+
+	if err != nil {
+		return []models.Project{}, err
+	}
+
+	defer rows.Close()
+
+	var userProjects []models.Project
+	for rows.Next() {
+		var project models.Project
+		rows.Scan(&project.Id, &project.Name)
+
+		userProjects = append(userProjects, project)
+	}
+
+	return userProjects, nil
+
+}
