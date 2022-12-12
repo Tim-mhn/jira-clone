@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthAPI } from '../../apis/auth.api';
 
 @Component({
@@ -8,17 +9,25 @@ import { AuthAPI } from '../../apis/auth.api';
   styleUrls: ['./sign-up.component.scss'],
 })
 export class SignUpComponent implements OnInit {
-  constructor(private authAPI: AuthAPI, private fb: FormBuilder) {}
+  constructor(
+    private authAPI: AuthAPI,
+    private fb: FormBuilder,
+    private router: Router
+  ) {}
 
   signupForm = this.fb.group({
-    name: '',
-    email: '',
-    password: '',
+    name: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
   });
 
   ngOnInit(): void {}
 
   signUp() {
-    this.authAPI.signUp(this.signupForm.value).subscribe(console.log);
+    if (this.signupForm.valid) {
+      this.authAPI.signUp(this.signupForm.value).subscribe(() => {
+        this.router.navigate(['auth', 'login']);
+      });
+    }
   }
 }

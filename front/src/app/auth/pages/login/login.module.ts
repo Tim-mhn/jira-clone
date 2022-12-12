@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatSliderModule } from '@angular/material/slider';
+import { MatButtonModule } from '@angular/material/button';
 import { LoginComponent } from './login.component';
 
 const routes: Routes = [
@@ -21,7 +21,7 @@ const routes: Routes = [
     MatInputModule,
     MatFormFieldModule,
     ReactiveFormsModule,
-    MatSliderModule,
+    MatButtonModule,
   ],
 })
 export class LoginModule {}

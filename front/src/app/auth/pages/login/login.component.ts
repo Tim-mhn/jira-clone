@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
+import { AuthAPI } from '../../apis/auth.api';
 
 @Component({
   selector: 'app-login',
@@ -7,9 +8,16 @@ import { FormBuilder } from '@angular/forms';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private authAPI: AuthAPI) {}
 
-  fc = this.fb.control('');
+  loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+  });
 
   ngOnInit(): void {}
+
+  login() {
+    this.authAPI.login(this.loginForm.value).subscribe();
+  }
 }

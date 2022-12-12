@@ -38,6 +38,7 @@ module.exports = {
         ts: 'never',
       },
     ],
+    'lines-between-class-members': 'off',
     'no-unused-expressions': [
       'error',
       {

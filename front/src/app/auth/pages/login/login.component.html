@@ -1,8 +1,26 @@
-<div class="bg-gray-200">
-  <mat-form-field appearance="outline" color="primary">
-    <mat-label>test</mat-label>
-    <input [formControl]="fc" matInput placeholder="test" />
-  </mat-form-field>
+<form
+  [formGroup]="loginForm"
+  (ngSubmit)="login()"
+  class="flex flex-col justify-center items-center flex-grow p-32 gap-4"
+>
+  <mat-form-field>
+    <mat-label>Email</mat-label>
 
-  <mat-slider min="1" max="5" step="0.5" value="1.5"></mat-slider>
-</div>
+    <input
+      matInput
+      color="primary"
+      formControlName="email"
+      type="email"
+    /> </mat-form-field
+  ><mat-form-field>
+    <mat-label>Password</mat-label>
+
+    <input
+      matInput
+      color="primary"
+      formControlName="password"
+      type="password"
+    />
+  </mat-form-field>
+  <button mat-flat-button color="primary" type="submit">Login</button>
+</form>
