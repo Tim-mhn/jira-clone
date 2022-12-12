@@ -1,1 +1,29 @@
-<p>sign-up works!</p>
+<form
+  [formGroup]="signupForm"
+  (ngSubmit)="signUp()"
+  class="flex flex-col justify-center items-center flex-grow p-32 gap-4"
+>
+  <mat-form-field>
+    <mat-label>Name</mat-label>
+    <input matInput color="primary" formControlName="name" /> </mat-form-field
+  ><mat-form-field>
+    <mat-label>Email</mat-label>
+
+    <input
+      matInput
+      color="primary"
+      formControlName="email"
+      type="email"
+    /> </mat-form-field
+  ><mat-form-field>
+    <mat-label>Password</mat-label>
+
+    <input
+      matInput
+      color="primary"
+      formControlName="password"
+      type="password"
+    />
+  </mat-form-field>
+  <button mat-flat-button color="primary" type="submit">Sign up</button>
+</form>

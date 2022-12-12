@@ -26,10 +26,18 @@ module.exports = {
     'no-console': 'off',
     'class-methods-use-this': 'off',
     //     'no-underscore-dangle': 'off',
-    //     'no-useless-constructor': 'off',
-    //     'no-empty-function': 'off',
+    'no-useless-constructor': 'off',
+    'no-empty-function': 'off',
     'unused-imports/no-unused-imports': 'error',
     'import/no-unresolved': 'error',
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      {
+        js: 'never',
+        ts: 'never',
+      },
+    ],
     'no-unused-expressions': [
       'error',
       {

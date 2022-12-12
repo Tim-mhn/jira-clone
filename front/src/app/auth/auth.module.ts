@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { SignUpComponent } from './pages/sign-up/sign-up.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { AuthAPI } from './apis/auth.api';
+
 const routes: Routes = [
   {
     path: 'login',
@@ -13,11 +13,12 @@ const routes: Routes = [
   },
   {
     path: 'sign-up',
-    component: SignUpComponent,
+    loadChildren: () =>
+      import('./pages/sign-up/sign-up.module').then((m) => m.SignUpModule),
   },
 ];
 @NgModule({
-  declarations: [SignUpComponent],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
