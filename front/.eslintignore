@@ -1,0 +1,9 @@
+*.conf.js
+*.json
+*.spec.ts
+*.scss
+*.md
+*.scss
+*.d.ts
+karma.conf.*
+schematics/
