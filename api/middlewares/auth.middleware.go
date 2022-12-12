@@ -12,14 +12,16 @@ import (
 func IsAuthenticatedMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		authString := c.Request.Header.Get("Authorization")
+		authString, noCookieFoundError := c.Cookie("Authorization")
+
+		if noCookieFoundError != nil {
+			c.AbortWithStatusJSON(http.StatusForbidden, "missing token in cookie")
+			return
+		}
 
 		user, tokenError := utils.ParseTokenString(authString)
 
-		fmt.Println("Token")
-
 		if tokenError != nil {
-			fmt.Println(tokenError.Error())
 			c.AbortWithStatusJSON(http.StatusForbidden, "invalid token")
 			return
 		}
