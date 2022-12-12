@@ -10,15 +10,15 @@ module.exports = {
     sourceType: 'module',
   },
   settings: {
-    'import/parsers': {
-      '@typescript-eslint/parser': ['.ts'],
-    },
-    'import/resolver': {
-      typescript: {},
-      node: {
-        extensions: ['.js', '.ts'],
-      },
-    },
+    // 'import/parsers': {
+    //   '@typescript-eslint/parser': ['.ts'],
+    // },
+    // 'import/resolver': {
+    //   typescript: {},
+    //   node: {
+    //     extensions: ['.js', '.ts'],
+    //   },
+    // },
   },
   plugins: ['@typescript-eslint', 'unused-imports', 'import'],
   rules: {
