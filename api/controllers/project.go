@@ -5,11 +5,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/middlewares"
+	"github.com/tim-mhn/figma-clone/models"
 	"github.com/tim-mhn/figma-clone/repositories"
 )
 
 type projectController struct {
 	projectRepo *repositories.ProjectRepository
+	taskRepo    *repositories.TaskRepository
 }
 
 type NewProjectDTO struct {
@@ -20,9 +22,10 @@ type AddMemberToProjectDTO struct {
 	MemberID string `json:"memberID"`
 }
 
-func newProjectController(projectRepo *repositories.ProjectRepository) *projectController {
+func newProjectController(projectRepo *repositories.ProjectRepository, taskRepo *repositories.TaskRepository) *projectController {
 	return &projectController{
 		projectRepo: projectRepo,
+		taskRepo:    taskRepo,
 	}
 }
 
@@ -71,7 +74,7 @@ func (pc *projectController) addMemberToProject(c *gin.Context) {
 func (pc *projectController) getProject(c *gin.Context) {
 	projectID := getProjectIDParam(c)
 
-	project, err := pc.projectRepo.GetProjectMembers(projectID)
+	projectInfo, err := pc.projectRepo.GetProjectMembers(projectID)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
@@ -79,7 +82,20 @@ func (pc *projectController) getProject(c *gin.Context) {
 
 	}
 
-	c.IndentedJSON(http.StatusOK, project)
+	tasks, tasksError := pc.taskRepo.GetProjectTasks(projectID)
+
+	if tasksError != nil {
+		c.IndentedJSON(http.StatusInternalServerError, tasksError.Error())
+		return
+	}
+
+	p := models.ProjectWithMembersAndTasks{
+		Id:      projectInfo.Id,
+		Name:    projectInfo.Name,
+		Members: projectInfo.Members,
+		Tasks:   tasks,
+	}
+	c.IndentedJSON(http.StatusOK, p)
 
 }
 

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { ProjectListComponent } from './project-list.component';
-import { ProjectListAPI } from '../../apis/project-list.api';
+import { ProjectListAPI } from '../../core/apis/project-list.api';
 
 const routes: Routes = [
   {

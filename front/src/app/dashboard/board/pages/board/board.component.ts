@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map, switchMap } from 'rxjs';
-import { SingleProjectAPI } from '../../apis/single-project.api';
+import { SingleProjectAPI } from '../../../core/apis/single-project.api';
 
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
-  styleUrls: ['./board.component.scss'],
 })
 export class BoardComponent implements OnInit {
   constructor(private route: ActivatedRoute, private api: SingleProjectAPI) {}

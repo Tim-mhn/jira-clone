@@ -10,3 +10,10 @@ type ProjectWithMembers struct {
 	Name    string
 	Members []User
 }
+
+type ProjectWithMembersAndTasks struct {
+	Id      string
+	Name    string
+	Members []User
+	Tasks   []Task
+}

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { BoardComponent } from './board.component';
-import { SingleProjectAPI } from '../../apis/single-project.api';
+import { SingleProjectAPI } from '../../../core/apis/single-project.api';
 
 const routes: Routes = [
   {

@@ -10,11 +10,13 @@ import (
 )
 
 func RegisterControllers(router *gin.Engine, conn *sql.DB) {
-	um := repositories.NewUserRepository(conn)
-	pm := repositories.NewProjectRepository(um, conn)
-	tc := newTasksController(um, pm, conn)
-	uc := newUserController(um)
-	pc := newProjectController(pm)
+	userRepo := repositories.NewUserRepository(conn)
+	projectRepo := repositories.NewProjectRepository(userRepo, conn)
+	taskRepo := repositories.NewTaskRepository(userRepo, projectRepo, conn)
+
+	tc := newTasksController(userRepo, projectRepo, conn)
+	uc := newUserController(userRepo)
+	pc := newProjectController(projectRepo, taskRepo)
 
 	router.POST("/sign-up", uc.signUp)
 	router.POST("/sign-in", uc.signIn)
@@ -25,7 +27,7 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 
 	singleProjectRoutes := projectsRoutes.Group(
 		fmt.Sprintf(`/:%s`, PROJECT_ID_ROUTE_PARAM),
-		middlewares.CanAccessProjectMiddleware(pm))
+		middlewares.CanAccessProjectMiddleware(projectRepo))
 
 	tasksRoutes := singleProjectRoutes.Group("/tasks")
 	tasksRoutes.GET("", tc.getProjectTasks)

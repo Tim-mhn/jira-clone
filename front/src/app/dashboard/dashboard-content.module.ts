@@ -5,19 +5,16 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full',
     loadChildren: () =>
       import('./pages/project-list/project-list.module').then(
         (m) => m.ProjectListModule
       ),
   },
   {
-    path: ':projectId',
-    redirectTo: ':projectId/board',
-  },
-  {
-    path: ':projectId/board',
+    path: '',
     loadChildren: () =>
-      import('./pages/board/board.module').then((m) => m.BoardModule),
+      import('./board/board-content.module').then((m) => m.BoardContentModule),
   },
 ];
 @NgModule({
