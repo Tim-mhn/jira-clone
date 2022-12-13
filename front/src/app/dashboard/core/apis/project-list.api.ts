@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PROJECTS_API_ENDPOINT } from '.';
-import { Projects } from '../../models/project';
+import { Projects } from '../models/project';
 
 @Injectable()
 export class ProjectListAPI {

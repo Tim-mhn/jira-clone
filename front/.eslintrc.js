@@ -45,6 +45,7 @@ module.exports = {
         allowTernary: true,
       },
     ],
+    'no-underscore-dangle': 'off',
     'dot-notation': 'off',
     'no-return-assign': 'off',
     'no-unused-vars': [

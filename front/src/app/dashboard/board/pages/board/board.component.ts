@@ -2,13 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map, switchMap } from 'rxjs';
 import { SingleProjectAPI } from '../../../core/apis/single-project.api';
+import { CurrentProjectService } from '../../state-services/current-project.service';
 
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
 })
 export class BoardComponent implements OnInit {
-  constructor(private route: ActivatedRoute, private api: SingleProjectAPI) {}
+  constructor(
+    private route: ActivatedRoute,
+    private api: SingleProjectAPI,
+    private currentProjectService: CurrentProjectService
+  ) {}
 
   ngOnInit(): void {
     this.route.params
@@ -18,7 +23,7 @@ export class BoardComponent implements OnInit {
         switchMap((projectId) => this.api.getProjectInfo(projectId))
       )
       .subscribe((projectInfo) => {
-        console.log(projectInfo);
+        this.currentProjectService.updateCurrentProject(projectInfo);
       });
   }
 }
