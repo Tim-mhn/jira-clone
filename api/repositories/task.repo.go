@@ -128,7 +128,7 @@ func (taskRepo *TaskRepository) CreateTask(projectID string, title string, assig
 		INSERT INTO task (title, points, project_id, assignee_id, description, status) 
 		VALUES ('%s', '%d', '%s', '%s', '%s', %d)
 		RETURNING id
-	`, title, points, projectID, assigneeID, description, models.New)
+	`, title, points, projectID, assigneeID, description, models.NEW_STATUS)
 
 	rows, err := taskRepo.conn.Query(createTaskQuery)
 

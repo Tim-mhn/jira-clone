@@ -84,3 +84,7 @@ func (tc *tasksController) updateTaskStatus(c *gin.Context) {
 
 	tc.tm.UpdateTaskStatus(taskID, updateTaskDTO.Status)
 }
+
+// func (tc *tasksController) getTaskStatusList( c *gin.Context) {
+// 	statusList := tc.
+// }
