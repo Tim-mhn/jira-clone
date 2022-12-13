@@ -1,15 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { PROJECTS_API_ENDPOINT } from '.';
 import { Projects } from '../models/project';
 
 @Injectable()
 export class ProjectListAPI {
   constructor(private http: HttpClient) {}
 
-  private ENDPOINT = `${environment.apiUrl}projects`;
-
   getUserProjects() {
-    return this.http.get<Projects>(this.ENDPOINT);
+    return this.http.get<Projects>(PROJECTS_API_ENDPOINT);
   }
 }

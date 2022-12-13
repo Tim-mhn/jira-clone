@@ -1,0 +1,22 @@
+<div
+  class="h-14 flex flex-row px-3 items-center border-b border-gray-200 shadow-sm"
+>
+  <div class="flex">
+    <ng-container *ngTemplateOutlet="icon"></ng-container>
+  </div>
+  <div class="flex flex-grow justify-end">
+    <div>one</div>
+    <div>two</div>
+  </div>
+</div>
+
+<ng-template #icon>
+  <span
+    style="--logo-color: #2684ff; --logo-fill: var(--ds-text, #253858)"
+    aria-label="Jira Software"
+    role="img"
+    class="css-12mte9y"
+  >
+    <img src="assets/jira-icon.svg"
+  /></span>
+</ng-template>

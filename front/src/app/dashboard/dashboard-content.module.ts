@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 
 const routes: Routes = [
   {
@@ -12,14 +10,18 @@ const routes: Routes = [
         (m) => m.ProjectListModule
       ),
   },
+  {
+    path: ':projectId',
+    redirectTo: ':projectId/board',
+  },
+  {
+    path: ':projectId/board',
+    loadChildren: () =>
+      import('./pages/board/board.module').then((m) => m.BoardModule),
+  },
 ];
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    MatInputModule,
-    MatFormFieldModule,
-  ],
+  imports: [CommonModule, RouterModule.forChild(routes)],
 })
-export class ProjectsModule {}
+export class DashboardContentModule {}

@@ -45,6 +45,7 @@ module.exports = {
         allowTernary: true,
       },
     ],
+    'dot-notation': 'off',
     'no-return-assign': 'off',
     'no-unused-vars': [
       'error',
