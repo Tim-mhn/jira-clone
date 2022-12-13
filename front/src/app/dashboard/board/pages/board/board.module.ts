@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { BoardComponent } from './board.component';
 import { SingleProjectAPI } from '../../../core/apis/single-project.api';
+import { BoardBreadcrumbModule } from '../../components/board-breadcrumb/board-breadcrumb.module';
+import { TaskListModule } from '../../components/task-list/task-list.module';
 
 const routes: Routes = [
   {
@@ -13,7 +15,12 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [BoardComponent],
-  imports: [CommonModule, RouterModule.forChild(routes)],
+  imports: [
+    CommonModule,
+    RouterModule.forChild(routes),
+    BoardBreadcrumbModule,
+    TaskListModule,
+  ],
   providers: [SingleProjectAPI],
 })
 export class BoardModule {}

@@ -1,0 +1,7 @@
+<div class="flex flex-col gap-2 border border-gray-200 p-2">
+  <div *ngFor="let task of tasks" class="flex flex-row gap-2">
+    <div>{{ task.Title }}</div>
+    <div>{{ task.Points }}</div>
+    <div>{{ task.Assignee.Name }}</div>
+  </div>
+</div>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map, switchMap } from 'rxjs';
 import { SingleProjectAPI } from '../../../core/apis/single-project.api';
+import { ProjectWithMembersAndTasks } from '../../../core/models/project';
 import { CurrentProjectService } from '../../state-services/current-project.service';
 
 @Component({
@@ -15,6 +16,8 @@ export class BoardComponent implements OnInit {
     private currentProjectService: CurrentProjectService
   ) {}
 
+  project: ProjectWithMembersAndTasks;
+
   ngOnInit(): void {
     this.route.params
       .pipe(
@@ -24,6 +27,7 @@ export class BoardComponent implements OnInit {
       )
       .subscribe((projectInfo) => {
         this.currentProjectService.updateCurrentProject(projectInfo);
+        this.project = projectInfo;
       });
   }
 }

@@ -1,0 +1,12 @@
+<div class="flex gap-2 text-sm text-gray-500">
+  <div class="cursor-pointer hover:underline" [routerLink]="['/', 'projects']">
+    Projects
+  </div>
+  <div>/</div>
+  <div
+    class="cursor-pointer hover:underline"
+    [routerLink]="['/', 'projects', project?.Id]"
+  >
+    {{ project?.Name }}
+  </div>
+</div>
