@@ -2,6 +2,34 @@
   <div *ngFor="let task of tasks" class="flex flex-row gap-2">
     <div>{{ task.Title }}</div>
     <div>{{ task.Points }}</div>
-    <div>{{ task.Assignee.Name }}</div>
+    <div [matMenuTriggerFor]="assigneeMenu">{{ task.Assignee.Name }}</div>
+    <div [matMenuTriggerFor]="statusMenu">{{ task.Status.Label }}</div>
+
+    <mat-menu #statusMenu="matMenu">
+      <div class="flex flex-col gap-1 py-1">
+        <div
+          *ngFor="let status of allStatus"
+          class="hover:bg-gray-100 cursor-pointer border-l-2 border-transparent hover:border-blue-500 px-2 py-1"
+          (click)="updateTaskStatus(task, status)"
+        >
+          {{ status.Label }}
+        </div>
+      </div>
+    </mat-menu>
+
+    <mat-menu #assigneeMenu="matMenu">
+      <div class="flex flex-col gap-1 py-1">
+        <div
+          *ngFor="let member of projectMembers"
+          (click)="updateTaskAssignee(task, member)"
+          class="hover:bg-blue-100 cursor-pointer px-3 py-2 flex flex-col text-gray-800 text-sm"
+        >
+          <div>
+            {{ member.Name }}
+          </div>
+          <div class="text-xs text-gray-600">{{ member.Email }}</div>
+        </div>
+      </div>
+    </mat-menu>
   </div>
 </div>
