@@ -75,7 +75,8 @@ func (pm *ProjectRepository) getProjectByID(projectID string) (models.Project, e
 func (pm *ProjectRepository) MemberIsInProject(projectID string, memberID string) (bool, error) {
 
 	var resultsCount int
-	query := fmt.Sprintf(`SELECT COUNT(*) FROM project_user WHERE project_id='%s' AND user_id='%s' LIMIT 1`, projectID, memberID)
+	query := fmt.Sprintf(`SELECT COUNT(*) FROM "project_user" WHERE project_id='%s' AND user_id='%s' LIMIT 1`, projectID, memberID)
+
 	rows, err := pm.conn.Query(query)
 
 	if err != nil {
@@ -85,7 +86,11 @@ func (pm *ProjectRepository) MemberIsInProject(projectID string, memberID string
 	defer rows.Close()
 
 	if rows.Next() {
-		rows.Scan(&resultsCount)
+		err := rows.Scan(&resultsCount)
+
+		if err != nil {
+			return false, err
+		}
 	}
 
 	return resultsCount > 0, nil
@@ -111,9 +116,8 @@ func (pm *ProjectRepository) AddMemberToProject(projectID string, userID string)
 		return err
 	}
 
-	if !isInProject {
+	if isInProject {
 		return fmt.Errorf("member is already in project")
-
 	}
 
 	query := fmt.Sprintf(`INSERT INTO project_user (project_id, user_id) VALUES ('%s', '%s')`, projectID, userID)
