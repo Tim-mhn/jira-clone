@@ -4,5 +4,5 @@ type Task struct {
 	Points                 int
 	Assignee               User
 	Id, Title, Description string
-	Status                 Status
+	Status                 TaskStatus
 }

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tim-mhn/figma-clone/models"
 	"github.com/tim-mhn/figma-clone/repositories"
 )
 
@@ -21,7 +20,7 @@ type NewTaskDTO struct {
 }
 
 type UpdateTaskDTO struct {
-	Status models.Status `json:"status"`
+	Status int `json:"status"`
 }
 
 func newTasksController(um *repositories.UserRepository, pm *repositories.ProjectRepository, conn *sql.DB) *tasksController {
@@ -75,14 +74,21 @@ func (tc *tasksController) createNewTask(c *gin.Context) {
 }
 
 func (tc *tasksController) updateTaskStatus(c *gin.Context) {
-	var updateTaskDTO UpdateTaskDTO
+	var updateTaskDTO repositories.PatchTaskDTO
 	taskID := getTaskIDParam(c)
 	if err := c.BindJSON(&updateTaskDTO); err != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
 
-	tc.tm.UpdateTaskStatus(taskID, updateTaskDTO.Status)
+	err := tc.tm.UpdateTaskStatus(taskID, updateTaskDTO)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, nil)
 }
 
 // func (tc *tasksController) getTaskStatusList( c *gin.Context) {

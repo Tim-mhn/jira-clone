@@ -29,11 +29,14 @@ func (taskRepo TaskRepository) GetProjectTasks(projectID string) ([]models.Task,
 	task.title as task_title,
 	task.points as task_points,
 	task.description as task_description,
+	task.status as task_status,
+	task_status.label as task_status_label,
 	"user".id as user_id, 
 	"user".name as user_name, 
 	"user".email as user_email 
 	from task 
 	INNER JOIN "user" ON assignee_id="user".id
+	INNER JOIN task_status ON task_status.id=task.status
 	WHERE task.project_id='%s' 
 	`, projectID)
 
@@ -53,6 +56,7 @@ func (taskRepo TaskRepository) GetProjectTasks(projectID string) ([]models.Task,
 		var assignee models.User
 		err := rows.Scan(
 			&task.Id, &task.Title, &task.Points, &task.Description,
+			&task.Status.Id, &task.Status.Label,
 			&assignee.Id, &assignee.Name, &assignee.Email)
 
 		if err != nil {
@@ -73,11 +77,14 @@ func (taskRepo *TaskRepository) GetTaskById(taskID string) (models.Task, error) 
 	task.title as task_title,
 	task.points as task_points,
 	task.description as task_description,
+	task.status as task_status,
+	task_status.label as task_status_label,
 	"user".id as user_id, 
 	"user".name as user_name, 
 	"user".email as user_email 
 	from task 
 	INNER JOIN "user" ON assignee_id="user".id
+	INNER JOIN task_status ON task_status.id=task.status
 	WHERE task.id='%s' 
 	LIMIT 1 
 	`, taskID)
@@ -95,6 +102,7 @@ func (taskRepo *TaskRepository) GetTaskById(taskID string) (models.Task, error) 
 	if rows.Next() {
 		err := rows.Scan(
 			&task.Id, &task.Title, &task.Points, &task.Description,
+			&task.Status.Id, &task.Status.Label,
 			&assignee.Id, &assignee.Name, &assignee.Email)
 
 		if err != nil {
@@ -146,13 +154,29 @@ func (taskRepo *TaskRepository) CreateTask(projectID string, title string, assig
 	return taskID, nil
 }
 
-func (taskRepo *TaskRepository) UpdateTaskStatus(taskID string, newStatus models.Status) error {
-	queryStr := fmt.Sprintf(`
-		UPDATE task 
-		SET status=%d
-		WHERE id=%s`,
-		newStatus, taskID)
-	_, err := taskRepo.conn.Query(queryStr)
+type PatchTaskDTO struct {
+	Status     *int    `json:"status,omitempty"`
+	AssigneeId *string `json:"assigneeId,omitempty`
+}
+
+func (dto PatchTaskDTO) String() string {
+	return fmt.Sprintf(`status: %d -- assigneeId: %s`, dto.Status, *dto.AssigneeId)
+}
+
+func (taskRepo *TaskRepository) UpdateTaskStatus(taskID string, patchDTO PatchTaskDTO) error {
+
+	ApiToDBFields := map[string]string{
+		"AssigneeId": "assignee_id",
+		"Status":     "status",
+	}
+
+	updateQuery := buildSQLUpdateQuery(patchDTO, ApiToDBFields, SQLCondition{
+		field: "id",
+		value: fmt.Sprintf(`'%s'`, taskID),
+	})
+
+	fmt.Println(updateQuery)
+	_, err := taskRepo.conn.Exec(updateQuery)
 
 	return err
 

@@ -17,8 +17,12 @@ const (
 	dbname   = "figma"
 )
 
-func main() {
+type patch struct {
+	name *string
+	id   *string
+}
 
+func main() {
 	psqlconn := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
