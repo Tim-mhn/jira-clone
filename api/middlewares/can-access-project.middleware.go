@@ -14,7 +14,12 @@ func CanAccessProjectMiddleware(pm *repositories.ProjectRepository) gin.HandlerF
 		projectID := c.Param("projectID")
 		user, _ := GetUserFromRequestContext(c)
 
-		memberIsInProject := pm.MemberIsInProject(projectID, user.Id)
+		memberIsInProject, err := pm.MemberIsInProject(projectID, user.Id)
+
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		if !memberIsInProject {
 			c.AbortWithStatusJSON(http.StatusForbidden, fmt.Errorf("member is not in project"))

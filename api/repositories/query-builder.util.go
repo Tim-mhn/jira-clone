@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-type SQLUpdates struct {
+type FieldValuesToUpdate struct {
 	fields []string
 	values []any
 }
@@ -15,7 +15,7 @@ type SQLCondition struct {
 	value string
 }
 
-func buildSQLUpdates(input interface{}) SQLUpdates {
+func buildFieldValuesToUpdate(input interface{}) FieldValuesToUpdate {
 
 	var fields []string
 	var args []any
@@ -62,21 +62,21 @@ func buildSQLUpdates(input interface{}) SQLUpdates {
 
 	}
 
-	return SQLUpdates{
+	return FieldValuesToUpdate{
 		fields: fields,
 		values: args,
 	}
 
 }
 
-func buildSQLUpdateQuery(input interface{}, fieldsMap map[string]string, condition SQLCondition) string {
-	sqlUpdates := buildSQLUpdates(input)
+func buildSQLUpdateQuery(input interface{}, apiToDBFieldMap map[string]string, condition SQLCondition) string {
+	sqlUpdates := buildFieldValuesToUpdate(input)
 
 	var dbFields []string
 
 	for i := range sqlUpdates.fields {
 		apiField := sqlUpdates.fields[i]
-		dbFields = append(dbFields, fieldsMap[apiField])
+		dbFields = append(dbFields, apiToDBFieldMap[apiField])
 	}
 
 	var updateQuery = "UPDATE task SET "

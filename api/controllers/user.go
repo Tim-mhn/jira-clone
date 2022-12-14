@@ -4,23 +4,13 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tim-mhn/figma-clone/dtos"
 	"github.com/tim-mhn/figma-clone/repositories"
 	"github.com/tim-mhn/figma-clone/utils"
 )
 
 type userController struct {
 	um *repositories.UserRepository
-}
-
-type NewUserDTO struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type SignInDTO struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
 }
 
 func newUserController(um *repositories.UserRepository) *userController {
@@ -30,7 +20,7 @@ func newUserController(um *repositories.UserRepository) *userController {
 }
 
 func (uc *userController) signUp(c *gin.Context) {
-	var userDTO NewUserDTO
+	var userDTO dtos.SignUpDTO
 	if err := c.BindJSON(&userDTO); err != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
@@ -47,7 +37,7 @@ func (uc *userController) signUp(c *gin.Context) {
 
 func (uc *userController) signIn(c *gin.Context) {
 
-	var signInDTO SignInDTO
+	var signInDTO dtos.SignInDTO
 	if err := c.BindJSON(&signInDTO); err != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return

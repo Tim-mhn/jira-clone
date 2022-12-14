@@ -5,22 +5,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tim-mhn/figma-clone/dtos"
 	"github.com/tim-mhn/figma-clone/repositories"
 )
 
 type tasksController struct {
 	tm *repositories.TaskRepository
-}
-
-type NewTaskDTO struct {
-	Points      int    `json:"points"`
-	Title       string `json:"title"`
-	AssigneeID  string `json:"assigneeID"`
-	Description string `json:"description"`
-}
-
-type UpdateTaskDTO struct {
-	Status int `json:"status"`
 }
 
 func newTasksController(um *repositories.UserRepository, pm *repositories.ProjectRepository, conn *sql.DB) *tasksController {
@@ -55,14 +45,14 @@ func (tc *tasksController) getTaskByID(c *gin.Context) {
 }
 
 func (tc *tasksController) createNewTask(c *gin.Context) {
-	var taskDTO NewTaskDTO
+	var taskDTO dtos.NewTaskDTO
 	if err := c.BindJSON(&taskDTO); err != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
 
 	projectID := getProjectIDParam(c)
-	newTask, newTaskErr := tc.tm.CreateTask(projectID, taskDTO.Title, taskDTO.AssigneeID, taskDTO.Points, taskDTO.Description)
+	newTask, newTaskErr := tc.tm.CreateTask(projectID, taskDTO.Title, taskDTO.AssigneeId, taskDTO.Points, taskDTO.Description)
 
 	if newTaskErr != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, newTaskErr.Error())
@@ -73,15 +63,15 @@ func (tc *tasksController) createNewTask(c *gin.Context) {
 
 }
 
-func (tc *tasksController) updateTaskStatus(c *gin.Context) {
-	var updateTaskDTO repositories.PatchTaskDTO
+func (tc *tasksController) UpdateTask(c *gin.Context) {
+	var updateTaskDTO dtos.PatchTaskDTO
 	taskID := getTaskIDParam(c)
 	if err := c.BindJSON(&updateTaskDTO); err != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
 
-	err := tc.tm.UpdateTaskStatus(taskID, updateTaskDTO)
+	err := tc.tm.UpdateTask(taskID, updateTaskDTO)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
@@ -90,7 +80,3 @@ func (tc *tasksController) updateTaskStatus(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, nil)
 }
-
-// func (tc *tasksController) getTaskStatusList( c *gin.Context) {
-// 	statusList := tc.
-// }

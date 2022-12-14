@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/tim-mhn/figma-clone/dtos"
 	"github.com/tim-mhn/figma-clone/models"
 )
 
@@ -128,8 +129,15 @@ func (taskRepo *TaskRepository) CreateTask(projectID string, title string, assig
 		return "", getProjectErr
 	}
 
-	if !taskRepo.pm.MemberIsInProject(projectID, assigneeID) {
-		return "", fmt.Errorf("assignee is not in project")
+	isInProject, err := taskRepo.pm.MemberIsInProject(projectID, assigneeID)
+
+	if err != nil {
+		return "", err
+	}
+
+	if !isInProject {
+		return "", fmt.Errorf("member is already in project")
+
 	}
 
 	createTaskQuery := fmt.Sprintf(`
@@ -148,22 +156,17 @@ func (taskRepo *TaskRepository) CreateTask(projectID string, title string, assig
 
 	var taskID string
 	if rows.Next() {
-		rows.Scan(&taskID)
+		err := rows.Scan(&taskID)
+
+		if err != nil {
+			return "", err
+		}
 	}
 
 	return taskID, nil
 }
 
-type PatchTaskDTO struct {
-	Status     *int    `json:"status,omitempty"`
-	AssigneeId *string `json:"assigneeId,omitempty`
-}
-
-func (dto PatchTaskDTO) String() string {
-	return fmt.Sprintf(`status: %d -- assigneeId: %s`, dto.Status, *dto.AssigneeId)
-}
-
-func (taskRepo *TaskRepository) UpdateTaskStatus(taskID string, patchDTO PatchTaskDTO) error {
+func (taskRepo *TaskRepository) UpdateTask(taskID string, patchDTO dtos.PatchTaskDTO) error {
 
 	ApiToDBFields := map[string]string{
 		"AssigneeId": "assignee_id",
