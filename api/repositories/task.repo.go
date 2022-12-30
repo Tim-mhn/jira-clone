@@ -23,30 +23,37 @@ func NewTaskRepository(um *UserRepository, pm *ProjectRepository, conn *sql.DB) 
 	return &taskRepo
 }
 
+func spreadErrorMessage(contextErrorMessage string, sourceError error) error {
+	return fmt.Errorf(`%s Details: %s `, contextErrorMessage, sourceError.Error())
+}
 func (taskRepo TaskRepository) GetProjectTasks(projectID string) ([]models.Task, error) {
+
+	BASE_ERROR_MESSAGE := fmt.Sprintf(`error  when fetching list of tasks of project %s`, projectID)
 
 	getProjectTasksRequest := fmt.Sprintf(`
 	SELECT task.id as task_id, 
 	task.title as task_title,
 	task.points as task_points,
 	task.description as task_description,
-	task.status as task_status,
-	task_status.label as task_status_label,
-	"user".id as user_id, 
-	"user".name as user_name, 
-	"user".email as user_email 
+	COALESCE(task.status, 0) as task_status,
+	COALESCE(task_status.label, '') as task_status_label,
+	assignee_id, 
+	COALESCE("user".name, '') as user_name, 
+	COALESCE("user".email, '') as user_email 
 	from task 
-	INNER JOIN "user" ON assignee_id="user".id
-	INNER JOIN task_status ON task_status.id=task.status
+	LEFT JOIN "user" ON assignee_id="user".id
+	LEFT JOIN task_status ON task_status.id=task.status
 	WHERE task.project_id='%s' 
 	`, projectID)
+
+	var assigneeIdBytes []byte
 
 	tasks := []models.Task{}
 
 	rows, err := taskRepo.conn.Query(getProjectTasksRequest)
 
 	if err != nil {
-		return []models.Task{}, err
+		return []models.Task{}, spreadErrorMessage(BASE_ERROR_MESSAGE, err)
 	}
 
 	defer rows.Close()
@@ -58,13 +65,15 @@ func (taskRepo TaskRepository) GetProjectTasks(projectID string) ([]models.Task,
 		err := rows.Scan(
 			&task.Id, &task.Title, &task.Points, &task.Description,
 			&task.Status.Id, &task.Status.Label,
-			&assignee.Id, &assignee.Name, &assignee.Email)
+			&assigneeIdBytes, &assignee.Name, &assignee.Email)
 
 		if err != nil {
-			return []models.Task{}, err
+			return []models.Task{}, spreadErrorMessage(BASE_ERROR_MESSAGE, err)
 		}
 
 		task.Assignee = assignee
+		assigneeIdString := string(assigneeIdBytes)
+		task.Assignee.Id = assigneeIdString
 
 		tasks = append(tasks, task)
 	}
@@ -82,10 +91,10 @@ func (taskRepo *TaskRepository) GetTaskById(taskID string) (models.Task, error) 
 	task_status.label as task_status_label,
 	"user".id as user_id, 
 	"user".name as user_name, 
-	"user".email as user_email 
+	user.email as user_email 
 	from task 
-	INNER JOIN "user" ON assignee_id="user".id
-	INNER JOIN task_status ON task_status.id=task.status
+	LEFT JOIN "user" ON assignee_id="user".id
+	LEFT JOIN task_status ON task_status.id=task.status
 	WHERE task.id='%s' 
 	LIMIT 1 
 	`, taskID)

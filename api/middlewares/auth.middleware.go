@@ -30,20 +30,20 @@ func IsAuthenticatedMiddleware() gin.HandlerFunc {
 	}
 }
 
-func GetUserFromRequestContext(c *gin.Context) (models.User, error) {
+func GetUserFromRequestContext(c *gin.Context) (*models.User, error) {
 	user, exists := c.Get("user")
 
 	if !exists {
-		return models.User{}, fmt.Errorf("missing user from middleware context")
+		return &models.User{}, fmt.Errorf("missing user from middleware context")
 	}
 
 	u, ok := user.(models.User)
 
 	if !ok {
-		return models.User{}, fmt.Errorf("error when casting user in middleware context")
+		return &models.User{}, fmt.Errorf("error when casting user in middleware context")
 	}
 
-	return u, nil
+	return &u, nil
 
 }
 

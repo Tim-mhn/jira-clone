@@ -50,7 +50,8 @@ func buildFieldValuesToUpdate(input interface{}) FieldValuesToUpdate {
 			args = append(args, fmt.Sprintf(`%d`, val.Int()))
 
 		case reflect.String:
-			args = append(args, fmt.Sprintf(`'%s'`, val.String()))
+			stringVal := val.String()
+			args = append(args, stringNULLIfEmptyString(stringVal))
 
 		case reflect.Bool:
 			if val.Bool() {
@@ -67,6 +68,14 @@ func buildFieldValuesToUpdate(input interface{}) FieldValuesToUpdate {
 		values: args,
 	}
 
+}
+
+func stringNULLIfEmptyString(strValue string) string {
+	if strValue == "" {
+		return "NULL"
+	} else {
+		return fmt.Sprintf(`'%s'`, strValue)
+	}
 }
 
 func buildSQLUpdateQuery(input interface{}, apiToDBFieldMap map[string]string, condition SQLCondition) string {

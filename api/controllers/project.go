@@ -44,7 +44,7 @@ func (pc *projectController) createProject(c *gin.Context) {
 		return
 	}
 
-	err = pc.projectRepo.AddMemberToProject(newProject.Id, user.Id)
+	err = pc.projectRepo.AddMemberToProject(newProject.Id, (user).Id)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
