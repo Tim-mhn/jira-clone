@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 )
 
@@ -15,13 +16,13 @@ type SQLCondition struct {
 	value string
 }
 
-func buildFieldValuesToUpdate(input interface{}) FieldValuesToUpdate {
+func buildFieldValuesToUpdate(fieldsToUpdate interface{}) FieldValuesToUpdate {
 
 	var fields []string
 	var args []any
-	inputFields := reflect.TypeOf(input)
+	inputFields := reflect.TypeOf(fieldsToUpdate)
 
-	values := reflect.ValueOf(input)
+	values := reflect.ValueOf(fieldsToUpdate)
 
 	num := inputFields.NumField()
 
@@ -63,6 +64,8 @@ func buildFieldValuesToUpdate(input interface{}) FieldValuesToUpdate {
 
 	}
 
+	log.Printf(`[buildFieldValuesToUpdate] Fields=%s Args=%s`, fields, args)
+
 	return FieldValuesToUpdate{
 		fields: fields,
 		values: args,
@@ -78,8 +81,9 @@ func stringNULLIfEmptyString(strValue string) string {
 	}
 }
 
-func buildSQLUpdateQuery(input interface{}, apiToDBFieldMap map[string]string, condition SQLCondition) string {
-	sqlUpdates := buildFieldValuesToUpdate(input)
+func buildSQLUpdateQuery(fieldsToUpdate interface{}, apiToDBFieldMap map[string]string, condition SQLCondition) string {
+	log.Printf(`[buildSQLUpdateQuery] starting with condition: field=%s -- value=%s`, condition.field, condition.value)
+	sqlUpdates := buildFieldValuesToUpdate(fieldsToUpdate)
 
 	var dbFields []string
 
@@ -104,6 +108,7 @@ func buildSQLUpdateQuery(input interface{}, apiToDBFieldMap map[string]string, c
 
 	updateQuery += fmt.Sprintf(` WHERE %s=%s`, condition.field, condition.value)
 
+	log.Printf(`[buildSQLUpdateQuery] Result: %s`, updateQuery)
 	return updateQuery
 
 }

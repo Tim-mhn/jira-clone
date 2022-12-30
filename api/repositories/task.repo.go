@@ -61,7 +61,7 @@ func (taskRepo TaskRepository) GetProjectTasks(projectID string) ([]models.Task,
 func getTaskDataFromRow(rows *sql.Rows) (models.Task, error) {
 	var task models.Task
 	var assignee models.User
-	var assigneeIdBytes []byte
+	var assigneeIdBytes []byte // handle potential null values
 
 	err := rows.Scan(
 		&task.Id, &task.Title, &task.Points, &task.Description,
