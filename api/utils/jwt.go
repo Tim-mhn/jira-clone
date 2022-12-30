@@ -47,10 +47,12 @@ func ParseTokenString(tokenString string) (models.User, error) {
 	id := data["Id"].(string)
 	email := data["Email"].(string)
 	username := data["Name"].(string)
+	icon := fmt.Sprintf(`%s`, data["Icon"])
 
 	return models.User{
 		Id:    id,
 		Email: email,
 		Name:  username,
+		Icon:  icon,
 	}, nil
 }

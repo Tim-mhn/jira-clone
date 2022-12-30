@@ -4,6 +4,7 @@ type User struct {
 	Id    string
 	Name  string
 	Email string
+	Icon  string
 }
 
 type UserWithPassword struct {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/tim-mhn/figma-clone/models"
+	"github.com/tim-mhn/figma-clone/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -57,16 +58,21 @@ func (um *UserRepository) GetUserByID(userID string) (models.User, error) {
 
 	defer rows.Close()
 
-	if rows.Next() {
-		err := rows.Scan(&user.Id, &user.Name, &user.Email)
+	if !rows.Next() {
 
-		if err != nil {
-			return user, err
-		}
+		return models.User{}, fmt.Errorf(`could not find user %s`, userID)
 
 	}
 
-	return user, nil
+	scanError := rows.Scan(&user.Id, &user.Name, &user.Email)
+
+	if scanError != nil {
+		return models.User{}, scanError
+	}
+
+	user.Icon = utils.GetUserIconPath(userID)
+	return user, scanError
+
 }
 
 func (um *UserRepository) getUserInfoByEmail(email string) (models.UserWithPassword, error) {
@@ -101,14 +107,16 @@ func (um *UserRepository) SignInByEmail(email string, password string) (models.U
 		return models.User{}, err
 	}
 
-	if passwordIsCorrect(password, userWithPwd.Password) {
+	if !passwordIsCorrect(password, userWithPwd.Password) {
 		return models.User{}, fmt.Errorf("invalid password")
 	}
 
+	icon := utils.GetUserIconPath(userWithPwd.Id)
 	return models.User{
 		Id:    userWithPwd.Id,
 		Name:  userWithPwd.Name,
 		Email: userWithPwd.Email,
+		Icon:  icon,
 	}, nil
 }
 
@@ -130,9 +138,8 @@ func hashAndSalt(pwd string) (string, error) {
 	return string(hash), nil
 }
 
-func passwordIsCorrect(unhashedPwd string, userPwd string) bool {
-	hashedPwd, _ := hashAndSalt(unhashedPwd)
-
-	return hashedPwd == userPwd
+func passwordIsCorrect(unhashedPassord string, userPassword string) bool {
+	errorIfIncorrect := bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(unhashedPassord))
+	return errorIfIncorrect == nil
 
 }
