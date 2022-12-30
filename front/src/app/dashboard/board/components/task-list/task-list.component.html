@@ -20,12 +20,12 @@
     <mat-menu #assigneeMenu="matMenu">
       <div class="flex flex-col gap-1 py-1">
         <div
-          *ngFor="let member of projectMembers"
+          *ngFor="let member of membersOptions"
           (click)="updateTaskAssignee(task, member)"
           class="hover:bg-blue-100 cursor-pointer px-3 py-2 flex flex-col text-gray-800 text-sm"
         >
           <div>
-            {{ member.Name }}
+            {{ member?.Name }}
           </div>
           <div class="text-xs text-gray-600">{{ member.Email }}</div>
         </div>

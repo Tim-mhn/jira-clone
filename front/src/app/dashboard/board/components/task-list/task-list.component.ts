@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PatchTaskAPI } from '../../../core/apis/patch-task.api';
+import { UNASSIGNED_TASK_ID_DTO } from '../../../core/dtos/task.dto';
 import { ProjectMember } from '../../../core/models/project-member';
 import { Task, Tasks } from '../../../core/models/task';
 import { TaskStatus } from '../../../core/models/task-status';
@@ -12,7 +13,19 @@ export class TaskListComponent implements OnInit {
   @Input() tasks: Tasks;
   @Input() allStatus: TaskStatus[];
   @Input() currentProjectId: string;
-  @Input() projectMembers: ProjectMember[];
+  @Input() set projectMembers(_members: ProjectMember[]) {
+    const members = _members || [];
+    this.membersOptions = [
+      {
+        Email: '',
+        Id: UNASSIGNED_TASK_ID_DTO,
+        Name: 'Unassigned',
+      },
+      ...members,
+    ];
+  }
+
+  membersOptions: ProjectMember[];
 
   constructor(private patchTaskAPI: PatchTaskAPI) {}
 
@@ -22,7 +35,7 @@ export class TaskListComponent implements OnInit {
     this.patchTaskAPI
       .updateTask({
         projectId: this.currentProjectId,
-        statusId: newStatus.Id,
+        status: newStatus.Id,
         taskId: task.Id,
       })
       .subscribe(() => {

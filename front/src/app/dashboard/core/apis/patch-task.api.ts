@@ -7,7 +7,7 @@ import { concatObjectsIf } from '../../../shared/utils/object.util';
 export interface PatchTaskDTO {
   taskId: string;
   projectId: string;
-  statusId?: number;
+  status?: number;
   assigneeId?: string;
 }
 @Injectable({
@@ -19,9 +19,9 @@ export class PatchTaskAPI {
   updateTask(dto: PatchTaskDTO) {
     const endpoint = this.buildEndpoint(dto);
     let body = {};
-    const { statusId, assigneeId } = dto;
-    body = concatObjectsIf(body, { statusId }, !!statusId);
-    body = concatObjectsIf(body, { assigneeId }, !!assigneeId);
+    const { status, assigneeId } = dto;
+    body = concatObjectsIf(body, { status }, status !== undefined);
+    body = concatObjectsIf(body, { assigneeId }, assigneeId !== undefined);
 
     return this.http.patch<void>(endpoint, body);
   }
