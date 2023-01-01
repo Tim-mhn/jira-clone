@@ -1,19 +1,30 @@
-<div class="flex flex-col gap-2 border border-gray-200 p-2">
+<div class="flex flex-col gap-2 border border-gray-200 p-2 text-gray-800">
   <div *ngFor="let task of tasks" class="flex flex-row gap-2">
-    <div>{{ task.Title }}</div>
-    <div>{{ task.Points }}</div>
-    <div [matMenuTriggerFor]="assigneeMenu">{{ task.Assignee.Name }}</div>
-    <div [matMenuTriggerFor]="statusMenu">{{ task.Status.Label }}</div>
+    <div class="flex flex-grow overflow-x-auto text-sm">{{ task.Title }}</div>
+    <div
+      class="rounded-full w-5 h-5 bg-gray-200 text-gray-900 text-[10px] flex justify-center items-center"
+    >
+      {{ task.Points }}
+    </div>
+
+    <jira-task-status-trigger [matMenuTriggerFor]="statusMenu"
+      >{{ task.Status.Label }}
+    </jira-task-status-trigger>
+    <jira-member-icon
+      [member]="task.Assignee"
+      class="cursor-pointer hover:border-blue-100 border border-transparent rounded-full"
+      [matMenuTriggerFor]="assigneeMenu"
+    ></jira-member-icon>
 
     <mat-menu #statusMenu="matMenu">
       <div class="flex flex-col gap-1 py-1">
-        <div
-          *ngFor="let status of allStatus"
+        <jira-task-status-chip
           class="hover:bg-gray-100 cursor-pointer border-l-2 border-transparent hover:border-blue-500 px-2 py-1"
+          *ngFor="let status of allStatus"
           (click)="updateTaskStatus(task, status)"
         >
           {{ status.Label }}
-        </div>
+        </jira-task-status-chip>
       </div>
     </mat-menu>
 
@@ -24,10 +35,16 @@
           (click)="updateTaskAssignee(task, member)"
           class="hover:bg-blue-100 cursor-pointer px-3 py-2 flex flex-col text-gray-800 text-sm"
         >
-          <div>
-            {{ member?.Name }}
+          <div class="flex gap-4 items-center">
+            <jira-member-icon [member]="member"></jira-member-icon>
+
+            <div class="flex flex-col gap-1">
+              <div>
+                {{ member?.Name }}
+              </div>
+              <div class="text-xs text-gray-600">{{ member.Email }}</div>
+            </div>
           </div>
-          <div class="text-xs text-gray-600">{{ member.Email }}</div>
         </div>
       </div>
     </mat-menu>

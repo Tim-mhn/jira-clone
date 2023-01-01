@@ -1,8 +1,6 @@
-/** @type {import('tailwindcss').Config} */
+const iqairTailwind = require('iqair-tailwind');
+
 module.exports = {
-  content: ["./src/**/*.{html,ts}"],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
+  content: ['./src/**/*.{html,ts}'],
+  ...iqairTailwind,
 };

@@ -1,5 +1,3 @@
-export interface ProjectMember {
-  Id: string;
-  Email: string;
-  Name: string;
-}
+import { User } from '../../../auth/models/user';
+
+export type ProjectMember = User;

@@ -20,6 +20,7 @@ export class TaskListComponent implements OnInit {
         Email: '',
         Id: UNASSIGNED_TASK_ID_DTO,
         Name: 'Unassigned',
+        Icon: '',
       },
       ...members,
     ];

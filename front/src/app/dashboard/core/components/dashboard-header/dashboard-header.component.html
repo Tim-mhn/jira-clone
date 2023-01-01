@@ -5,13 +5,7 @@
     <ng-container *ngTemplateOutlet="icon"></ng-container>
   </div>
   <div class="flex flex-grow justify-end">
-    <img
-      class=""
-      [src]="(loggedUser$ | async)?.Icon"
-      height="20"
-      width="20"
-      class="w-5 h-5 border border-gray-200 rounded-full"
-    />
+    <jira-member-icon [member]="loggedUser$ | async"></jira-member-icon>
   </div>
 </div>
 

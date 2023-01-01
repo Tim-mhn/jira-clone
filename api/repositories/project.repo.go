@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/tim-mhn/figma-clone/models"
+	"github.com/tim-mhn/figma-clone/utils"
 )
 
 type ProjectRepository struct {
@@ -156,9 +157,12 @@ func (pm *ProjectRepository) GetProjectMembers(projectID string) (models.Project
 	defer rows.Close()
 
 	for rows.Next() {
-		var member models.User
-		rows.Scan(&member.Id, &member.Name, &member.Email)
+		var memberId string
+		var memberName string
+		var memberEmail string
+		rows.Scan(&memberId, &memberName, &memberEmail)
 
+		member := utils.BuildUserWithIcon(memberId, memberName, memberEmail)
 		projectMembers = append(projectMembers, member)
 	}
 

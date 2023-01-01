@@ -70,8 +70,8 @@ func (um *UserRepository) GetUserByID(userID string) (models.User, error) {
 		return models.User{}, scanError
 	}
 
-	user.Icon = utils.GetUserIconPath(userID)
-	return user, scanError
+	userWithIcon := utils.BuildUserWithIcon(user.Id, user.Name, user.Email)
+	return userWithIcon, scanError
 
 }
 
@@ -111,13 +111,9 @@ func (um *UserRepository) SignInByEmail(email string, password string) (models.U
 		return models.User{}, fmt.Errorf("invalid password")
 	}
 
-	icon := utils.GetUserIconPath(userWithPwd.Id)
-	return models.User{
-		Id:    userWithPwd.Id,
-		Name:  userWithPwd.Name,
-		Email: userWithPwd.Email,
-		Icon:  icon,
-	}, nil
+	user := utils.BuildUserWithIcon(userWithPwd.Id, userWithPwd.Name, userWithPwd.Email)
+
+	return user, nil
 }
 
 func hashAndSalt(pwd string) (string, error) {

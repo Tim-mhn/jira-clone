@@ -6,6 +6,7 @@ import (
 
 	"github.com/tim-mhn/figma-clone/dtos"
 	"github.com/tim-mhn/figma-clone/models"
+	"github.com/tim-mhn/figma-clone/utils"
 )
 
 type TaskRepository struct {
@@ -74,7 +75,7 @@ func getTaskDataFromRow(rows *sql.Rows) (models.Task, error) {
 
 	task.Assignee = assignee
 	assigneeIdString := string(assigneeIdBytes)
-	task.Assignee.Id = assigneeIdString
+	task.Assignee = utils.BuildUserWithIcon(assigneeIdString, task.Assignee.Name, task.Assignee.Email)
 
 	return task, nil
 

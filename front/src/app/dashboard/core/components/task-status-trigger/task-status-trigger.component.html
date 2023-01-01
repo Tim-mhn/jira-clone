@@ -1,0 +1,9 @@
+<jira-task-status-chip class="cursor-pointer relative group">
+  <div
+    class="absolute left-0 top-0 right-0 bottom-0 bg-black opacity-0 group-hover:opacity-5"
+  ></div>
+  <div class="flex items-center gap-0.5">
+    <ng-content></ng-content>
+    <img class="w-3 h-3" height="12" width="12" [src]="ARROW_DOWN" />
+  </div>
+</jira-task-status-chip>

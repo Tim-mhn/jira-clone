@@ -22,6 +22,7 @@
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
     "eslint-config-airbnb": "^19.0.4",
+    "iqair-tailwind": "^1.0.11",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -48,7 +49,7 @@
     "karma-jasmine-html-reporter": "~1.7.0",
     "lint-staged": "^13.1.0",
     "prettier": "2.8.1",
-    "tailwindcss": "^3.2.4",
+    "tailwindcss": "^3.0.24",
     "typescript": "~4.6.2"
   },
   "lint-staged": {
