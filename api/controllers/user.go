@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/dtos"
+	"github.com/tim-mhn/figma-clone/middlewares"
 	"github.com/tim-mhn/figma-clone/repositories"
 	"github.com/tim-mhn/figma-clone/utils"
 )
@@ -56,5 +57,13 @@ func (uc *userController) signIn(c *gin.Context) {
 
 	c.SetCookie("Authorization", ss, 365*24*60*60, "/", "localhost", true, true)
 	c.IndentedJSON(http.StatusOK, token)
+
+}
+
+func (uc *userController) me(c *gin.Context) {
+
+	user, _ := middlewares.GetUserFromRequestContext(c)
+
+	c.IndentedJSON(http.StatusOK, user)
 
 }

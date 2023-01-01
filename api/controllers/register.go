@@ -23,7 +23,10 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 	router.POST("/sign-up", uc.signUp)
 	router.POST("/sign-in", uc.signIn)
 
-	projectsRoutes := router.Group("/projects", middlewares.IsAuthenticatedMiddleware())
+	requiresAuthRoutes := router.Group("", middlewares.IsAuthenticatedMiddleware())
+	requiresAuthRoutes.GET("/me", middlewares.IsAuthenticatedMiddleware(), uc.me)
+
+	projectsRoutes := requiresAuthRoutes.Group("/projects")
 
 	projectsRoutes.GET("", pc.getUserProjects)
 
