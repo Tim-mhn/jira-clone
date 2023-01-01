@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { TaskListComponent } from './task-list.component';
 import { MemberIconModule } from '../../../../shared/components/member-icon/member-icon.module';
-import { TaskStatusTriggerModule } from '../../../core/components/task-status-trigger/task-status-trigger.module';
-import { TaskStatusChipModule } from '../../../core/components/task-status-chip/task-status-chip.module';
+import { TaskStatusComponentsModule } from '../../../core/components/task-status/task-status.module';
 
 @NgModule({
   declarations: [TaskListComponent],
@@ -12,8 +11,7 @@ import { TaskStatusChipModule } from '../../../core/components/task-status-chip/
     CommonModule,
     MatMenuModule,
     MemberIconModule,
-    TaskStatusTriggerModule,
-    TaskStatusChipModule,
+    TaskStatusComponentsModule,
   ],
   exports: [TaskListComponent],
 })

@@ -32,18 +32,6 @@ export class TaskListComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  updateTaskStatus(task: Task, newStatus: TaskStatus) {
-    this.patchTaskAPI
-      .updateTask({
-        projectId: this.currentProjectId,
-        status: newStatus.Id,
-        taskId: task.Id,
-      })
-      .subscribe(() => {
-        task.updateStatus(newStatus);
-      });
-  }
-
   updateTaskAssignee(task: Task, newAssignee: ProjectMember) {
     this.patchTaskAPI
       .updateTask({

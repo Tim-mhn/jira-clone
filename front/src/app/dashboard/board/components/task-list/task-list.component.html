@@ -7,26 +7,16 @@
       {{ task.Points }}
     </div>
 
-    <jira-task-status-trigger [matMenuTriggerFor]="statusMenu"
-      >{{ task.Status.Label }}
-    </jira-task-status-trigger>
+    <jira-task-status-selector
+      [task]="task"
+      [projectId]="currentProjectId"
+      [allStatus]="allStatus"
+    ></jira-task-status-selector>
     <jira-member-icon
       [member]="task.Assignee"
       class="cursor-pointer hover:border-blue-100 border border-transparent rounded-full"
       [matMenuTriggerFor]="assigneeMenu"
     ></jira-member-icon>
-
-    <mat-menu #statusMenu="matMenu">
-      <div class="flex flex-col gap-1 py-1">
-        <jira-task-status-chip
-          class="hover:bg-gray-100 cursor-pointer border-l-2 border-transparent hover:border-blue-500 px-2 py-1"
-          *ngFor="let status of allStatus"
-          (click)="updateTaskStatus(task, status)"
-        >
-          {{ status.Label }}
-        </jira-task-status-chip>
-      </div>
-    </mat-menu>
 
     <mat-menu #assigneeMenu="matMenu">
       <div class="flex flex-col gap-1 py-1">
