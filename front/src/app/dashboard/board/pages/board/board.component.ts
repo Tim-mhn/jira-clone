@@ -5,6 +5,7 @@ import { SubscriptionHandler } from '../../../../shared/services/subscription-ha
 import { SingleProjectAPI } from '../../../core/apis/single-project.api';
 import { TaskStatusAPI } from '../../../core/apis/task-status.api';
 import { ProjectInfo } from '../../../core/models/project';
+import { Task } from '../../../core/models/task';
 import { TaskStatus } from '../../../core/models/task-status';
 import { CurrentProjectService } from '../../state-services/current-project.service';
 
@@ -26,6 +27,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   statusList: TaskStatus[] = [];
 
   projectId$: Observable<string>;
+
+  taskSelected: Task;
 
   ngOnInit(): void {
     const projectId$ = this.route.params.pipe(

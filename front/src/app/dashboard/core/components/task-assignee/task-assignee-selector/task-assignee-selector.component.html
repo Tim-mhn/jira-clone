@@ -1,0 +1,27 @@
+<jira-member-icon
+  [member]="task.Assignee"
+  class="cursor-pointer inline-block hover:border-blue-100 border border-transparent rounded-full"
+  iqairDropdownTrigger
+  [iqairDropdownMenuTriggerFor]="assigneeMenu"
+></jira-member-icon>
+
+<tim-dropdown-menu #assigneeMenu>
+  <div class="flex flex-col gap-1 py-1">
+    <div
+      *ngFor="let member of assigneeOptions"
+      (click)="updateTaskAssignee(member)"
+      class="hover:bg-blue-100 cursor-pointer px-3 py-2 flex flex-col text-gray-800 text-sm"
+    >
+      <div class="flex gap-4 items-center">
+        <jira-member-icon [member]="member"></jira-member-icon>
+
+        <div class="flex flex-col gap-1">
+          <div>
+            {{ member?.Name }}
+          </div>
+          <div class="text-xs text-gray-600">{{ member.Email }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</tim-dropdown-menu>

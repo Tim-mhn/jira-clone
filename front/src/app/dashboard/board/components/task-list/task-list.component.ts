@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { PatchTaskAPI } from '../../../core/apis/patch-task.api';
 import { UNASSIGNED_TASK_ID_DTO } from '../../../core/dtos/task.dto';
 import { ProjectMember } from '../../../core/models/project-member';
@@ -25,6 +25,8 @@ export class TaskListComponent implements OnInit {
       ...members,
     ];
   }
+
+  @Output() taskClicked = new EventEmitter<Task>();
 
   membersOptions: ProjectMember[];
 

@@ -1,0 +1,21 @@
+<div class="flex gap-2 text-gray-800 flex-grow">
+  <div class="flex flex-col gap-1">
+    <div class="font-bold">{{ task.Title }}</div>
+    <div class="text-xs font-medium">Description</div>
+    <div class="text-2xs">{{ task.Description }}</div>
+  </div>
+
+  <div class="flex flex-col flex-grow gap-1 items-end">
+    <jira-task-assignee-selector
+      [task]="task"
+      [projectId]="projectId"
+      [assigneeOptions]="projectMembers"
+    ></jira-task-assignee-selector>
+
+    <jira-task-status-selector
+      [task]="task"
+      [projectId]="projectId"
+      [allStatus]="allStatus"
+    ></jira-task-status-selector>
+  </div>
+</div>

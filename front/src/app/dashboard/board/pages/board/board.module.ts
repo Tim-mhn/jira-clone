@@ -5,6 +5,7 @@ import { BoardComponent } from './board.component';
 import { SingleProjectAPI } from '../../../core/apis/single-project.api';
 import { BoardBreadcrumbModule } from '../../components/board-breadcrumb/board-breadcrumb.module';
 import { TaskListModule } from '../../components/task-list/task-list.module';
+import { TaskDetailsModule } from '../../components/task-details/task-details.module';
 
 const routes: Routes = [
   {
@@ -20,6 +21,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     BoardBreadcrumbModule,
     TaskListModule,
+    TaskDetailsModule,
   ],
   providers: [SingleProjectAPI],
 })
