@@ -35,6 +35,14 @@ export class Task implements ITask {
   public updateAssignee(newAssignee: ProjectMember) {
     this.Assignee = newAssignee;
   }
+
+  public updateDescription(newDescription: string) {
+    this.Description = newDescription;
+  }
+
+  public updateTitle(newTitle: string) {
+    this.Title = newTitle;
+  }
 }
 
 export type Tasks = Task[];

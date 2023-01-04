@@ -1,4 +1,7 @@
 import { NgModule } from '@angular/core';
+import { TimHttpModule } from '@tim-mhn/common/http';
 
-@NgModule({})
+@NgModule({
+  imports: [TimHttpModule],
+})
 export class BoardContentProvidersModule {}

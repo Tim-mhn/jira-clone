@@ -1,21 +1,48 @@
-<div class="flex gap-2 text-gray-800 flex-grow">
-  <div class="flex flex-col gap-1">
-    <div class="font-bold">{{ task.Title }}</div>
-    <div class="text-xs font-medium">Description</div>
-    <div class="text-2xs">{{ task.Description }}</div>
-  </div>
-
-  <div class="flex flex-col flex-grow gap-1 items-end">
-    <jira-task-assignee-selector
-      [task]="task"
+<div class="flex gap-2 text-gray-800 flex-grow w-full">
+  <div class="flex flex-col gap-3 w-full">
+    <jira-task-editable-title
       [projectId]="projectId"
-      [assigneeOptions]="projectMembers"
-    ></jira-task-assignee-selector>
-
-    <jira-task-status-selector
       [task]="task"
-      [projectId]="projectId"
-      [allStatus]="allStatus"
-    ></jira-task-status-selector>
+    ></jira-task-editable-title>
+
+    <div class="flex gap-4">
+      <jira-task-status-selector
+        [task]="task"
+        [projectId]="projectId"
+        [allStatus]="allStatus"
+      ></jira-task-status-selector>
+
+      <jira-task-assignee-selector
+        [task]="task"
+        [projectId]="projectId"
+        [assigneeOptions]="projectMembers"
+      ></jira-task-assignee-selector>
+    </div>
+    <div class="flex flex-col">
+      <div class="text-xs font-medium">Description</div>
+      <div class="flex flex-col gap-1">
+        <tim-text-editor [formControl]="descriptionFc"></tim-text-editor>
+
+        <div class="flex flex-row gap-1">
+          <button
+            tim-flat-button
+            [disabled]="descriptionFc.value === task.Description"
+            size="xs"
+            (click)="saveDescriptionChanges()"
+            [loading]="requestState.isPending"
+          >
+            Save
+          </button>
+          <button
+            tim-simple-button
+            color="neutral"
+            size="xs"
+            (click)="cancelDescriptionChanges()"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

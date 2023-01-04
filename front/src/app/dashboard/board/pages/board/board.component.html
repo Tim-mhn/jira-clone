@@ -3,7 +3,8 @@
 
   <div class="flex flex-grow gap-4">
     <jira-task-list
-      class="flex-grow-[3] flex"
+      class="flex-grow-[3] flex-shrink-0"
+      style="flex-basis: 75%"
       [tasks]="project?.Tasks"
       [allStatus]="statusList"
       [currentProjectId]="project?.Id"
@@ -12,7 +13,8 @@
     ></jira-task-list>
 
     <jira-task-details
-      class="flex-grow-[1] flex"
+      class="flex-grow-[1] flex-shrink-0"
+      style="flex-basis: 25%; max-width: 24%"
       *ngIf="taskSelected"
       [task]="taskSelected"
       [projectMembers]="project?.Members"
