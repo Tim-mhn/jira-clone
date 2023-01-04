@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/tim-mhn/figma-clone/dtos"
 	"github.com/tim-mhn/figma-clone/models"
@@ -158,8 +159,10 @@ func (taskRepo *TaskRepository) CreateTask(projectID string, title string, assig
 func (taskRepo *TaskRepository) UpdateTask(taskID string, patchDTO dtos.PatchTaskDTO) error {
 
 	ApiToDBFields := map[string]string{
-		"AssigneeId": "assignee_id",
-		"Status":     "status",
+		"AssigneeId":  "assignee_id",
+		"Status":      "status",
+		"Description": "description",
+		"Title":       "title",
 	}
 
 	updateQuery := buildSQLUpdateQuery(patchDTO, ApiToDBFields, SQLCondition{
@@ -167,9 +170,11 @@ func (taskRepo *TaskRepository) UpdateTask(taskID string, patchDTO dtos.PatchTas
 		value: fmt.Sprintf(`'%s'`, taskID),
 	})
 
-	fmt.Println(updateQuery)
 	_, err := taskRepo.conn.Exec(updateQuery)
 
+	if err != nil {
+		log.Printf(`Error in TaskRepository.UpdateTask: %s`, err.Error())
+	}
 	return err
 
 }
