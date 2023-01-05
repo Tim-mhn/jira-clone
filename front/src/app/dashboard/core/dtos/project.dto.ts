@@ -1,10 +1,9 @@
-import { Constraint } from '../../../shared/types/constraint.type';
-import { ProjectInfo } from '../models/project';
-import { ITask } from '../models/task';
+import { ProjectMember } from '../models/project-member';
+import { TaskDTO } from './task.dto';
 
-export type ProjectInfoDTO = Constraint<
-  ProjectInfo,
-  {
-    Tasks: ITask[];
-  }
->;
+export type ProjectDTO = {
+  Id: string;
+  Name: string;
+  Members: ProjectMember[];
+  Tasks: TaskDTO[];
+};

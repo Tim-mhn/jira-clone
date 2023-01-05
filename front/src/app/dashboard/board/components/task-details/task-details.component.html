@@ -1,48 +1,22 @@
 <div class="flex gap-2 text-gray-800 flex-grow w-full">
   <div class="flex flex-col gap-3 w-full">
-    <jira-task-editable-title
-      [projectId]="projectId"
-      [task]="task"
-    ></jira-task-editable-title>
+    <jira-task-editable-title [task]="task"></jira-task-editable-title>
 
     <div class="flex gap-4">
       <jira-task-status-selector
         [task]="task"
-        [projectId]="projectId"
-        [allStatus]="allStatus"
+        [projectId]="project.Id"
+        [allStatus]="project.AllTaskStatus"
       ></jira-task-status-selector>
 
       <jira-task-assignee-selector
         [task]="task"
-        [projectId]="projectId"
-        [assigneeOptions]="projectMembers"
+        [projectId]="project.Id"
+        [assigneeOptions]="project.Members"
       ></jira-task-assignee-selector>
     </div>
-    <div class="flex flex-col">
-      <div class="text-xs font-medium">Description</div>
-      <div class="flex flex-col gap-1">
-        <tim-text-editor [formControl]="descriptionFc"></tim-text-editor>
-
-        <div class="flex flex-row gap-1">
-          <button
-            tim-flat-button
-            [disabled]="descriptionFc.value === task.Description"
-            size="xs"
-            (click)="saveDescriptionChanges()"
-            [loading]="requestState.isPending"
-          >
-            Save
-          </button>
-          <button
-            tim-simple-button
-            color="neutral"
-            size="xs"
-            (click)="cancelDescriptionChanges()"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
+    <jira-task-details-editable-description
+      [task]="task"
+    ></jira-task-details-editable-description>
   </div>
 </div>

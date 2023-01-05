@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PatchTaskAPI } from '../../../apis/patch-task.api';
+import { UNASSIGNED_TASK_ID_DTO } from '../../../dtos/task.dto';
 import { ProjectMember } from '../../../models/project-member';
 import { Task } from '../../../models/task';
 
@@ -13,9 +14,22 @@ import { Task } from '../../../models/task';
 export class TaskAssigneeSelectorComponent implements OnInit {
   constructor(private patchTaskAPI: PatchTaskAPI) {}
 
-  @Input() assigneeOptions: ProjectMember[];
   @Input() task: Task;
   @Input() projectId: string;
+  @Input('assigneeOptions') set _assigneeOptions(_members: ProjectMember[]) {
+    const members = _members || [];
+    this.assigneeOptions = [
+      {
+        Email: '',
+        Id: UNASSIGNED_TASK_ID_DTO,
+        Name: 'Unassigned',
+        Icon: '',
+      },
+      ...members,
+    ];
+  }
+
+  assigneeOptions: ProjectMember[];
 
   ngOnInit(): void {}
 

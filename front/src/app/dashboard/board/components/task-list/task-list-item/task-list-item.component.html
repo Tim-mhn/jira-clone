@@ -1,0 +1,49 @@
+<div
+  class="flex flex-row items-center gap-2 cursor-pointer hover:bg-gray-100 p-1"
+>
+  <div class="flex flex-grow overflow-x-auto group">
+    <div
+      *ngIf="!editTitleModeActive; else titleInput"
+      class="text-xs flex flex-grow gap-2"
+    >
+      {{ task.Title }}
+
+      <button
+        tim-stroked-button
+        iconBtn="pen"
+        class="invisible group-hover:visible"
+        color="neutral"
+        size="xs"
+        (click)="activateEditMode($event)"
+      >
+        Edit
+      </button>
+    </div>
+    <!-- </div> -->
+
+    <ng-template #titleInput>
+      <div class="flex gap-2">
+        <tim-input [formControl]="titleFc"></tim-input>
+
+        <div class="flex gap-0.5">
+          <button tim-faint-button color="success" size="xs">✔</button>
+          <button tim-faint-button color="destructive" size="xs">X</button>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+
+  <tim-chip color="neutral"> {{ task.Points }} </tim-chip>
+
+  <jira-task-status-selector
+    [task]="task"
+    [projectId]="project.Id"
+    [allStatus]="project.AllTaskStatus"
+  ></jira-task-status-selector>
+
+  <jira-task-assignee-selector
+    [assigneeOptions]="project.Members"
+    [projectId]="project.Id"
+    [task]="task"
+  ></jira-task-assignee-selector>
+</div>

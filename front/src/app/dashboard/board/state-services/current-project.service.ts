@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
-import { ProjectInfo } from '../../core/models/project';
+import { ReplaySubject, tap } from 'rxjs';
+import { Project } from '../../core/models/project';
 import { BoardContentProvidersModule } from '../board-providers.module';
 
 @Injectable({
@@ -9,10 +9,18 @@ import { BoardContentProvidersModule } from '../board-providers.module';
 export class CurrentProjectService {
   constructor() {}
 
-  private _currentProject$ = new ReplaySubject<ProjectInfo>();
-  readonly currentProject$ = this._currentProject$.asObservable();
+  private _currentProject$ = new ReplaySubject<Project>();
+  readonly currentProject$ = this._currentProject$
+    .asObservable()
+    .pipe(tap((p) => (this._currentProject = p)));
 
-  public updateCurrentProject(p: ProjectInfo) {
+  private _currentProject: Project;
+
+  public updateCurrentProject(p: Project) {
     this._currentProject$.next(p);
+  }
+
+  public get currentProject() {
+    return this._currentProject;
   }
 }

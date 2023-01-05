@@ -1,14 +1,16 @@
 import { ProjectMember } from './project-member';
 import { Task } from './task';
+import { TaskStatus } from './task-status';
 
-export interface Project {
+export interface ProjectIdName {
   Id: string;
   Name: string;
 }
 
-export type Projects = Project[];
+export type ProjectIdNames = ProjectIdName[];
 
-export type ProjectInfo = Project & {
+export type Project = ProjectIdName & {
   Members: ProjectMember[];
   Tasks: Task[];
+  AllTaskStatus: TaskStatus[];
 };

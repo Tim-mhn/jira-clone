@@ -23,7 +23,6 @@ export class TaskEditableTitleComponent implements OnInit, OnChanges {
   readonly SUCCESS_ICON = ICONS.CHECK_CIRCLE_GREEN;
   readonly ERROR_ICON = ICONS.EXCLAMATION_CIRCLE_RED;
 
-  @Input() projectId: string;
   @Input() task: Task;
 
   titleFc = this.tfb.control('', Validators.required);
@@ -64,7 +63,6 @@ export class TaskEditableTitleComponent implements OnInit, OnChanges {
 
   updateTaskTitle(newTitle: string) {
     return this.controller.updateTask({
-      projectId: this.projectId,
       taskId: this.task.Id,
       title: newTitle,
     });

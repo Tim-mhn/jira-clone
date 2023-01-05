@@ -1,19 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { PROJECTS_API_ENDPOINT } from '.';
-import { ProjectInfoDTO } from '../dtos/project.dto';
-import { ProjectMapper } from '../mappers/project.mapper';
-import { ProjectInfo } from '../models/project';
+import { BoardContentProvidersModule } from '../../board/board-providers.module';
+import { ProjectDTO } from '../dtos/project.dto';
 
-@Injectable()
+@Injectable({
+  providedIn: BoardContentProvidersModule,
+})
 export class SingleProjectAPI {
-  constructor(private http: HttpClient, private projectMapper: ProjectMapper) {}
+  constructor(private http: HttpClient) {}
 
-  getProjectInfo(projectId: string): Observable<ProjectInfo> {
+  getProject(projectId: string): Observable<ProjectDTO> {
     const projectEndpoint = `${PROJECTS_API_ENDPOINT}/${projectId}`;
-    return this.http
-      .get<ProjectInfoDTO>(projectEndpoint)
-      .pipe(map((p) => this.projectMapper.toDomain(p)));
+    return this.http.get<ProjectDTO>(projectEndpoint);
   }
 }

@@ -11,9 +11,14 @@ import { TaskDetailsComponent } from './task-details.component';
 import { TaskAssigneeModule } from '../../../core/components/task-assignee/task-assignee.module';
 import { TaskStatusComponentsModule } from '../../../core/components/task-status/task-status.module';
 import { TaskEditableTitleComponent } from './task-editable-title/task-editable-title.component';
+import { TaskDetailsEditableDescriptionComponent } from './task-details-editable-description/task-details-editable-description.component';
 
 @NgModule({
-  declarations: [TaskDetailsComponent, TaskEditableTitleComponent],
+  declarations: [
+    TaskDetailsComponent,
+    TaskEditableTitleComponent,
+    TaskDetailsEditableDescriptionComponent,
+  ],
   imports: [
     CommonModule,
     TaskAssigneeModule,

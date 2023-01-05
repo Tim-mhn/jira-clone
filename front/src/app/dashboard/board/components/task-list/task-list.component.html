@@ -1,23 +1,9 @@
 <div class="flex flex-grow flex-col gap-2 border border-gray-200 text-gray-800">
-  <div
+  <jira-task-list-item
     *ngFor="let task of tasks"
-    class="flex flex-row gap-2 cursor-pointer hover:bg-gray-100 p-1"
     (click)="taskClicked.emit(task)"
+    [project]="project$ | async"
+    [task]="task"
   >
-    <div class="flex flex-grow overflow-x-auto text-xs">{{ task.Title }}</div>
-
-    <tim-chip color="neutral"> {{ task.Points }} </tim-chip>
-
-    <jira-task-status-selector
-      [task]="task"
-      [projectId]="currentProjectId"
-      [allStatus]="allStatus"
-    ></jira-task-status-selector>
-
-    <jira-task-assignee-selector
-      [assigneeOptions]="membersOptions"
-      [projectId]="currentProjectId"
-      [task]="task"
-    ></jira-task-assignee-selector>
-  </div>
+  </jira-task-list-item>
 </div>
