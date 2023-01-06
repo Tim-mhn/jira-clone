@@ -26,9 +26,7 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   ) {}
 
   titleFc = this.tfb.control('');
-
   editTitleModeActive = false;
-
   requestState = new RequestState();
 
   ngOnInit(): void {}

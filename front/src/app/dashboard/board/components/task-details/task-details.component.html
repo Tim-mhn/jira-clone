@@ -1,6 +1,15 @@
 <div class="flex gap-2 text-gray-800 flex-grow w-full">
-  <div class="flex flex-col gap-3 w-full">
-    <jira-task-editable-title [task]="task"></jira-task-editable-title>
+  <ng-content></ng-content>
+  <div class="flex flex-col gap-3 w-full relative">
+    <jira-task-editable-title [task]="task"> </jira-task-editable-title>
+
+    <button
+      tim-simple-button
+      iconBtn="cross"
+      class="absolute top-2 right-1"
+      color="neutral"
+      (click)="crossClicked.emit()"
+    ></button>
 
     <div class="flex gap-4">
       <jira-task-status-selector

@@ -52,6 +52,14 @@ export class BoardComponent implements OnInit, OnDestroy {
       });
   }
 
+  updateTaskSelected(task: Task) {
+    this.taskSelected = task;
+  }
+
+  resetTaskSelected() {
+    this.taskSelected = null;
+  }
+
   ngOnDestroy() {
     this._subscriptionHandler.destroy();
   }

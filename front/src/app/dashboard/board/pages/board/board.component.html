@@ -7,7 +7,7 @@
       style="flex-basis: 75%"
       [project]="project"
       [tasks]="project?.Tasks"
-      (taskClicked)="taskSelected = $event"
+      (taskClicked)="updateTaskSelected($event)"
     ></jira-task-list>
 
     <jira-task-details
@@ -16,6 +16,8 @@
       *ngIf="taskSelected"
       [task]="taskSelected"
       [project]="project"
-    ></jira-task-details>
+      (crossClicked)="resetTaskSelected()"
+    >
+    </jira-task-details>
   </div>
 </div>
