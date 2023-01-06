@@ -4,16 +4,19 @@
   <div class="flex flex-grow overflow-x-auto group">
     <div
       *ngIf="!editTitleModeActive; else titleInput"
-      class="text-xs flex flex-grow gap-2"
+      class="text-xs flex flex-grow gap-2 items-center"
     >
       {{ task.Title }}
 
+      <tim-spinner *ngIf="requestState.isPending" size="xs"></tim-spinner>
+
       <button
-        tim-stroked-button
+        tim-simple-button
         iconBtn="pen"
-        class="invisible group-hover:visible"
-        color="neutral"
+        class="invisible group-hover:visible hover:border-gray-300 border border-transparent rounded-md"
         size="xs"
+        color="neutral"
+        [disabled]="requestState.isPending"
         (click)="activateEditMode($event)"
       >
         Edit
@@ -23,11 +26,28 @@
 
     <ng-template #titleInput>
       <div class="flex gap-2">
-        <tim-input [formControl]="titleFc"></tim-input>
+        <tim-input
+          [formControl]="titleFc"
+          (click)="stopPropagation($event)"
+        ></tim-input>
 
         <div class="flex gap-0.5">
-          <button tim-faint-button color="success" size="xs">✔</button>
-          <button tim-faint-button color="destructive" size="xs">X</button>
+          <button
+            tim-stroked-button
+            color="neutral"
+            size="xs"
+            (click)="updateTitle($event)"
+          >
+            ✔
+          </button>
+          <button
+            tim-faint-button
+            color="destructive"
+            size="xs"
+            (click)="cancelEditModeOnDocumentClick()"
+          >
+            X
+          </button>
         </div>
       </div>
     </ng-template>

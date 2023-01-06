@@ -6,7 +6,9 @@ import {
   OnInit,
 } from '@angular/core';
 import { TypedChanges } from '@tim-mhn/common/extra-types';
+import { RequestState } from '@tim-mhn/common/http';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
+import { UpdateTaskController } from '../../../../core/controllers/update-task.controller';
 import { Project } from '../../../../core/models/project';
 import { Task } from '../../../../core/models/task';
 
@@ -18,11 +20,16 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   @Input() task: Task;
   @Input() project: Project;
 
-  constructor(private tfb: TypedFormBuilder) {}
+  constructor(
+    private tfb: TypedFormBuilder,
+    private controller: UpdateTaskController
+  ) {}
 
   titleFc = this.tfb.control('');
 
   editTitleModeActive = false;
+
+  requestState = new RequestState();
 
   ngOnInit(): void {}
 
@@ -32,14 +39,35 @@ export class TaskListItemComponent implements OnInit, OnChanges {
     }
   }
 
+  updateTitle(event?: Event) {
+    event.stopPropagation();
+    this.cancelEditModeOnDocumentClick({ resetControlValue: false });
+    const newTitle = this.titleFc.value;
+    this.controller
+      .updateTask(
+        {
+          taskId: this.task.Id,
+          title: newTitle,
+        },
+        this.requestState
+      )
+      .subscribe(() => this.task.updateTitle(newTitle));
+  }
+
   activateEditMode(event: Event) {
     this.editTitleModeActive = true;
     event.stopPropagation();
     event.preventDefault();
   }
 
+  stopPropagation = (event: Event) => event.stopPropagation();
+
   @HostListener('document:click')
-  cancelEditModeOnDocumentClick() {
+  cancelEditModeOnDocumentClick(
+    opts: { resetControlValue: boolean } = { resetControlValue: true }
+  ) {
+    if (opts?.resetControlValue)
+      this.titleFc.setValue(this.task.Title, { emitEvent: false });
     this.editTitleModeActive = false;
   }
 }
