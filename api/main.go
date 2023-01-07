@@ -17,16 +17,8 @@ const (
 	dbname   = "figma"
 )
 
-type patch struct {
-	name *string
-	id   *string
-}
-
 func main() {
-	psqlconn := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-
+	psqlconn := "postgresql://postgres:cyBYv6a3jgQ4NddgsUYs@containers-us-west-73.railway.app:7740/railway"
 	db, err := sql.Open("postgres", psqlconn)
 
 	if err != nil {
