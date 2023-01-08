@@ -35,9 +35,12 @@ func (taskRepo TaskRepository) GetProjectTasks(projectID string) ([]models.Task,
 
 	tasksOfProjectQuery := buildGetTasksOfProjectQuery(projectID)
 
+	log.Printf(`[GetProjectTasks] SQL Query: %s`, tasksOfProjectQuery)
+
 	rows, err := taskRepo.conn.Query(tasksOfProjectQuery)
 
 	if err != nil {
+
 		return []models.Task{}, addContextToError(BASE_ERROR_MESSAGE, err)
 	}
 
@@ -107,11 +110,9 @@ func (taskRepo *TaskRepository) GetTaskById(taskID string) (models.Task, error) 
 
 }
 
-func (taskRepo *TaskRepository) CreateTask(projectID string, title string, assigneeID string, points int, description string) (string, error) {
-	_, getUserErr := taskRepo.um.GetUserByID(assigneeID)
-	if getUserErr != nil {
-		return "", getUserErr
-	}
+func (taskRepo *TaskRepository) CreateTask(projectID string, sprintID string, title string, assigneeID string, points int, description string) (string, error) {
+
+	log.Printf("create task called")
 
 	_, getProjectErr := taskRepo.pm.getProjectByID(projectID)
 
@@ -119,23 +120,19 @@ func (taskRepo *TaskRepository) CreateTask(projectID string, title string, assig
 		return "", getProjectErr
 	}
 
-	isInProject, err := taskRepo.pm.MemberIsInProject(projectID, assigneeID)
+	assignationError := taskRepo.checkCanAssignTaskToMember(projectID, assigneeID)
 
-	if err != nil {
-		return "", err
-	}
-
-	if !isInProject {
-		return "", fmt.Errorf("member is already in project")
-
+	if assignationError != nil {
+		return "", assignationError
 	}
 
 	createTaskQuery := fmt.Sprintf(`
-		INSERT INTO task (title, points, project_id, assignee_id, description, status) 
+		INSERT INTO task (title, points, sprint_id, assignee_id, description, status) 
 		VALUES ('%s', '%d', '%s', '%s', '%s', %d)
 		RETURNING id
-	`, title, points, projectID, assigneeID, description, models.NEW_STATUS)
+	`, title, points, sprintID, assigneeID, description, models.NEW_STATUS)
 
+	log.Printf(`[CreateTask] SQL Query: %s`, createTaskQuery)
 	rows, err := taskRepo.conn.Query(createTaskQuery)
 
 	if err != nil {
@@ -156,6 +153,26 @@ func (taskRepo *TaskRepository) CreateTask(projectID string, title string, assig
 	return taskID, nil
 }
 
+func (taskRepo *TaskRepository) checkCanAssignTaskToMember(taskProjectId string, memberId string) error {
+
+	noAssignee := memberId == ""
+	if noAssignee {
+		return nil
+	}
+	isInProject, err := taskRepo.pm.MemberIsInProject(taskProjectId, memberId)
+
+	if err != nil {
+		return err
+	}
+
+	if !isInProject {
+		return fmt.Errorf("assignee is not in project")
+
+	}
+
+	return nil
+}
+
 func (taskRepo *TaskRepository) UpdateTask(taskID string, patchDTO dtos.PatchTaskDTO) error {
 
 	ApiToDBFields := map[string]string{
@@ -163,6 +180,7 @@ func (taskRepo *TaskRepository) UpdateTask(taskID string, patchDTO dtos.PatchTas
 		"Status":      "status",
 		"Description": "description",
 		"Title":       "title",
+		"Points":      "points",
 	}
 
 	updateQuery := buildSQLUpdateQuery(patchDTO, ApiToDBFields, SQLCondition{
@@ -193,7 +211,7 @@ const TASK_REQUEST string = `SELECT task.id as task_id,
 	LEFT JOIN task_status ON task_status.id=task.status`
 
 func buildGetTasksOfProjectQuery(projectID string) string {
-	return fmt.Sprintf(`%s WHERE task.project_id='%s'`, TASK_REQUEST, projectID)
+	return fmt.Sprintf(`%s LEFT JOIN sprint ON sprint.id=task.sprint_id WHERE sprint.project_id='%s'`, TASK_REQUEST, projectID)
 }
 
 func buildSingleTaskQuery(taskID string) string {

@@ -12,6 +12,7 @@ import { TaskAssigneeModule } from '../../../core/components/task-assignee/task-
 import { TaskStatusComponentsModule } from '../../../core/components/task-status/task-status.module';
 import { TaskEditableTitleComponent } from './task-editable-title/task-editable-title.component';
 import { TaskDetailsEditableDescriptionComponent } from './task-details-editable-description/task-details-editable-description.component';
+import { TaskPointsChipModule } from '../../../core/components/task-points-chip/task-points-chip.module';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { TaskDetailsEditableDescriptionComponent } from './task-details-editable
     TimUIButtonModule,
     TimUISpinnerModule,
     TimHttpModule,
+    TaskPointsChipModule,
   ],
   exports: [TaskDetailsComponent],
 })

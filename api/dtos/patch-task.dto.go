@@ -5,4 +5,5 @@ type PatchTaskDTO struct {
 	AssigneeId  *string `json:"assigneeId,omitempty"`
 	Description *string `json:"description,omitempty"`
 	Title       *string `json:"title,omitempty"`
+	Points      *int    `json:"points,omitempty"`
 }

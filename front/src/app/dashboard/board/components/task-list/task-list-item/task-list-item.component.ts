@@ -26,6 +26,7 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   ) {}
 
   titleFc = this.tfb.control('');
+  pointsFc = this.tfb.control<number>(null);
   editTitleModeActive = false;
   requestState = new RequestState();
 
@@ -34,6 +35,7 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   ngOnChanges(ch: TypedChanges<TaskListItemComponent>) {
     if (ch.task) {
       this.titleFc.setValue(this.task.Title, { emitEvent: false });
+      this.pointsFc.setValue(this.task.Points, { emitEvent: false });
     }
   }
 

@@ -52,7 +52,7 @@ func (tc *tasksController) createNewTask(c *gin.Context) {
 	}
 
 	projectID := getProjectIDParam(c)
-	newTask, newTaskErr := tc.tm.CreateTask(projectID, taskDTO.Title, taskDTO.AssigneeId, taskDTO.Points, taskDTO.Description)
+	newTask, newTaskErr := tc.tm.CreateTask(projectID, taskDTO.SprintID, taskDTO.Title, taskDTO.AssigneeId, taskDTO.Points, taskDTO.Description)
 
 	if newTaskErr != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, newTaskErr.Error())

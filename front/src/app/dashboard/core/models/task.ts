@@ -43,6 +43,10 @@ export class Task implements ITask {
   public updateTitle(newTitle: string) {
     this.Title = newTitle;
   }
+
+  public updatePoints(newPoints: number) {
+    this.Points = newPoints;
+  }
 }
 
 export type Tasks = Task[];

@@ -23,6 +23,11 @@
         [projectId]="project.Id"
         [assigneeOptions]="project.Members"
       ></jira-task-assignee-selector>
+
+      <jira-task-points-chip
+        [task]="task"
+        [taskPoints]="task.Points"
+      ></jira-task-points-chip>
     </div>
     <jira-task-details-editable-description
       [task]="task"

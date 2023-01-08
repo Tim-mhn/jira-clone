@@ -11,6 +11,7 @@ export interface PatchTaskDTO {
   assigneeId?: string;
   description?: string;
   title?: string;
+  points?: number;
 }
 @Injectable({
   providedIn: BoardContentProvidersModule,
@@ -21,11 +22,17 @@ export class PatchTaskAPI {
   updateTask(dto: PatchTaskDTO) {
     const endpoint = this.buildEndpoint(dto);
     let body = {};
-    const { status, assigneeId, description, title } = dto;
+    const { status, assigneeId, description, title, points } = dto;
     body = concatObjectsIf(body, { status }, status !== undefined);
     body = concatObjectsIf(body, { assigneeId }, assigneeId !== undefined);
     body = concatObjectsIf(body, { description }, description !== undefined);
     body = concatObjectsIf(body, { title }, title !== undefined);
+    body = concatObjectsIf(
+      body,
+      // eslint-disable-next-line radix
+      { points: parseInt(<string>(<any>points)) },
+      points !== undefined
+    );
 
     return this.http.patch<void>(endpoint, body);
   }

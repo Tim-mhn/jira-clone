@@ -11,6 +11,7 @@ import { MemberIconModule } from '../../../../shared/components/member-icon/memb
 import { TaskStatusComponentsModule } from '../../../core/components/task-status/task-status.module';
 import { TaskAssigneeModule } from '../../../core/components/task-assignee/task-assignee.module';
 import { TaskListItemComponent } from './task-list-item/task-list-item.component';
+import { TaskPointsChipModule } from '../../../core/components/task-points-chip/task-points-chip.module';
 
 @NgModule({
   declarations: [TaskListComponent, TaskListItemComponent],
@@ -25,6 +26,7 @@ import { TaskListItemComponent } from './task-list-item/task-list-item.component
     ReactiveFormsModule,
     TimUIButtonModule,
     TimUISpinnerModule,
+    TaskPointsChipModule,
   ],
   exports: [TaskListComponent],
 })

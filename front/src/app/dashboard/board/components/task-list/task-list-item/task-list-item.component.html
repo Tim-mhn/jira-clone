@@ -53,8 +53,10 @@
     </ng-template>
   </div>
 
-  <tim-chip color="neutral"> {{ task.Points }} </tim-chip>
-
+  <jira-task-points-chip
+    [task]="task"
+    [taskPoints]="task.Points"
+  ></jira-task-points-chip>
   <jira-task-status-selector
     [task]="task"
     [projectId]="project.Id"
