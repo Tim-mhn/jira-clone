@@ -37,6 +37,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     this._getProjectOnRouteChange(projectId$);
   }
 
+  // todo: refine this logic to have separate controllers to get project id/name (and members ??) AND get tasks grouped by sprints
   private _getProjectOnRouteChange(projectId$: Observable<string>) {
     projectId$
       .pipe(

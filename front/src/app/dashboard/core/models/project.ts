@@ -1,5 +1,5 @@
 import { ProjectMember } from './project-member';
-import { Task } from './task';
+import { SprintWithTasks } from './sprint';
 import { TaskStatus } from './task-status';
 
 export interface ProjectIdName {
@@ -11,6 +11,6 @@ export type ProjectIdNames = ProjectIdName[];
 
 export type Project = ProjectIdName & {
   Members: ProjectMember[];
-  Tasks: Task[];
+  Sprints: SprintWithTasks[];
   AllTaskStatus: TaskStatus[];
 };

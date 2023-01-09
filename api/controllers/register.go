@@ -12,12 +12,13 @@ import (
 func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 	userRepo := repositories.NewUserRepository(conn)
 	projectRepo := repositories.NewProjectRepository(userRepo, conn)
-	taskRepo := repositories.NewTaskRepository(userRepo, projectRepo, conn)
 	taskStatusRepo := repositories.NewTaskStatusRepository(conn)
+	sprintRepo := repositories.NewSprintRepository(conn)
+	taskQueriesRepo := repositories.NewTaskQueriesRepository(userRepo, projectRepo, conn)
 
-	tc := newTasksController(userRepo, projectRepo, conn)
+	tc := newTasksController(userRepo, projectRepo, sprintRepo, taskQueriesRepo, conn)
 	uc := newUserController(userRepo)
-	pc := newProjectController(projectRepo, taskRepo)
+	pc := newProjectController(projectRepo)
 	tsc := newTaskStatusController(taskStatusRepo)
 
 	router.POST("/sign-up", uc.signUp)
@@ -38,8 +39,9 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 	taskStatusRoutes.GET("", tsc.getTaskStatusList)
 
 	tasksRoutes := singleProjectRoutes.Group("/tasks")
-	tasksRoutes.GET("", tc.getProjectTasks)
 	tasksRoutes.POST("", tc.createNewTask)
+
+	singleProjectRoutes.GET(`/sprints`, tc.getSprintsWithTasksOfProject)
 
 	singleTaskRoutes := tasksRoutes.Group(fmt.Sprintf(`/:%s`, TASK_ID_ROUTE_PARAM))
 	singleTaskRoutes.GET("", tc.getTaskByID)

@@ -11,7 +11,6 @@ import (
 
 type projectController struct {
 	projectRepo *repositories.ProjectRepository
-	taskRepo    *repositories.TaskRepository
 }
 
 type NewProjectDTO struct {
@@ -22,10 +21,9 @@ type AddMemberToProjectDTO struct {
 	MemberID string `json:"memberID"`
 }
 
-func newProjectController(projectRepo *repositories.ProjectRepository, taskRepo *repositories.TaskRepository) *projectController {
+func newProjectController(projectRepo *repositories.ProjectRepository) *projectController {
 	return &projectController{
 		projectRepo: projectRepo,
-		taskRepo:    taskRepo,
 	}
 }
 
@@ -82,18 +80,9 @@ func (pc *projectController) getProject(c *gin.Context) {
 
 	}
 
-	tasks, tasksError := pc.taskRepo.GetProjectTasks(projectID)
-
-	if tasksError != nil {
-		c.IndentedJSON(http.StatusInternalServerError, tasksError.Error())
-		return
-	}
-
-	p := models.ProjectWithMembersAndTasks{
-		Id:      projectInfo.Id,
-		Name:    projectInfo.Name,
-		Members: projectInfo.Members,
-		Tasks:   tasks,
+	p := models.Project{
+		Id:   projectInfo.Id,
+		Name: projectInfo.Name,
 	}
 	c.IndentedJSON(http.StatusOK, p)
 
