@@ -1,32 +1,33 @@
-<div class="flex flex-col gap-2">
-  <jira-board-breadcrumb [project]="project"></jira-board-breadcrumb>
+<div class="flex flex-col gap-2 h-full">
+  <ng-container *ngIf="!requestState.isPending; else spinner">
+    <jira-board-breadcrumb [project]="project"></jira-board-breadcrumb>
 
-  <div class="flex flex-grow gap-4">
-    <!-- <jira-task-list
-      class="flex-grow-[3] flex-shrink-0"
-      style="flex-basis: 75%"
-      [project]="project"
-      [tasks]="project?.Tasks"
-      (taskClicked)="updateTaskSelected($event)"
-    ></jira-task-list> -->
+    <div class="flex flex-grow gap-4">
+      <div class="flex flex-col flex-grow gap-4" *ngIf="project">
+        <jira-sprint
+          *ngFor="let sprintWithTasks of project?.Sprints"
+          [project]="project"
+          [tasks]="sprintWithTasks.Tasks"
+          [sprint]="sprintWithTasks.Sprint"
+          (taskClicked)="updateTaskSelected($event)"
+        ></jira-sprint>
+      </div>
 
-    <div class="flex flex-col gap-2" *ngIf="project">
-      <jira-sprint
-        *ngFor="let sprintWithTasks of project?.Sprints"
+      <jira-task-details
+        class="flex-grow-[1] flex-shrink-0"
+        style="flex-basis: 25%; max-width: 24%"
+        *ngIf="taskSelected"
+        [task]="taskSelected"
         [project]="project"
-        [tasks]="sprintWithTasks.Tasks"
-        [sprint]="sprintWithTasks.Sprint"
-      ></jira-sprint>
+        (crossClicked)="resetTaskSelected()"
+      >
+      </jira-task-details>
     </div>
-
-    <jira-task-details
-      class="flex-grow-[1] flex-shrink-0"
-      style="flex-basis: 25%; max-width: 24%"
-      *ngIf="taskSelected"
-      [task]="taskSelected"
-      [project]="project"
-      (crossClicked)="resetTaskSelected()"
-    >
-    </jira-task-details>
-  </div>
+  </ng-container>
 </div>
+
+<ng-template #spinner>
+  <div class="flex flex-grow justify-center items-center">
+    <tim-spinner></tim-spinner>
+  </div>
+</ng-template>

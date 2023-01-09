@@ -1,4 +1,6 @@
-<jira-task-status-trigger [matMenuTriggerFor]="statusMenu"
+<jira-task-status-trigger
+  [matMenuTriggerFor]="statusMenu"
+  (click)="stopPropagation($event)"
   >{{ task.Status.Label }}
 </jira-task-status-trigger>
 

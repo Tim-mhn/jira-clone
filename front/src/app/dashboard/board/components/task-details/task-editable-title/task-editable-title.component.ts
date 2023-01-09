@@ -24,6 +24,8 @@ export class TaskEditableTitleComponent implements OnInit, OnChanges {
   readonly ERROR_ICON = ICONS.EXCLAMATION_CIRCLE_RED;
 
   @Input() task: Task;
+  @Input() title: string;
+  // todo? "ObservePropertyChange" style to avoid having task and a property of task as inputs
 
   titleFc = this.tfb.control('', Validators.required);
 
@@ -39,7 +41,7 @@ export class TaskEditableTitleComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(ch: TypedChanges<TaskEditableTitleComponent>) {
-    if (ch.task) {
+    if (ch.title) {
       this.titleFc.setValue(this.task.Title, { emitEvent: false });
     }
   }

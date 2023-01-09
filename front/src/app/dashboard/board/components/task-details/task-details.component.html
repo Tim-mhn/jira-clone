@@ -1,7 +1,8 @@
 <div class="flex gap-2 text-gray-800 flex-grow w-full">
   <ng-content></ng-content>
   <div class="flex flex-col gap-3 w-full relative">
-    <jira-task-editable-title [task]="task"> </jira-task-editable-title>
+    <jira-task-editable-title [task]="task" [title]="task.Title">
+    </jira-task-editable-title>
 
     <button
       tim-simple-button

@@ -27,4 +27,6 @@ export class TaskStatusSelectorComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  stopPropagation = (e: Event) => e.stopPropagation();
 }

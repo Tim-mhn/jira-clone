@@ -19,9 +19,6 @@ func TestSort(t *testing.T) {
 func TestSortWithIdenticalNums(t *testing.T) {
 	var nums = []int{3, 5, 2, 5, 3}
 
-	// sortDesc := func(a int, b int) bool {
-	// 	return a-b > 0
-	// }
 	sortedNums := Sort(nums)
 
 	testPassed := sortedNums[0] == 2 && sortedNums[1] == 3 && sortedNums[2] == 3

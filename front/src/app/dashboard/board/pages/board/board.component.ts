@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { filter, map, Observable, switchMap, takeUntil } from 'rxjs';
 import { SubscriptionHandler } from '../../../../shared/services/subscription-handler.service';
 import { ProjectController } from '../../../core/controllers/project.controller';
@@ -11,12 +12,14 @@ import { CurrentProjectService } from '../../state-services/current-project.serv
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
+  providers: [RequestStateController],
 })
 export class BoardComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private controller: ProjectController,
-    private currentProjectService: CurrentProjectService
+    private currentProjectService: CurrentProjectService,
+    private requestStateController: RequestStateController
   ) {}
 
   private _subscriptionHandler = new SubscriptionHandler();
@@ -27,6 +30,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   projectId$: Observable<string>;
 
   taskSelected: Task;
+
+  requestState = new RequestState();
 
   ngOnInit(): void {
     const projectId$ = this.route.params.pipe(
@@ -41,7 +46,11 @@ export class BoardComponent implements OnInit, OnDestroy {
   private _getProjectOnRouteChange(projectId$: Observable<string>) {
     projectId$
       .pipe(
-        switchMap((projectId) => this.controller.getProject(projectId)),
+        switchMap((projectId) =>
+          this.controller
+            .getProject(projectId)
+            .pipe(this.requestStateController.handleRequest(this.requestState))
+        ),
         takeUntil(this._subscriptionHandler.onDestroy$)
       )
       .subscribe({

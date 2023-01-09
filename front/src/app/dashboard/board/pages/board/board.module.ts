@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
+import { TimUISpinnerModule } from '@tim-mhn/ng-ui/spinner';
 import { BoardComponent } from './board.component';
 import { SingleProjectAPI } from '../../../core/apis/single-project.api';
 import { BoardBreadcrumbModule } from '../../components/board-breadcrumb/board-breadcrumb.module';
@@ -24,6 +25,7 @@ const routes: Routes = [
     TaskListModule,
     TaskDetailsModule,
     SprintModule,
+    TimUISpinnerModule,
   ],
   providers: [SingleProjectAPI],
 })
