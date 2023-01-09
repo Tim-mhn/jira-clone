@@ -8,7 +8,7 @@ func Join[T int | string](elements []T, separator string) string {
 	for index, el := range elements {
 		stringifiedEl := fmt.Sprint(el)
 		if index == 0 {
-			joinedString = fmt.Sprintf(`%s`, stringifiedEl)
+			joinedString = stringifiedEl
 
 		} else {
 			joinedString = fmt.Sprintf(`%s,%s`, joinedString, stringifiedEl)
