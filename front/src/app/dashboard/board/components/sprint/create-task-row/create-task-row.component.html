@@ -1,9 +1,15 @@
-<div class="flex flex-grow">
-  <div *ngIf="!createTaskMode" (click)="toggleCreateTaskMode()">
+<div class="flex flex-grow text-gray-800 font-light">
+  <div
+    *ngIf="!createTaskMode"
+    (click)="activateCreateTaskMode($event)"
+    class="flex flex-grow gap-1 items-center p-1 rounded-sm cursor-pointer hover:bg-blue-100"
+  >
+    <img [src]="PLUS_ICON" height="16" width="16" class="w-4 h-4 pb-0.5" />
     Create task
   </div>
 
   <tim-input
+    (click)="stopPropagation($event)"
     class="flex flex-grow"
     *ngIf="createTaskMode"
     [formControl]="taskTitleFc"

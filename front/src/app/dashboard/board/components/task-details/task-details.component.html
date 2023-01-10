@@ -15,14 +15,14 @@
     <div class="flex gap-4">
       <jira-task-status-selector
         [task]="task"
-        [projectId]="project.Id"
-        [allStatus]="project.AllTaskStatus"
+        [projectId]="project?.Id"
+        [allStatus]="project?.AllTaskStatus"
       ></jira-task-status-selector>
 
       <jira-task-assignee-selector
         [task]="task"
-        [projectId]="project.Id"
-        [assigneeOptions]="project.Members"
+        [projectId]="project?.Id"
+        [assigneeOptions]="project?.Members"
       ></jira-task-assignee-selector>
 
       <jira-task-points-chip

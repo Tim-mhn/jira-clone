@@ -1,4 +1,5 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { ICONS } from '@tim-mhn/common/icons';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
 import { CreateTaskController } from '../../../../core/controllers/create-task.controller';
 import { Sprint } from '../../../../core/models/sprint';
@@ -8,6 +9,7 @@ import { Sprint } from '../../../../core/models/sprint';
   templateUrl: './create-task-row.component.html',
 })
 export class CreateTaskRowComponent implements OnInit {
+  readonly PLUS_ICON = ICONS.PLUS_BLUE;
   @Input() sprint: Sprint;
   constructor(
     private tfb: TypedFormBuilder,
@@ -20,13 +22,22 @@ export class CreateTaskRowComponent implements OnInit {
 
   taskTitleFc = this.tfb.control('');
 
-  toggleCreateTaskMode = () => (this.createTaskMode = !this.createTaskMode);
+  activateCreateTaskMode = (event?: Event) => {
+    event?.stopPropagation();
+    this.toggleCreateTaskMode(true);
+  };
+  deactivateCreateTaskMode = () => this.toggleCreateTaskMode(false);
+  toggleCreateTaskMode = (active: boolean) => (this.createTaskMode = active);
 
-  @HostListener('keydown.enter')
-  createTaskOnEnter() {
+  stopPropagation = (e: Event) => e?.stopPropagation();
+
+  @HostListener('keydown.enter', ['$event'])
+  createTaskOnEnter(e: Event) {
+    e.stopPropagation();
+    e.stopImmediatePropagation();
     if (!this.createTaskMode) return;
 
-    this.toggleCreateTaskMode();
+    this.deactivateCreateTaskMode();
 
     this.controller
       .createTask({
@@ -35,7 +46,18 @@ export class CreateTaskRowComponent implements OnInit {
         title: this.taskTitleFc.value,
       })
       .subscribe({
-        error: () => this.toggleCreateTaskMode(),
+        error: () => this.activateCreateTaskMode(),
       });
+  }
+
+  @HostListener('document:click')
+  onClick() {
+    console.log('click');
+    this.deactivateCreateTaskMode();
+  }
+
+  @HostListener('keydown.escape')
+  onEscape() {
+    console.log('escape');
   }
 }

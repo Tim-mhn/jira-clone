@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject, tap } from 'rxjs';
-import { logMethod } from '../../../shared/utils/log-method.decorator';
 import { Project } from '../../core/models/project';
 import { BoardContentProvidersModule } from '../board-providers.module';
 
@@ -19,7 +18,6 @@ export class CurrentProjectService {
 
   private _currentProject: Project;
 
-  @logMethod
   public updateCurrentProject(p: Project) {
     this._currentProject$.next(p);
   }

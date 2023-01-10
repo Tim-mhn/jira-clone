@@ -6,7 +6,6 @@ import { CurrentSprintsService } from '../../board/state-services/current-sprint
 import { GetTasksAPI } from '../apis/get-tasks.api';
 import { Task } from '../models/task';
 import { CurrentProjectService } from '../../board/state-services/current-project.service';
-import { logMethod } from '../../../shared/utils/log-method.decorator';
 import { TasksGroupedBySprintsDTO } from '../dtos';
 
 @Injectable({
@@ -20,7 +19,6 @@ export class GetSprintsController {
     private currentProjectService: CurrentProjectService
   ) {}
 
-  @logMethod
   getSprintsTasksForProject(
     projectId: string,
     requestState?: RequestState
