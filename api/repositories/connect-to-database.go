@@ -2,16 +2,19 @@ package repositories
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
+
+	"github.com/tim-mhn/figma-clone/utils/environments"
 )
 
 func ConnectToDatabase() *sql.DB {
-	psqlconn := "postgresql://postgres:cyBYv6a3jgQ4NddgsUYs@containers-us-west-73.railway.app:7740/railway"
-	db, err := sql.Open("postgres", psqlconn)
+	dbDriver := environments.GetEnv("database.driver")
+	dbUrl := environments.GetEnv("database.url")
+
+	db, err := sql.Open(dbDriver, dbUrl)
 
 	if err != nil {
-		fmt.Println("error connecting to db")
-		fmt.Println(err.Error())
+		log.Fatalf(`error connecting to db: %s`, err.Error())
 	}
 	return db
 }
