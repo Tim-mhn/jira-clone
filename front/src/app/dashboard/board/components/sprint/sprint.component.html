@@ -1,22 +1,28 @@
 <div class="flex flex-col gap-2 flex-grow p-3 bg-blue-50 rounded-sm shadow-sm">
   <div
-    class="flex flex-grow text-md items-center font-medium text-gray-800 gap-2"
+    class="flex flex-grow text-md items-center font-medium text-gray-800 gap-2 cursor-pointer"
+    (click)="toggleList()"
   >
     <img
       [src]="showList ? ARROW_DOWN : ARROW_RIGHT"
-      (click)="toggleList()"
-      class="h-5 w-5 cursor-pointer"
+      class="h-5 w-5"
       height="20"
       width="20"
     />
     <div>{{ sprint?.Name }}</div>
   </div>
 
-  <jira-task-list
-    class="bg-white ease-in-out delay-150"
+  <div
     [ngClass]="showList ? 'visible' : 'hidden'"
-    [tasks]="tasks"
-    [project]="project"
-    (taskClicked)="taskClicked.emit($event)"
-  ></jira-task-list>
+    class="flex flex-col gap-2 flex-grow"
+  >
+    <jira-task-list
+      class="bg-white ease-in-out delay-150"
+      [tasks]="tasks"
+      [project]="project"
+      (taskClicked)="taskClicked.emit($event)"
+    ></jira-task-list>
+
+    <jira-create-task-row [sprint]="sprint"></jira-create-task-row>
+  </div>
 </div>

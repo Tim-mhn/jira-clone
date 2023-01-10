@@ -1,0 +1,13 @@
+<div class="flex flex-grow">
+  <div *ngIf="!createTaskMode" (click)="toggleCreateTaskMode()">
+    Create task
+  </div>
+
+  <tim-input
+    class="flex flex-grow"
+    *ngIf="createTaskMode"
+    [formControl]="taskTitleFc"
+    placeholder="What needs to be done ?"
+    [flexWidth]="true"
+  ></tim-input>
+</div>

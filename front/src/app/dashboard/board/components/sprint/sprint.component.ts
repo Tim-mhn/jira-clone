@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ICONS } from '@tim-mhn/common/icons';
+import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
 import { Project } from '../../../core/models/project';
 import { Sprint } from '../../../core/models/sprint';
 import { Task } from '../../../core/models/task';
@@ -17,10 +18,11 @@ export class SprintComponent implements OnInit {
   @Input() project: Project;
   @Output() taskClicked = new EventEmitter<Task>();
 
-  constructor() {}
+  constructor(private tfb: TypedFormBuilder) {}
 
   ngOnInit(): void {}
 
   showList = false;
+
   toggleList = () => (this.showList = !this.showList);
 }

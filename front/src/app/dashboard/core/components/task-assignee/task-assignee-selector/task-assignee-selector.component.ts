@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PatchTaskAPI } from '../../../apis/patch-task.api';
-import { UNASSIGNED_TASK_ID_DTO } from '../../../dtos/task.dto';
 import { ProjectMember } from '../../../models/project-member';
 import { Task } from '../../../models/task';
 
@@ -21,7 +20,7 @@ export class TaskAssigneeSelectorComponent implements OnInit {
     this.assigneeOptions = [
       {
         Email: '',
-        Id: UNASSIGNED_TASK_ID_DTO,
+        Id: null,
         Name: 'Unassigned',
         Icon: '',
       },

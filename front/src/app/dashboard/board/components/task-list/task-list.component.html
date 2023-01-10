@@ -1,6 +1,6 @@
 <div class="flex flex-grow flex-col gap-2 border border-gray-200 text-gray-800">
   <jira-task-list-item
-    *ngFor="let task of tasks"
+    *ngFor="let task of tasks; trackBy: trackById"
     (click)="taskClicked.emit(task)"
     [project]="project$ | async"
     [task]="task"

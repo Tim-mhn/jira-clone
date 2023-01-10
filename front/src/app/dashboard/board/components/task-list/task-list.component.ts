@@ -23,6 +23,8 @@ export class TaskListComponent implements OnInit {
 
   project$ = this.currentProjectService.currentProject$;
 
+  trackById = (_index: number, t: Task) => t.Id;
+
   updateTaskAssignee(task: Task, newAssignee: ProjectMember) {
     this.patchTaskAPI
       .updateTask({
