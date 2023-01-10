@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"github.com/tim-mhn/figma-clone/controllers"
+	"github.com/tim-mhn/figma-clone/environments"
 	"github.com/tim-mhn/figma-clone/repositories"
-	"github.com/tim-mhn/figma-clone/utils/environments"
 )
 
 func main() {

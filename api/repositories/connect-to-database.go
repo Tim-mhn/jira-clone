@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/tim-mhn/figma-clone/utils/environments"
+	"github.com/tim-mhn/figma-clone/environments"
 )
 
 func ConnectToDatabase() *sql.DB {
