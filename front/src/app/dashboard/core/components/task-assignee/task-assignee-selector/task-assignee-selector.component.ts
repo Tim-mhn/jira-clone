@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { PatchTaskAPI } from '../../../apis/patch-task.api';
+import { TaskCommandsAPI } from '../../../apis/task-commands.api';
 import { ProjectMember } from '../../../models/project-member';
 import { Task } from '../../../models/task';
 
@@ -11,7 +11,7 @@ import { Task } from '../../../models/task';
   },
 })
 export class TaskAssigneeSelectorComponent implements OnInit {
-  constructor(private patchTaskAPI: PatchTaskAPI) {}
+  constructor(private taskAPI: TaskCommandsAPI) {}
 
   @Input() task: Task;
   @Input() projectId: string;
@@ -33,7 +33,7 @@ export class TaskAssigneeSelectorComponent implements OnInit {
   ngOnInit(): void {}
 
   updateTaskAssignee(newAssignee: ProjectMember) {
-    this.patchTaskAPI
+    this.taskAPI
       .updateTask({
         projectId: this.projectId,
         taskId: this.task.Id,

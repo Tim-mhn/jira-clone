@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { PatchTaskAPI } from '../../../core/apis/patch-task.api';
+import { TaskCommandsAPI } from '../../../core/apis/task-commands.api';
 import { Project } from '../../../core/models/project';
 import { ProjectMember } from '../../../core/models/project-member';
 import { Task, Tasks } from '../../../core/models/task';
@@ -15,7 +15,7 @@ export class TaskListComponent implements OnInit {
   @Output() taskClicked = new EventEmitter<Task>();
 
   constructor(
-    private patchTaskAPI: PatchTaskAPI,
+    private taskAPI: TaskCommandsAPI,
     private currentProjectService: CurrentProjectService
   ) {}
 
@@ -26,7 +26,7 @@ export class TaskListComponent implements OnInit {
   trackById = (_index: number, t: Task) => t.Id;
 
   updateTaskAssignee(task: Task, newAssignee: ProjectMember) {
-    this.patchTaskAPI
+    this.taskAPI
       .updateTask({
         projectId: this.project.Id,
         taskId: task.Id,

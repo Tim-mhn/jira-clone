@@ -3,7 +3,7 @@ import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
 import { BoardContentProvidersModule } from '../../board/board-providers.module';
 import { CurrentProjectService } from '../../board/state-services/current-project.service';
-import { PatchTaskAPI } from '../apis/patch-task.api';
+import { TaskCommandsAPI } from '../apis/task-commands.api';
 import { PatchTaskDTO } from '../dtos';
 
 @Injectable({
@@ -12,7 +12,7 @@ import { PatchTaskDTO } from '../dtos';
 export class UpdateTaskController {
   constructor(
     private requestStateController: RequestStateController,
-    private api: PatchTaskAPI,
+    private api: TaskCommandsAPI,
     private currentProjectService: CurrentProjectService,
     private snackbarFeedback: SnackbarFeedbackService
   ) {}

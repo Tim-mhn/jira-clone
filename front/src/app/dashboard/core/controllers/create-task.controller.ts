@@ -4,7 +4,7 @@ import { switchMap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
 import { BoardContentProvidersModule } from '../../board/board-providers.module';
 import { CurrentProjectService } from '../../board/state-services/current-project.service';
-import { CreateTaskAPI } from '../apis/create-task.api';
+import { TaskCommandsAPI } from '../apis/task-commands.api';
 import { NewTaskDTO } from '../dtos/new-task.dto';
 import { GetSprintsController } from './get-sprints.controller';
 
@@ -16,7 +16,7 @@ export class CreateTaskController {
     private requestStateController: RequestStateController,
     private currentProjectService: CurrentProjectService,
     private snackbarFeedback: SnackbarFeedbackService,
-    private api: CreateTaskAPI,
+    private api: TaskCommandsAPI,
     private sprintsController: GetSprintsController
   ) {}
 

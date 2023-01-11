@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { PatchTaskAPI } from '../../../apis/patch-task.api';
+import { TaskCommandsAPI } from '../../../apis/task-commands.api';
 import { Task } from '../../../models/task';
 import { TaskStatus } from '../../../models/task-status';
 
@@ -12,10 +12,10 @@ export class TaskStatusSelectorComponent implements OnInit {
   @Input() projectId: string;
   @Input() allStatus: TaskStatus[];
 
-  constructor(private patchTaskAPI: PatchTaskAPI) {}
+  constructor(private taskAPI: TaskCommandsAPI) {}
 
   updateTaskStatus(task: Task, newStatus: TaskStatus) {
-    this.patchTaskAPI
+    this.taskAPI
       .updateTask({
         projectId: this.projectId,
         status: newStatus.Id,
