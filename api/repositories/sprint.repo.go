@@ -17,24 +17,24 @@ func NewSprintRepository(conn *sql.DB) *SprintRepository {
 	}
 }
 
-func (sprintRepo SprintRepository) GetSprintsOfProject(projectID string) ([]models.Sprint, error) {
+func (sprintRepo SprintRepository) GetSprintsOfProject(projectID string) ([]models.SprintInfo, error) {
 	query := fmt.Sprintf(`SELECT id, name, is_backlog from sprint WHERE sprint.project_id='%s'`, projectID)
 	rows, err := sprintRepo.conn.Query(query)
 
 	if err != nil {
-		return []models.Sprint{}, err
+		return []models.SprintInfo{}, err
 	}
 	defer rows.Close()
 
-	sprints := []models.Sprint{}
+	sprints := []models.SprintInfo{}
 
 	for rows.Next() {
-		var sprint models.Sprint
+		var sprint models.SprintInfo
 
 		err := rows.Scan(&sprint.Id, &sprint.Name, &sprint.IsBacklog)
 
 		if err != nil {
-			return []models.Sprint{}, err
+			return []models.SprintInfo{}, err
 		}
 
 		sprints = append(sprints, sprint)

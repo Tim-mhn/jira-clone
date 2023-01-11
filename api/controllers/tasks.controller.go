@@ -19,10 +19,12 @@ type tasksController struct {
 }
 
 func newTasksController(um *repositories.UserRepository, pm *repositories.ProjectRepository, sprintRepo *repositories.SprintRepository, taskRepo *repositories.TaskQueriesRepository, conn *sql.DB) *tasksController {
+	sprintPointsRepo := repositories.NewSprintPointsRepository(conn)
+
 	return &tasksController{
 		taskQueries:   repositories.NewTaskQueriesRepository(um, pm, conn),
 		taskCommands:  repositories.NewTaskCommandsRepository(um, pm, conn),
-		sprintService: services.NewSprintService(taskRepo, sprintRepo),
+		sprintService: services.NewSprintService(taskRepo, sprintRepo, sprintPointsRepo),
 	}
 }
 

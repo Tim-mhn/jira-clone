@@ -1,7 +1,12 @@
 package models
 
-type Sprint struct {
+type SprintInfo struct {
 	Id        string
 	Name      string
 	IsBacklog bool
+}
+
+type Sprint struct {
+	SprintInfo
+	Points SprintPointsBreakdown
 }

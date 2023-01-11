@@ -1,6 +1,8 @@
 package services
 
 import (
+	"log"
+
 	"github.com/tim-mhn/figma-clone/dtos"
 	"github.com/tim-mhn/figma-clone/models"
 	"github.com/tim-mhn/figma-clone/repositories"
@@ -10,12 +12,14 @@ import (
 type SprintService struct {
 	taskRepo   *repositories.TaskQueriesRepository
 	sprintRepo *repositories.SprintRepository
+	sprintPointsRepo *repositories.SprintPointsRepository
 }
 
-func NewSprintService(taskRepo *repositories.TaskQueriesRepository, sprintRepo *repositories.SprintRepository) *SprintService {
+func NewSprintService(taskRepo *repositories.TaskQueriesRepository, sprintRepo *repositories.SprintRepository, sprintPointsRepo *repositories.SprintPointsRepository) *SprintService {
 	return &SprintService{
 		taskRepo:   taskRepo,
 		sprintRepo: sprintRepo,
+		sprintPointsRepo: sprintPointsRepo
 	}
 }
 
@@ -31,15 +35,24 @@ func (service *SprintService) GetSprintListWithTasks(projectID string) (dtos.Spr
 	var sprintListWithTasks dtos.SprintListWithTasksDTO
 
 	for _, sprint := range sortedSprints {
+
+		//todo: execute these in parallel
 		sprintTasks, err := service.taskRepo.GetSprintTasks(sprint.Id)
+
+		pointsBreakdown, _ := service.sprintPointsRepo.GetSprintPointsBreakdown(sprint.Id)
+
+		log.Default().Print(pointsBreakdown)
 
 		if err != nil {
 			return dtos.SprintListWithTasksDTO{}, err
 		}
 
 		sprintWithTasks := dtos.SprintWithTasks{
-			Tasks:  sprintTasks,
-			Sprint: sprint,
+			Tasks: sprintTasks,
+			Sprint: models.Sprint{
+				SprintInfo: sprint,
+				Points:     pointsBreakdown,
+			},
 		}
 
 		sprintListWithTasks = append(sprintListWithTasks, sprintWithTasks)
@@ -49,8 +62,8 @@ func (service *SprintService) GetSprintListWithTasks(projectID string) (dtos.Spr
 	return sprintListWithTasks, nil
 }
 
-func moveBacklogSprintAtTheEnd(sprintList []models.Sprint) []models.Sprint {
-	backlogLastSortFunction := func(s1 models.Sprint, s2 models.Sprint) bool {
+func moveBacklogSprintAtTheEnd(sprintList []models.SprintInfo) []models.SprintInfo {
+	backlogLastSortFunction := func(s1 models.SprintInfo, s2 models.SprintInfo) bool {
 		return s2.IsBacklog
 	}
 

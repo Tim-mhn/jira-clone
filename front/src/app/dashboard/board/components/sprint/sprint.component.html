@@ -10,6 +10,12 @@
       width="20"
     />
     <div>{{ sprint?.Name }}</div>
+
+    <div class="flex flex-grow justify-end">
+      <jira-sprint-points-breakdown
+        [points]="sprint?.Points"
+      ></jira-sprint-points-breakdown>
+    </div>
   </div>
 
   <div

@@ -1,0 +1,13 @@
+<div class="flex gap-1 items-center">
+  <tim-chip
+    *ngFor="let opts of CHIP_TOOLTIP_OPTS"
+    [color]="opts.chipColor"
+    [timTooltipOrigin]="tooltip"
+  >
+    {{ points?.[opts.pointsKey] }}
+
+    <tim-tooltip #tooltip>
+      {{ opts?.tooltipLabel }} - {{ points?.[opts.pointsKey]}} points
+    </tim-tooltip>
+  </tim-chip>
+</div>
