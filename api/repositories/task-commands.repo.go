@@ -110,3 +110,26 @@ func (taskRepo *TaskCommandsRepository) UpdateTask(taskID string, patchDTO dtos.
 	return err
 
 }
+
+type DeleteTaskResponse struct {
+	NotFound bool
+}
+
+func (taskRepo *TaskCommandsRepository) DeleteTask(taskID string) (DeleteTaskResponse, error) {
+	deleteQuery := fmt.Sprintf(`DELETE FROM task WHERE task.id='%s'`, taskID)
+
+	res, err := taskRepo.conn.Exec(deleteQuery)
+
+	if err != nil {
+		return DeleteTaskResponse{}, err
+	}
+
+	rowsAffectedCount, err := res.RowsAffected()
+
+	if rowsAffectedCount == 0 {
+		return DeleteTaskResponse{
+			NotFound: true,
+		}, nil
+	}
+	return DeleteTaskResponse{}, err
+}

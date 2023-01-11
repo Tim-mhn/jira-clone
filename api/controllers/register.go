@@ -46,6 +46,7 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 	singleTaskRoutes := tasksRoutes.Group(fmt.Sprintf(`/:%s`, TASK_ID_ROUTE_PARAM))
 	singleTaskRoutes.GET("", tc.getTaskByID)
 	singleTaskRoutes.PATCH("", tc.UpdateTask)
+	singleTaskRoutes.DELETE("", tc.deleteTask)
 
 	projectsRoutes.POST("", pc.createProject)
 	singleProjectRoutes.GET("", pc.getProject)

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -86,4 +87,21 @@ func (tc *tasksController) getSprintsWithTasksOfProject(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, sprintListWithTasksDTO)
+}
+
+func (tc *tasksController) deleteTask(c *gin.Context) {
+	taskID := c.Param("taskID")
+
+	res, err := tc.taskCommands.DeleteTask(taskID)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if res.NotFound {
+		c.IndentedJSON(http.StatusNotFound, fmt.Sprintf(`could not find task %s`, taskID))
+	}
+
+	c.IndentedJSON(http.StatusNoContent, nil)
 }
