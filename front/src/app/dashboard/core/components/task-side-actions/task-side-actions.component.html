@@ -1,0 +1,13 @@
+<button
+  class="border rounded-lg border-gray-200"
+  tim-simple-button
+  iconBtn="dots"
+  iqairDropdownTrigger
+  [iqairDropdownMenuTriggerFor]="sideActionsMenu"
+></button>
+
+<tim-dropdown-menu #sideActionsMenu>
+  <tim-dropdown-item (click)="deleteTask($event)"
+    ><div class="text-red-800 font-medium">Delete</div></tim-dropdown-item
+  >
+</tim-dropdown-menu>

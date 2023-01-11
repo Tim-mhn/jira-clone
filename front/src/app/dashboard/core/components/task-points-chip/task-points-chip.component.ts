@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { TypedChanges } from '@tim-mhn/common/extra-types';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
-import { distinctUntilChanged, switchMap } from 'rxjs';
+import { distinctUntilChanged, filter, switchMap } from 'rxjs';
 import { UpdateTaskController } from '../../controllers/update-task.controller';
 import { Task } from '../../models/task';
 
@@ -23,6 +23,7 @@ export class TaskPointsChipComponent implements OnInit, OnChanges {
     this.pointsControl.valueChanges
       .pipe(
         distinctUntilChanged(),
+        filter(() => this.pointsControl.valid),
         switchMap((points) =>
           this.controller.updateTask({
             taskId: this.task.Id,

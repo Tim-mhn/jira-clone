@@ -7,6 +7,7 @@ import { GetTasksAPI } from '../apis/get-tasks.api';
 import { Task } from '../models/task';
 import { CurrentProjectService } from '../../board/state-services/current-project.service';
 import { TasksGroupedBySprintsDTO } from '../dtos';
+import { logMethod } from '../../../shared/utils/log-method.decorator';
 
 @Injectable({
   providedIn: BoardContentProvidersModule,
@@ -28,6 +29,7 @@ export class GetSprintsController {
       .pipe(this._mapDataAndUpdateSprintListState(requestState));
   }
 
+  @logMethod
   refreshSprintTasks() {
     return this.api
       .getTasksGroupedBySprints(this._currentProjectId)
@@ -44,8 +46,6 @@ export class GetSprintsController {
               Tasks: Tasks.map((t) => new Task(t)),
             })
           );
-
-          console.log(sprintsTasks);
 
           return sprintsTasks;
         }),

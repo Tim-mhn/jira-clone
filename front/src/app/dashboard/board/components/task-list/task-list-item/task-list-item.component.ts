@@ -8,6 +8,7 @@ import {
 import { TypedChanges } from '@tim-mhn/common/extra-types';
 import { RequestState } from '@tim-mhn/common/http';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
+import { DeleteTaskController } from '../../../../core/controllers/delete-task.controller';
 import { UpdateTaskController } from '../../../../core/controllers/update-task.controller';
 import { Project } from '../../../../core/models/project';
 import { Task } from '../../../../core/models/task';
@@ -22,7 +23,8 @@ export class TaskListItemComponent implements OnInit, OnChanges {
 
   constructor(
     private tfb: TypedFormBuilder,
-    private controller: UpdateTaskController
+    private controller: UpdateTaskController,
+    private deleteController: DeleteTaskController
   ) {}
 
   titleFc = this.tfb.control('');

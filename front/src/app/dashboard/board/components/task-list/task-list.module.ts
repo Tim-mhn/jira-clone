@@ -12,6 +12,7 @@ import { TaskStatusComponentsModule } from '../../../core/components/task-status
 import { TaskAssigneeModule } from '../../../core/components/task-assignee/task-assignee.module';
 import { TaskListItemComponent } from './task-list-item/task-list-item.component';
 import { TaskPointsChipModule } from '../../../core/components/task-points-chip/task-points-chip.module';
+import { TaskSideActionsModule } from '../../../core/components/task-side-actions/task-side-actions.module';
 
 @NgModule({
   declarations: [TaskListComponent, TaskListItemComponent],
@@ -27,6 +28,7 @@ import { TaskPointsChipModule } from '../../../core/components/task-points-chip/
     TimUIButtonModule,
     TimUISpinnerModule,
     TaskPointsChipModule,
+    TaskSideActionsModule,
   ],
   exports: [TaskListComponent],
 })

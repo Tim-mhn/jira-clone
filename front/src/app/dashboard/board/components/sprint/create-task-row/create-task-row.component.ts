@@ -52,12 +52,9 @@ export class CreateTaskRowComponent implements OnInit {
 
   @HostListener('document:click')
   onClick() {
-    console.log('click');
     this.deactivateCreateTaskMode();
   }
 
   @HostListener('keydown.escape')
-  onEscape() {
-    console.log('escape');
-  }
+  onEscape() {}
 }

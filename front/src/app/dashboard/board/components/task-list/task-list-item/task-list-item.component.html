@@ -1,7 +1,7 @@
 <div
-  class="flex flex-row items-center gap-2 cursor-pointer hover:bg-gray-100 p-1"
+  class="flex flex-row items-center gap-2 cursor-pointer hover:bg-gray-100 p-1 group"
 >
-  <div class="flex flex-grow overflow-x-auto group">
+  <div class="flex flex-grow overflow-x-auto group items-center">
     <div
       *ngIf="!editTitleModeActive; else titleInput"
       class="text-xs flex flex-grow gap-2 items-center"
@@ -22,7 +22,6 @@
         Edit
       </button>
     </div>
-    <!-- </div> -->
 
     <ng-template #titleInput>
       <div class="flex gap-2">
@@ -68,4 +67,9 @@
     [projectId]="project.Id"
     [task]="task"
   ></jira-task-assignee-selector>
+
+  <jira-task-side-actions
+    class="invisible group-hover:visible ml-1"
+    [task]="task"
+  ></jira-task-side-actions>
 </div>

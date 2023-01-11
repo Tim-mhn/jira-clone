@@ -8,6 +8,5 @@ export class TaskStatusTriggerComponent implements OnInit {
   readonly ARROW_DOWN = 'assets/icons/arrow-down-blue.svg';
   constructor() {}
 
-  onFocus = () => console.log('focus');
   ngOnInit(): void {}
 }
