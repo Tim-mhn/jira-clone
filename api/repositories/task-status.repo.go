@@ -19,7 +19,7 @@ func NewTaskStatusRepository(conn *sql.DB) *TaskStatusRepository {
 }
 
 func (taskStatusRepo TaskStatusRepository) GetAllStatus() ([]models.TaskStatus, error) {
-	request := "SELECT id, label from task_status"
+	request := "SELECT id, label, color from task_status ORDER BY id"
 
 	rows, err := taskStatusRepo.conn.Query(request)
 
@@ -34,7 +34,7 @@ func (taskStatusRepo TaskStatusRepository) GetAllStatus() ([]models.TaskStatus, 
 	for rows.Next() {
 		var status models.TaskStatus
 
-		rows.Scan(&status.Id, &status.Label)
+		rows.Scan(&status.Id, &status.Label, &status.Color)
 
 		statusList = append(statusList, status)
 	}

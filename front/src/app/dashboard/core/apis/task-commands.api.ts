@@ -31,7 +31,7 @@ export class TaskCommandsAPI {
   }
 
   updateTask(_dto: PatchTaskDTO) {
-    const endpoint = buildTaskEndpoint(_dto);
+    const endpoint = buildSingleTaskEndpoint(_dto);
     let body = {};
     const dto = handleNullAssigneeId(_dto);
 

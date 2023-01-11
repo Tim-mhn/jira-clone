@@ -12,7 +12,7 @@
       (click)="crossClicked.emit()"
     ></button>
 
-    <div class="flex gap-4">
+    <div class="flex flex-grow items-center gap-4">
       <jira-task-status-selector
         [task]="task"
         [projectId]="project?.Id"
@@ -29,6 +29,10 @@
         [task]="task"
         [taskPoints]="task.Points"
       ></jira-task-points-chip>
+
+      <div class="flex flex-grow justify-end">
+        <jira-task-side-actions [task]="task"></jira-task-side-actions>
+      </div>
     </div>
     <jira-task-details-editable-description
       [task]="task"

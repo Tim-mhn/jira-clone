@@ -13,6 +13,7 @@ import { TaskStatusComponentsModule } from '../../../core/components/task-status
 import { TaskEditableTitleComponent } from './task-editable-title/task-editable-title.component';
 import { TaskDetailsEditableDescriptionComponent } from './task-details-editable-description/task-details-editable-description.component';
 import { TaskPointsChipModule } from '../../../core/components/task-points-chip/task-points-chip.module';
+import { TaskSideActionsModule } from '../../../core/components/task-side-actions/task-side-actions.module';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { TaskPointsChipModule } from '../../../core/components/task-points-chip/
     TimUISpinnerModule,
     TimHttpModule,
     TaskPointsChipModule,
+    TaskSideActionsModule,
   ],
   exports: [TaskDetailsComponent],
 })

@@ -1,7 +1,14 @@
 import { Component, OnDestroy, OnInit, TrackByFunction } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import { filter, map, Observable, share, switchMap, takeUntil } from 'rxjs';
+import {
+  filter,
+  map,
+  Observable,
+  shareReplay,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 import { SubscriptionHandler } from '../../../../shared/services/subscription-handler.service';
 import { GetSprintsController } from '../../../core/controllers/get-sprints.controller';
 import { ProjectController } from '../../../core/controllers/project.controller';
@@ -27,7 +34,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   private _subscriptionHandler = new SubscriptionHandler();
 
-  project$ = this.currentProjectService.currentProject$.pipe(share());
+  project$ = this.currentProjectService.currentProject$.pipe(shareReplay());
   taskSelected: Task;
 
   requestState = new RequestState();
@@ -47,7 +54,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     s: SprintWithTasks
   ) => s.Sprint.Id;
 
-  // todo: refine this logic to have separate controllers to get project id/name (and members ??) AND get tasks grouped by sprints
   private _getProjectOnRouteChange(projectId$: Observable<string>) {
     projectId$
       .pipe(

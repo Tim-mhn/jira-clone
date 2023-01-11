@@ -1,5 +1,15 @@
 <div
-  class="text-[12px] w-fit bg-blue-100 text-blue-900 font-medium rounded-sm px-1"
+  class="text-[12px] w-fit font-medium rounded-sm px-1"
+  [ngClass]="{
+    'bg-blue-100 text-blue-900': status?.Color === 'primary',
+    'bg-green-100 text-green-900': status?.Color === 'success',
+    'bg-gray-100 text-gray-900': status?.Color === 'neutral'
+  }"
 >
-  <ng-content></ng-content>
+  <div class="flex items-center gap-0.5">
+    <div>{{ status.Label }}</div>
+    <ng-content></ng-content>
+  </div>
 </div>
+
+<!-- <tim-chip [color]="status?.Color">{{ status?.Label }}</tim-chip> -->

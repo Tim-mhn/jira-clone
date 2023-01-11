@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { TaskStatus } from '../../../models/task-status';
 
 @Component({
   selector: 'jira-task-status-chip',
@@ -8,6 +9,7 @@ import { Component, OnInit } from '@angular/core';
   },
 })
 export class TaskStatusChipComponent implements OnInit {
+  @Input() status: TaskStatus;
   constructor() {}
 
   ngOnInit(): void {}

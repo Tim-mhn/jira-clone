@@ -69,7 +69,7 @@ func getTaskDataFromRow(rows *sql.Rows) (models.Task, error) {
 
 	err := rows.Scan(
 		&task.Id, &task.Title, &task.Points, &task.Description,
-		&task.Status.Id, &task.Status.Label,
+		&task.Status.Id, &task.Status.Label, &task.Status.Color,
 		&assigneeIdBytes, &assignee.Name, &assignee.Email)
 
 	if err != nil {
@@ -115,6 +115,7 @@ const TASK_REQUEST string = `SELECT task.id as task_id,
 	task.description as task_description,
 	COALESCE(task.status, 0) as task_status,
 	COALESCE(task_status.label, '') as task_status_label,
+	task_status.color as task_status_color,
 	assignee_id,
 	COALESCE("user".name, '') as user_name,
 	COALESCE("user".email, '') as user_email
