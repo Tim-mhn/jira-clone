@@ -12,6 +12,7 @@ import { CurrentProjectService } from '../../state-services/current-project.serv
 export class TaskListComponent implements OnInit {
   @Input() project: Project;
   @Input() tasks: Tasks;
+  @Input() members: ProjectMember[];
   @Output() taskClicked = new EventEmitter<Task>();
 
   constructor(

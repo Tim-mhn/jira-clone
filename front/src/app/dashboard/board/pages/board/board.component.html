@@ -21,6 +21,7 @@
         *ngIf="taskSelected"
         [task]="taskSelected"
         [project]="project$ | async"
+        [members]="projectMembers$ | async"
         (crossClicked)="resetTaskSelected()"
       >
       </jira-task-details>

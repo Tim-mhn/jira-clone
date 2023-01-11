@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/middlewares"
-	"github.com/tim-mhn/figma-clone/models"
 	"github.com/tim-mhn/figma-clone/repositories"
 )
 
@@ -72,7 +71,7 @@ func (pc *projectController) addMemberToProject(c *gin.Context) {
 func (pc *projectController) getProject(c *gin.Context) {
 	projectID := getProjectIDParam(c)
 
-	projectInfo, err := pc.projectRepo.GetProjectMembers(projectID)
+	project, err := pc.projectRepo.GetProjectByID(projectID)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
@@ -80,11 +79,21 @@ func (pc *projectController) getProject(c *gin.Context) {
 
 	}
 
-	p := models.Project{
-		Id:   projectInfo.Id,
-		Name: projectInfo.Name,
+	c.IndentedJSON(http.StatusOK, project)
+
+}
+
+func (pc *projectController) getProjectMembers(c *gin.Context) {
+	projectID := getProjectIDParam(c)
+
+	members, err := pc.projectRepo.GetProjectMembers(projectID)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
 	}
-	c.IndentedJSON(http.StatusOK, p)
+
+	c.IndentedJSON(http.StatusOK, members)
 
 }
 

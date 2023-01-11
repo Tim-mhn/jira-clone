@@ -50,6 +50,7 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 
 	projectsRoutes.POST("", pc.createProject)
 	singleProjectRoutes.GET("", pc.getProject)
+	singleProjectRoutes.GET("/members", pc.getProjectMembers)
 	singleProjectRoutes.POST("/members/add", pc.addMemberToProject)
 
 }

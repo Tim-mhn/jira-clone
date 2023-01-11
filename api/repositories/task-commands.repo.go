@@ -28,7 +28,7 @@ func (taskRepo *TaskCommandsRepository) CreateTask(projectID string, sprintID st
 
 	log.Printf("create task called")
 
-	_, getProjectErr := taskRepo.pm.getProjectByID(projectID)
+	_, getProjectErr := taskRepo.pm.GetProjectByID(projectID)
 
 	if getProjectErr != nil {
 		return "", getProjectErr

@@ -4,6 +4,7 @@ import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
 import { Project } from '../../../core/models/project';
 import { Sprint } from '../../../core/models/sprint';
 import { Task } from '../../../core/models/task';
+import { ProjectMembersService } from '../../state-services/project-members.service';
 
 @Component({
   selector: 'jira-sprint',
@@ -18,11 +19,16 @@ export class SprintComponent implements OnInit {
   @Input() project: Project;
   @Output() taskClicked = new EventEmitter<Task>();
 
-  constructor(private tfb: TypedFormBuilder) {}
+  constructor(
+    private tfb: TypedFormBuilder,
+    private membersService: ProjectMembersService
+  ) {}
 
   ngOnInit(): void {}
 
   showList = false;
+
+  members$ = this.membersService.projectMembers$;
 
   toggleList = () => (this.showList = !this.showList);
 }

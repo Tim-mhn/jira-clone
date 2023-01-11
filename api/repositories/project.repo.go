@@ -50,7 +50,7 @@ func (pm *ProjectRepository) CreateProject(name string) (models.Project, error) 
 	}, nil
 }
 
-func (pm *ProjectRepository) getProjectByID(projectID string) (models.Project, error) {
+func (pm *ProjectRepository) GetProjectByID(projectID string) (models.Project, error) {
 	var project models.Project
 	query := fmt.Sprintf(`SELECT * FROM "project" WHERE id='%s' LIMIT 1;`, projectID)
 	rows, err := pm.conn.Query(query)
@@ -99,7 +99,7 @@ func (pm *ProjectRepository) MemberIsInProject(projectID string, memberID string
 
 func (pm *ProjectRepository) AddMemberToProject(projectID string, userID string) error {
 
-	_, getProjectErr := pm.getProjectByID(projectID)
+	_, getProjectErr := pm.GetProjectByID(projectID)
 
 	if getProjectErr != nil {
 		return getProjectErr
@@ -133,12 +133,7 @@ func (pm *ProjectRepository) AddMemberToProject(projectID string, userID string)
 
 }
 
-func (pm *ProjectRepository) GetProjectMembers(projectID string) (models.ProjectWithMembers, error) {
-	project, getProjectErr := pm.getProjectByID(projectID)
-
-	if getProjectErr != nil {
-		return models.ProjectWithMembers{}, getProjectErr
-	}
+func (pm *ProjectRepository) GetProjectMembers(projectID string) ([]models.User, error) {
 
 	var projectMembers []models.User
 	getMembersQuery := fmt.Sprintf(`
@@ -151,7 +146,7 @@ func (pm *ProjectRepository) GetProjectMembers(projectID string) (models.Project
 	rows, err := pm.conn.Query(getMembersQuery)
 
 	if err != nil {
-		return models.ProjectWithMembers{}, err
+		return []models.User{}, err
 	}
 
 	defer rows.Close()
@@ -166,13 +161,7 @@ func (pm *ProjectRepository) GetProjectMembers(projectID string) (models.Project
 		projectMembers = append(projectMembers, member)
 	}
 
-	projectWithMembers := models.ProjectWithMembers{
-		Id:      project.Id,
-		Name:    project.Name,
-		Members: projectMembers,
-	}
-
-	return projectWithMembers, nil
+	return projectMembers, nil
 
 }
 

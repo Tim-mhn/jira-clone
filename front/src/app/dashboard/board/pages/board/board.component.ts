@@ -16,6 +16,7 @@ import { SprintWithTasks } from '../../../core/models/sprint';
 import { Task } from '../../../core/models/task';
 import { CurrentProjectService } from '../../state-services/current-project.service';
 import { CurrentSprintsService } from '../../state-services/current-sprints.service';
+import { ProjectMembersService } from '../../state-services/project-members.service';
 
 @Component({
   selector: 'app-board',
@@ -29,7 +30,8 @@ export class BoardComponent implements OnInit, OnDestroy {
     private currentProjectService: CurrentProjectService,
     private requestStateController: RequestStateController,
     public sprintsService: CurrentSprintsService,
-    private sprintsController: GetSprintsController
+    private sprintsController: GetSprintsController,
+    private membersService: ProjectMembersService
   ) {}
 
   private _subscriptionHandler = new SubscriptionHandler();
@@ -38,6 +40,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   taskSelected: Task;
 
   requestState = new RequestState();
+
+  projectMembers$ = this.membersService.projectMembers$;
 
   ngOnInit(): void {
     const projectId$ = this.route.params.pipe(

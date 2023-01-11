@@ -7,9 +7,7 @@ import { BoardContentProvidersModule } from '../board-providers.module';
   providedIn: BoardContentProvidersModule,
 })
 export class CurrentProjectService {
-  constructor() {
-    console.log('current project service created');
-  }
+  constructor() {}
 
   private _currentProject$ = new ReplaySubject<Project>();
   readonly currentProject$ = this._currentProject$

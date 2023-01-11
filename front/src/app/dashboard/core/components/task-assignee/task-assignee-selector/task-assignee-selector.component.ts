@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { TaskCommandsAPI } from '../../../apis/task-commands.api';
+import { UpdateTaskController } from '../../../controllers/update-task.controller';
 import { ProjectMember } from '../../../models/project-member';
 import { Task } from '../../../models/task';
 
@@ -11,10 +11,9 @@ import { Task } from '../../../models/task';
   },
 })
 export class TaskAssigneeSelectorComponent implements OnInit {
-  constructor(private taskAPI: TaskCommandsAPI) {}
+  constructor(private controller: UpdateTaskController) {}
 
   @Input() task: Task;
-  @Input() projectId: string;
   @Input('assigneeOptions') set _assigneeOptions(_members: ProjectMember[]) {
     const members = _members || [];
     this.assigneeOptions = [
@@ -33,9 +32,8 @@ export class TaskAssigneeSelectorComponent implements OnInit {
   ngOnInit(): void {}
 
   updateTaskAssignee(newAssignee: ProjectMember) {
-    this.taskAPI
+    this.controller
       .updateTask({
-        projectId: this.projectId,
         taskId: this.task.Id,
         assigneeId: newAssignee.Id,
       })

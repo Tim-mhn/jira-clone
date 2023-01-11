@@ -20,6 +20,7 @@
       class="bg-white ease-in-out delay-150"
       [tasks]="tasks"
       [project]="project"
+      [members]="members$ | async"
       (taskClicked)="taskClicked.emit($event)"
     ></jira-task-list>
 
