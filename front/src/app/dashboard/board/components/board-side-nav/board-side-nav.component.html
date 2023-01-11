@@ -1,5 +1,12 @@
-<div class="flex flex-col flex-grow w-60 bg-gray-100 p-3 h-full">
+<div
+  class="flex flex-col flex-grow w-60 bg-gray-100 p-3 h-full text-gray-800 gap-4"
+>
   <div class="text-md font-medium">{{ (currentProject$ | async)?.Name }}</div>
-  <div>one</div>
-  <div>two</div>
+
+  <a
+    [routerLink]="['/', 'projects', (currentProject$ | async)?.Id]"
+    class="p-2 pl-3 text-gray-600 font-thin rounded-r-sm hover:border-blue-800"
+    routerLinkActive="bg-blue-100 border-l-2 border-blue-800 font-medium text-blue-800 hover:bg-blue-100 hover:text-blue-900"
+    >Board
+  </a>
 </div>
