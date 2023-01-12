@@ -9,6 +9,8 @@ import { UserDTO } from '../dtos/user.dto';
 export class AuthAPI {
   private readonly SIGN_UP_ENDPOINT = `${environment.apiUrl}sign-up`;
   private readonly LOGIN_ENDPOINT = `${environment.apiUrl}sign-in`;
+  private readonly SIGN_OUT_ENDPOINT = `${environment.apiUrl}sign-out`;
+
   private readonly ME_ENDPOINT = `${environment.apiUrl}me`;
 
   constructor(private http: HttpClient) {}
@@ -23,5 +25,9 @@ export class AuthAPI {
 
   me() {
     return this.http.get<UserDTO>(this.ME_ENDPOINT);
+  }
+
+  signOut() {
+    return this.http.post<void>(this.SIGN_OUT_ENDPOINT, null);
   }
 }

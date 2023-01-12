@@ -1,0 +1,10 @@
+<div class="flex gap-4 items-center">
+  <jira-member-icon [member]="member" size="md"></jira-member-icon>
+
+  <div class="flex flex-col">
+    <div>
+      {{ member?.Name }}
+    </div>
+    <div class="text-xs text-gray-600 -mt-0.5">{{ member?.Email }}</div>
+  </div>
+</div>

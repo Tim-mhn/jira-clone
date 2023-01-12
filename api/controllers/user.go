@@ -67,3 +67,16 @@ func (uc *userController) me(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, user)
 
 }
+
+func (uc *userController) signOut(c *gin.Context) {
+	cookie := &http.Cookie{
+		Name:     "Authorization",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+	}
+
+	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, "localhost", true, true)
+	c.IndentedJSON(http.StatusOK, nil)
+}

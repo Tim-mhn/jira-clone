@@ -1,6 +1,7 @@
 <img
   [src]="member?.Icon || EMPTY_MEMBER_ICON"
-  height="20"
-  width="20"
+  [height]="imgSize"
+  [width]="imgSize"
   class="w-5 h-5 border border-gray-100 rounded-full"
+  [ngClass]="classes"
 />

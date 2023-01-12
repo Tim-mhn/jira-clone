@@ -23,6 +23,7 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 
 	router.POST("/sign-up", uc.signUp)
 	router.POST("/sign-in", uc.signIn)
+	router.POST("/sign-out", uc.signOut)
 
 	requiresAuthRoutes := router.Group("", middlewares.IsAuthenticatedMiddleware())
 	requiresAuthRoutes.GET("/me", middlewares.IsAuthenticatedMiddleware(), uc.me)

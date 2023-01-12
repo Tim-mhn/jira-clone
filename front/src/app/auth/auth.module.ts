@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { AuthAPI } from './apis/auth.api';
+import { AuthProvidersModule } from './auth.providers.module';
 
 const routes: Routes = [
   {
@@ -24,6 +25,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     MatInputModule,
     MatFormFieldModule,
+    AuthProvidersModule,
   ],
   providers: [AuthAPI],
 })

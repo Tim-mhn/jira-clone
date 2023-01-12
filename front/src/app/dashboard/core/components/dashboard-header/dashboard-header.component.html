@@ -5,7 +5,12 @@
     <ng-container *ngTemplateOutlet="icon"></ng-container>
   </div>
   <div class="flex flex-grow justify-end">
-    <jira-member-icon [member]="loggedUser$ | async"></jira-member-icon>
+    <jira-member-icon
+      [member]="loggedUser$ | async"
+      size="md"
+      iqairDropdownTrigger
+      [iqairDropdownMenuTriggerFor]="accountDropdown"
+    ></jira-member-icon>
   </div>
 </div>
 
@@ -19,3 +24,14 @@
     <img src="assets/jira-icon.svg"
   /></span>
 </ng-template>
+
+<tim-dropdown-menu #accountDropdown>
+  <tim-dropdown-header>Account</tim-dropdown-header>
+  <div class="mx-4 mb-2">
+    <jira-member-info [member]="loggedUser$ | async"></jira-member-info>
+  </div>
+  <tim-divider></tim-divider>
+  <tim-dropdown-item (click)="signOut()"
+    ><span class="text-red-600 font-medium">Sign out</span></tim-dropdown-item
+  >
+</tim-dropdown-menu>
