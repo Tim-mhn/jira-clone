@@ -7,6 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:ci": "ng test --karma-config=karma.conf.ci.js",
+    "test:ci:watch": "ng test --karma-config=karma.conf.ci-watch.js",
     "prepare": "cd .. && husky install front/.husky"
   },
   "private": true,

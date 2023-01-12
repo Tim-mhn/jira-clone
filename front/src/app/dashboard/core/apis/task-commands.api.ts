@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { concatObjectsIf } from '@tim-mhn/common/objects';
 import { map } from 'rxjs';
 import { buildSingleTaskEndpoint, buildTaskEndpoint } from '.';
+import { removeUndefinedValues } from '../../../shared/utils/object.util';
 import { BoardContentProvidersModule } from '../../board/board-providers.module';
 import { handleNullAssigneeId, PatchTaskDTO } from '../dtos';
 import { DeleteTaskDTO } from '../dtos/delete-task.dto';
@@ -35,19 +35,13 @@ export class TaskCommandsAPI {
     let body = {};
     const dto = handleNullAssigneeId(_dto);
 
-    const { status, assigneeId, description, title, points, sprintId } = dto;
-    body = concatObjectsIf(body, { status }, status !== undefined);
-    body = concatObjectsIf(body, { assigneeId }, assigneeId !== undefined);
-    body = concatObjectsIf(body, { description }, description !== undefined);
-    body = concatObjectsIf(body, { title }, title !== undefined);
-    body = concatObjectsIf(body, { sprintId }, sprintId !== undefined);
+    const { projectId, taskId, ...patchDTO } = dto;
 
-    body = concatObjectsIf(
-      body,
+    if (patchDTO.points !== undefined)
       // eslint-disable-next-line radix
-      { points: parseInt(<string>(<any>points)) },
-      points !== undefined
-    );
+      patchDTO.points = parseInt(<string>(<any>patchDTO.points));
+
+    body = removeUndefinedValues(patchDTO);
 
     return this.http.patch<void>(endpoint, body);
   }
