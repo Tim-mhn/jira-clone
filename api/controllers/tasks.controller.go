@@ -13,18 +13,20 @@ import (
 )
 
 type tasksController struct {
-	taskQueries   *repositories.TaskQueriesRepository
-	taskCommands  *repositories.TaskCommandsRepository
-	sprintService *services.SprintService
+	taskQueries      *repositories.TaskQueriesRepository
+	taskCommands     *repositories.TaskCommandsRepository
+	sprintService    *services.SprintService
+	taskPositionRepo *repositories.TaskPositionRepository
 }
 
 func newTasksController(um *repositories.UserRepository, pm *repositories.ProjectRepository, sprintRepo *repositories.SprintRepository, taskRepo *repositories.TaskQueriesRepository, conn *sql.DB) *tasksController {
 	sprintPointsRepo := repositories.NewSprintPointsRepository(conn)
 
 	return &tasksController{
-		taskQueries:   repositories.NewTaskQueriesRepository(um, pm, conn),
-		taskCommands:  repositories.NewTaskCommandsRepository(um, pm, conn),
-		sprintService: services.NewSprintService(taskRepo, sprintRepo, sprintPointsRepo),
+		taskQueries:      repositories.NewTaskQueriesRepository(um, pm, conn),
+		taskCommands:     repositories.NewTaskCommandsRepository(um, pm, conn),
+		sprintService:    services.NewSprintService(taskRepo, sprintRepo, sprintPointsRepo),
+		taskPositionRepo: repositories.NewTaskPositionRepository(conn),
 	}
 }
 
@@ -92,7 +94,7 @@ func (tc *tasksController) getSprintsWithTasksOfProject(c *gin.Context) {
 }
 
 func (tc *tasksController) deleteTask(c *gin.Context) {
-	taskID := c.Param("taskID")
+	taskID := getTaskIDParam(c)
 
 	res, err := tc.taskCommands.DeleteTask(taskID)
 
@@ -106,4 +108,24 @@ func (tc *tasksController) deleteTask(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusNoContent, nil)
+}
+
+func (tc *tasksController) moveTask(c *gin.Context) {
+	taskID := getTaskIDParam(c)
+
+	var moveTaskDTO dtos.MoveTaskDTO
+	if err := c.BindJSON(&moveTaskDTO); err != nil {
+		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	err := tc.taskPositionRepo.MoveTaskBetween(taskID, moveTaskDTO)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, nil)
+
 }

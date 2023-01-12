@@ -1,6 +1,13 @@
-<div class="flex flex-grow flex-col gap-2 border border-gray-200 text-gray-800">
+<div
+  class="flex flex-grow flex-col gap-2 border border-gray-200 text-gray-800"
+  cdkDropList
+  (cdkDropListDropped)="moveTaskInSprint($event)"
+>
   <jira-task-list-item
     *ngFor="let task of tasks; trackBy: trackById"
+    cdkDrag
+    [cdkDragPreviewClass]="['bg-blue-50', 'shadow-md']"
+    [cdkDragData]="task"
     (click)="taskClicked.emit(task)"
     [project]="project$ | async"
     [task]="task"

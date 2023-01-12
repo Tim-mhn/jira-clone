@@ -121,10 +121,11 @@ const TASK_REQUEST string = `SELECT task.id as task_id,
 	COALESCE("user".email, '') as user_email
 	from task
 	LEFT JOIN "user" ON assignee_id="user".id
-	LEFT JOIN task_status ON task_status.id=task.status`
+	LEFT JOIN task_status ON task_status.id=task.status
+	`
 
 func buildGetTasksOfSprintQuery(sprintID string) string {
-	return fmt.Sprintf(`%s WHERE task.sprint_id='%s'`, TASK_REQUEST, sprintID)
+	return fmt.Sprintf(`%s LEFT JOIN task_position ON task_position.task_id=task.id WHERE task.sprint_id='%s' ORDER BY task_position.position ASC`, TASK_REQUEST, sprintID)
 }
 
 func buildSingleTaskQuery(taskID string) string {

@@ -1,4 +1,3 @@
-import { logMethod } from '../../../shared/utils/log-method.decorator';
 import { ProjectMember } from './project-member';
 import { TaskStatus } from './task-status';
 
@@ -45,7 +44,6 @@ export class Task implements ITask {
     this.Title = newTitle;
   }
 
-  @logMethod
   public updatePoints(newPoints: number) {
     this.Points = newPoints;
   }

@@ -6,6 +6,7 @@ import { TimInputModule } from '@tim-mhn/ng-forms/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TimUIButtonModule } from '@tim-mhn/ng-ui/button';
 import { TimUISpinnerModule } from '@tim-mhn/ng-ui/spinner';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { TaskListComponent } from './task-list.component';
 import { TaskStatusComponentsModule } from '../../../core/components/task-status/task-status.module';
 import { TaskAssigneeModule } from '../../../core/components/task-assignee/task-assignee.module';
@@ -29,6 +30,7 @@ import { MemberComponentsModule } from '../../../../shared/components/member/mem
     TimUISpinnerModule,
     TaskPointsChipModule,
     TaskSideActionsModule,
+    DragDropModule,
   ],
   exports: [TaskListComponent],
 })

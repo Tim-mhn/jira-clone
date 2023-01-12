@@ -48,6 +48,7 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) {
 	singleTaskRoutes.GET("", tc.getTaskByID)
 	singleTaskRoutes.PATCH("", tc.UpdateTask)
 	singleTaskRoutes.DELETE("", tc.deleteTask)
+	singleTaskRoutes.PATCH("/move", tc.moveTask)
 
 	projectsRoutes.POST("", pc.createProject)
 	singleProjectRoutes.GET("", pc.getProject)
