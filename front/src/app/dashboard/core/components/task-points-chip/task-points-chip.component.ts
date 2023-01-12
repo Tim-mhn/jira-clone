@@ -25,16 +25,15 @@ export class TaskPointsChipComponent implements OnInit, OnChanges {
         distinctUntilChanged(),
         filter(() => this.pointsControl.valid),
         switchMap((points) =>
-          this.controller.updateTask({
-            taskId: this.task.Id,
-            points,
-          })
+          this.controller.updateTaskPoints(this.task.Id, points)
         )
       )
       .subscribe({
         next: () => this.task.updatePoints(this.pointsControl.value),
-        error: () =>
-          this.pointsControl.setValue(this.task.Points, { emitEvent: false }),
+        error: (err) => {
+          console.error(err);
+          this.pointsControl.setValue(this.task.Points, { emitEvent: false });
+        },
       });
   }
 

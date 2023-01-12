@@ -6,6 +6,7 @@ import { BoardContentProvidersModule } from '../../board/board-providers.module'
 import { CurrentProjectService } from '../../board/state-services/current-project.service';
 import { TaskCommandsAPI } from '../apis/task-commands.api';
 import { PatchTaskDTO } from '../dtos';
+import { TaskStatus } from '../models/task-status';
 import { GetSprintsController } from './get-sprints.controller';
 
 @Injectable({
@@ -35,6 +36,32 @@ export class UpdateTaskController {
         this.requestStateController.handleRequest(requestState),
         this.snackbarFeedback.showFeedbackSnackbars()
       );
+  }
+
+  updateTaskPoints(taskId: string, newPoints: number) {
+    const dto: PatchTaskDTO = {
+      taskId,
+      points: newPoints,
+      projectId: this._currentProjectId,
+    };
+
+    return this.api.updateTask(dto).pipe(
+      this.snackbarFeedback.showFeedbackSnackbars(),
+      switchMap(() => this.sprintsController.refreshSprintTasks())
+    );
+  }
+
+  updateTaskStatus(taskId: string, newStatus: TaskStatus) {
+    const dto: PatchTaskDTO = {
+      taskId,
+      status: newStatus.Id,
+      projectId: this._currentProjectId,
+    };
+
+    return this.api.updateTask(dto).pipe(
+      this.snackbarFeedback.showFeedbackSnackbars(),
+      switchMap(() => this.sprintsController.refreshSprintTasks())
+    );
   }
 
   moveTaskToSprint(
