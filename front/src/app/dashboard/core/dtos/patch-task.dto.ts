@@ -1,6 +1,7 @@
 import { NewTaskDTO } from './new-task.dto';
 
-export type PatchTaskDTO = Omit<NewTaskDTO, 'sprintId'> & {
+export type PatchTaskDTO = Partial<NewTaskDTO> & {
+  projectId: string;
   taskId: string;
   status?: number;
 };

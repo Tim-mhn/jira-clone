@@ -8,6 +8,14 @@
 ></button>
 
 <tim-dropdown-menu #sideActionsMenu>
+  <tim-dropdown-header>Move to</tim-dropdown-header>
+  <tim-dropdown-item
+    *ngFor="let sprint of otherSprints$ | async"
+    (click)="moveTaskToSprint(sprint.Id)"
+    >{{ sprint.Name }}</tim-dropdown-item
+  >
+
+  <tim-divider></tim-divider>
   <tim-dropdown-item (click)="deleteTask($event)"
     ><div class="text-red-800 font-medium">Delete</div></tim-dropdown-item
   >

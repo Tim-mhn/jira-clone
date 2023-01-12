@@ -22,6 +22,7 @@
         [task]="taskSelected"
         [project]="project$ | async"
         [members]="projectMembers$ | async"
+        [sprints]="sprintInfoList$ | async"
         (crossClicked)="resetTaskSelected()"
       >
       </jira-task-details>

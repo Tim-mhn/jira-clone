@@ -30,7 +30,10 @@
       ></jira-task-points-chip>
 
       <div class="flex flex-grow justify-end">
-        <jira-task-side-actions [task]="task"></jira-task-side-actions>
+        <jira-task-side-actions
+          [task]="task"
+          [sprints]="sprints"
+        ></jira-task-side-actions>
       </div>
     </div>
     <jira-task-details-editable-description

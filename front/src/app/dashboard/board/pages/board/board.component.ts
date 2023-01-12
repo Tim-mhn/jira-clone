@@ -43,6 +43,8 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   projectMembers$ = this.membersService.projectMembers$;
 
+  sprintInfoList$ = this.sprintsService.sprintInfoList$;
+
   ngOnInit(): void {
     const projectId$ = this.route.params.pipe(
       map((params) => params['projectId']),

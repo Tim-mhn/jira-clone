@@ -11,6 +11,7 @@ import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
 import { UpdateTaskController } from '../../../../core/controllers/update-task.controller';
 import { Project } from '../../../../core/models/project';
 import { ProjectMember } from '../../../../core/models/project-member';
+import { SprintInfo } from '../../../../core/models/sprint';
 import { Task } from '../../../../core/models/task';
 
 @Component({
@@ -21,6 +22,7 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   @Input() task: Task;
   @Input() project: Project;
   @Input() members: ProjectMember[] = [];
+  @Input() sprints: SprintInfo[];
 
   constructor(
     private tfb: TypedFormBuilder,

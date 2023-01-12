@@ -35,11 +35,13 @@ export class TaskCommandsAPI {
     let body = {};
     const dto = handleNullAssigneeId(_dto);
 
-    const { status, assigneeId, description, title, points } = dto;
+    const { status, assigneeId, description, title, points, sprintId } = dto;
     body = concatObjectsIf(body, { status }, status !== undefined);
     body = concatObjectsIf(body, { assigneeId }, assigneeId !== undefined);
     body = concatObjectsIf(body, { description }, description !== undefined);
     body = concatObjectsIf(body, { title }, title !== undefined);
+    body = concatObjectsIf(body, { sprintId }, sprintId !== undefined);
+
     body = concatObjectsIf(
       body,
       // eslint-disable-next-line radix

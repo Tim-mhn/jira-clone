@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Project } from '../../../core/models/project';
 import { ProjectMember } from '../../../core/models/project-member';
+import { SprintInfo } from '../../../core/models/sprint';
 import { Task } from '../../../core/models/task';
 
 @Component({
@@ -11,6 +12,7 @@ export class TaskDetailsComponent implements OnInit {
   @Input() task: Task;
   @Input() project: Project;
   @Input() members: ProjectMember[];
+  @Input() sprints: SprintInfo[];
 
   @Output() crossClicked = new EventEmitter<void>();
   constructor() {}

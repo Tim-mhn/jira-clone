@@ -10,16 +10,16 @@ import (
 )
 
 type SprintService struct {
-	taskRepo   *repositories.TaskQueriesRepository
-	sprintRepo *repositories.SprintRepository
+	taskRepo         *repositories.TaskQueriesRepository
+	sprintRepo       *repositories.SprintRepository
 	sprintPointsRepo *repositories.SprintPointsRepository
 }
 
 func NewSprintService(taskRepo *repositories.TaskQueriesRepository, sprintRepo *repositories.SprintRepository, sprintPointsRepo *repositories.SprintPointsRepository) *SprintService {
 	return &SprintService{
-		taskRepo:   taskRepo,
-		sprintRepo: sprintRepo,
-		sprintPointsRepo: sprintPointsRepo
+		taskRepo:         taskRepo,
+		sprintRepo:       sprintRepo,
+		sprintPointsRepo: sprintPointsRepo,
 	}
 }
 

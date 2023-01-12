@@ -95,6 +95,7 @@ func (taskRepo *TaskCommandsRepository) UpdateTask(taskID string, patchDTO dtos.
 		"Description": "description",
 		"Title":       "title",
 		"Points":      "points",
+		"SprintId":    "sprint_id",
 	}
 
 	updateQuery := buildSQLUpdateQuery(patchDTO, ApiToDBFields, SQLCondition{

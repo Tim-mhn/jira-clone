@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ICONS } from '@tim-mhn/common/icons';
-import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
+import { shareReplay } from 'rxjs';
 import { Project } from '../../../core/models/project';
 import { Sprint } from '../../../core/models/sprint';
 import { Task } from '../../../core/models/task';
+import { CurrentSprintsService } from '../../state-services/current-sprints.service';
 import { ProjectMembersService } from '../../state-services/project-members.service';
 
 @Component({
@@ -20,8 +21,8 @@ export class SprintComponent implements OnInit {
   @Output() taskClicked = new EventEmitter<Task>();
 
   constructor(
-    private tfb: TypedFormBuilder,
-    private membersService: ProjectMembersService
+    private membersService: ProjectMembersService,
+    private sprintService: CurrentSprintsService
   ) {}
 
   ngOnInit(): void {}
@@ -29,6 +30,7 @@ export class SprintComponent implements OnInit {
   showList = false;
 
   members$ = this.membersService.projectMembers$;
+  sprintInfoList$ = this.sprintService.sprintInfoList$.pipe(shareReplay());
 
   toggleList = () => (this.showList = !this.showList);
 }
