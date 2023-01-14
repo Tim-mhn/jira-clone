@@ -8,11 +8,13 @@ import (
 type Project struct {
 	Id   string
 	Name string
+	Key  string
 }
 
 type ProjectWithMembers struct {
 	Id      string
 	Name    string
+	Key     string
 	Members []auth.User
 }
 

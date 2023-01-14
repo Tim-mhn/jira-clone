@@ -51,7 +51,7 @@ func (pm *ProjectRepository) CreateProject(name string) (Project, error) {
 
 func (pm *ProjectRepository) GetProjectByID(projectID string) (Project, error) {
 	var project Project
-	query := fmt.Sprintf(`SELECT * FROM "project" WHERE id='%s' LIMIT 1;`, projectID)
+	query := fmt.Sprintf(`SELECT id, name, key FROM "project" WHERE id='%s' LIMIT 1;`, projectID)
 	rows, err := pm.conn.Query(query)
 
 	if err != nil {
@@ -61,7 +61,7 @@ func (pm *ProjectRepository) GetProjectByID(projectID string) (Project, error) {
 	defer rows.Close()
 
 	if rows.Next() {
-		err := rows.Scan(&project.Id, &project.Name)
+		err := rows.Scan(&project.Id, &project.Name, &project.Key)
 
 		if err != nil {
 			return Project{}, err

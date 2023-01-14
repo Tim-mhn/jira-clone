@@ -1,6 +1,32 @@
 <div
   class="flex flex-row items-center gap-2 cursor-pointer hover:bg-gray-100 p-1 group"
 >
+  <div class="text-gray-600 font-light text-sm">{{ task.Key }}</div>
+
+  <ng-container *ngTemplateOutlet="editableTitle"></ng-container>
+
+  <jira-task-points-chip
+    [task]="task"
+    [taskPoints]="task.Points"
+  ></jira-task-points-chip>
+  <jira-task-status-selector
+    [task]="task"
+    [allStatus]="project.AllTaskStatus"
+  ></jira-task-status-selector>
+
+  <jira-task-assignee-selector
+    [assigneeOptions]="members"
+    [task]="task"
+  ></jira-task-assignee-selector>
+
+  <jira-task-side-actions
+    class="invisible group-hover:visible ml-1"
+    [task]="task"
+    [sprints]="sprints"
+  ></jira-task-side-actions>
+</div>
+
+<ng-template #editableTitle>
   <div class="flex flex-grow overflow-x-auto group items-center">
     <div
       *ngIf="!editTitleModeActive; else titleInput"
@@ -51,24 +77,4 @@
       </div>
     </ng-template>
   </div>
-
-  <jira-task-points-chip
-    [task]="task"
-    [taskPoints]="task.Points"
-  ></jira-task-points-chip>
-  <jira-task-status-selector
-    [task]="task"
-    [allStatus]="project.AllTaskStatus"
-  ></jira-task-status-selector>
-
-  <jira-task-assignee-selector
-    [assigneeOptions]="members"
-    [task]="task"
-  ></jira-task-assignee-selector>
-
-  <jira-task-side-actions
-    class="invisible group-hover:visible ml-1"
-    [task]="task"
-    [sprints]="sprints"
-  ></jira-task-side-actions>
-</div>
+</ng-template>

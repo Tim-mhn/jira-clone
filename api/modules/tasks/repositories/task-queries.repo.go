@@ -71,7 +71,7 @@ func getTaskDataFromRow(rows *sql.Rows) (tasks_models.Task, error) {
 	err := rows.Scan(
 		&task.Id, &task.Title, &task.Points, &task.Description,
 		&task.Status.Id, &task.Status.Label, &task.Status.Color,
-		&assigneeIdBytes, &assignee.Name, &assignee.Email)
+		&assigneeIdBytes, &assignee.Name, &assignee.Email, &task.Key)
 
 	if err != nil {
 		return tasks_models.Task{}, err
@@ -119,10 +119,13 @@ const TASK_REQUEST string = `SELECT task.id as task_id,
 	task_status.color as task_status_color,
 	assignee_id,
 	COALESCE("user".name, '') as user_name,
-	COALESCE("user".email, '') as user_email
+	COALESCE("user".email, '') as user_email,
+	CONCAT(project.key, '-', task.number) as task_key
 	from task
 	LEFT JOIN "user" ON assignee_id="user".id
 	LEFT JOIN task_status ON task_status.id=task.status
+	LEFT JOIN sprint ON sprint.id=task.sprint_id
+	LEFT JOIN project ON sprint.project_id=project.id
 	`
 
 func buildGetTasksOfSprintQuery(sprintID string) string {

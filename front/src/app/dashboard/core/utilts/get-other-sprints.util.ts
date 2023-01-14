@@ -8,7 +8,7 @@ export function getSprintsTaskDoesNotBelongTo(
     (sprintWithTasks) => !!sprintWithTasks.Tasks.find((t) => t.Id === taskId)
   );
 
-  const taskSprintId = taskSprint.Sprint.Id;
+  const taskSprintId = taskSprint?.Sprint?.Id;
 
   const otherSprints = allSprints
     .filter((sprintWithTasks) => sprintWithTasks.Sprint.Id !== taskSprintId)

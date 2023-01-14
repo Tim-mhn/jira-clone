@@ -1,0 +1,22 @@
+WITH insert_task AS (
+    WITH task_number AS (
+      SELECT MAX(number) + 1 as next_number
+      FROM task
+      WHERE task.sprint_id='%s'
+    )
+    INSERT INTO task (title, points, sprint_id, assignee_id, description, status, number) 
+    SELECT '%s', %d, '%s', '%s', '%s', %d, task_number.next_number
+    FROM  task_number 
+    RETURNING id
+),
+positions AS (
+SELECT MAX(position) + 1 as next_position
+FROM task
+JOIN task_position ON task.id=task_position.task_id
+WHERE task.sprint_id='%s'
+)
+INSERT INTO task_position (position, task_id)
+SELECT positions.next_position, id
+FROM insert_task
+JOIN positions ON true
+RETURNING task_id as id
