@@ -9,6 +9,7 @@ type Project struct {
 	Id   string
 	Name string
 	Key  string
+	Icon string
 }
 
 type ProjectWithMembers struct {

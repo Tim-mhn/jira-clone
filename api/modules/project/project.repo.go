@@ -61,7 +61,8 @@ func (pm *ProjectRepository) GetProjectByID(projectID string) (Project, error) {
 	defer rows.Close()
 
 	if rows.Next() {
-		err := rows.Scan(&project.Id, &project.Name, &project.Key)
+
+		project, err = buildProjectFromQueryRows(rows)
 
 		if err != nil {
 			return Project{}, err
@@ -165,7 +166,7 @@ func (pm *ProjectRepository) GetProjectMembers(projectID string) ([]auth.User, e
 }
 
 func (pm *ProjectRepository) GetProjectsOfUser(userID string) ([]Project, error) {
-	query := fmt.Sprintf(`SELECT project.id as project_id, project.name as project_name FROM project 
+	query := fmt.Sprintf(`SELECT project.id as project_id, project.name as project_name, project.key as project_key FROM project 
 JOIN  project_user ON project_user.project_id=project.id  
 WHERE project_user.user_id='%s'`, userID)
 
@@ -179,12 +180,25 @@ WHERE project_user.user_id='%s'`, userID)
 
 	var userProjects []Project
 	for rows.Next() {
-		var project Project
-		rows.Scan(&project.Id, &project.Name)
+		project, err := buildProjectFromQueryRows(rows)
 
+		if err != nil {
+			return []Project{}, err
+		}
 		userProjects = append(userProjects, project)
 	}
 
 	return userProjects, nil
 
+}
+
+func buildProjectFromQueryRows(rows *sql.Rows) (Project, error) {
+	var project Project
+	err := rows.Scan(&project.Id, &project.Name, &project.Key)
+
+	if err != nil {
+		return Project{}, err
+	}
+	project.Icon = getProjectIcon(project.Id)
+	return project, nil
 }
