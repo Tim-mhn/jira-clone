@@ -7,7 +7,7 @@ const routes: Routes = [
     path: '',
     pathMatch: 'full',
     loadChildren: () =>
-      import('./project-list/pages/project-list/project-list.module').then(
+      import('./projects/pages/project-list/project-list.module').then(
         (m) => m.ProjectListModule
       ),
   },

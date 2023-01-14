@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ProjectIdName } from '../../../core/models/project';
+import { ProjectInfo } from '../../../core/models/project';
 
 @Component({
   selector: 'jira-board-breadcrumb',
@@ -8,7 +8,7 @@ import { ProjectIdName } from '../../../core/models/project';
 export class BoardBreadcrumbComponent implements OnInit {
   constructor() {}
 
-  @Input() project: ProjectIdName;
+  @Input() project: ProjectInfo;
 
   ngOnInit(): void {}
 }

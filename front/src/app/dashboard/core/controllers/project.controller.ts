@@ -1,19 +1,23 @@
 import { Injectable } from '@angular/core';
+import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { forkJoin, map, Observable } from 'rxjs';
-import { BoardContentProvidersModule } from '../../board/board-providers.module';
+import { DashboardCoreProvidersModule } from '../core-apis-providers.module';
+import { ProjectListAPI } from '../apis/project-list.api';
 import { SingleProjectAPI } from '../apis/single-project.api';
 import { TaskStatusAPI } from '../apis/task-status.api';
 import { ProjectMapper } from '../mappers/project.mapper';
-import { Project } from '../models/project';
+import { Project, ProjectInfoList } from '../models/project';
 
 @Injectable({
-  providedIn: BoardContentProvidersModule,
+  providedIn: DashboardCoreProvidersModule,
 })
 export class ProjectController {
   constructor(
     private projectApi: SingleProjectAPI,
     private taskStatusApi: TaskStatusAPI,
-    private mapper: ProjectMapper
+    private mapper: ProjectMapper,
+    private requestStateController: RequestStateController,
+    private projectListAPI: ProjectListAPI
   ) {}
 
   getProject(projectId: string): Observable<Project> {
@@ -25,16 +29,24 @@ export class ProjectController {
       allTaskStatus: allTaskStatus$,
     }).pipe(
       map(({ projectInfo, allTaskStatus }) => {
-        const { Id, Name, Members } = projectInfo;
+        const { Id, Name, Members, Key, Icon } = projectInfo;
 
         const projectData: Project = {
           Id,
           Name,
           Members,
+          Key,
+          Icon,
           AllTaskStatus: allTaskStatus,
         };
         return projectData;
       })
     );
+  }
+
+  getUserProjects(requestState?: RequestState): Observable<ProjectInfoList> {
+    return this.projectListAPI
+      .getUserProjects()
+      .pipe(this.requestStateController.handleRequest(requestState));
   }
 }

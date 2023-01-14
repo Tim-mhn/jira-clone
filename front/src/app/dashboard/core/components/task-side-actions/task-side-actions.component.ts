@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TypedChanges } from '@tim-mhn/common/extra-types';
+import { TimUIDropdownMenu } from '@tim-mhn/ng-ui/dropdown-menu';
 import { Observable } from 'rxjs';
 import { CurrentSprintsService } from '../../../board/state-services/current-sprints.service';
 import { DeleteTaskController } from '../../controllers/delete-task.controller';
@@ -15,6 +16,7 @@ export class TaskSideActionsComponent implements OnInit {
   @Input() task: Task;
   @Input() sprints: SprintInfo[];
 
+  @ViewChild('sideActionsMenu') menu: TimUIDropdownMenu;
   constructor(
     private deleteTaskController: DeleteTaskController,
     private updateTaskController: UpdateTaskController,
@@ -34,10 +36,13 @@ export class TaskSideActionsComponent implements OnInit {
 
   deleteTask(e: Event) {
     e.stopPropagation();
+    this.menu.close();
     this.deleteTaskController.deleteTask(this.task.Id).subscribe();
   }
 
   moveTaskToSprint(sprintId: string) {
+    this.menu.close();
+
     this.updateTaskController
       .moveTaskToSprint({
         taskId: this.task.Id,

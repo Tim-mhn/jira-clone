@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PROJECTS_API_ENDPOINT } from '.';
-import { BoardContentProvidersModule } from '../../board/board-providers.module';
+import { DashboardCoreProvidersModule } from '../core-apis-providers.module';
 import { TaskStatus } from '../models/task-status';
 
 @Injectable({
-  providedIn: BoardContentProvidersModule,
+  providedIn: DashboardCoreProvidersModule,
 })
 export class TaskStatusAPI {
   constructor(private http: HttpClient) {}
