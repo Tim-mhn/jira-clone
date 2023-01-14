@@ -9,7 +9,7 @@
     [cdkDragPreviewClass]="['bg-blue-50', 'shadow-md']"
     [cdkDragData]="task"
     (click)="taskClicked.emit(task)"
-    [project]="project$ | async"
+    [project]="project"
     [task]="task"
     [members]="members"
     [sprints]="sprints"

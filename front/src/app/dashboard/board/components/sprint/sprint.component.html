@@ -19,6 +19,7 @@
   </div>
 
   <div
+    *ngIf="renderTaskList"
     [ngClass]="showList ? 'visible' : 'hidden'"
     class="flex flex-col gap-2 flex-grow"
   >

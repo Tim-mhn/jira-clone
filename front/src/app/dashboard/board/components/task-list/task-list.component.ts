@@ -6,7 +6,6 @@ import { Project } from '../../../core/models/project';
 import { ProjectMember } from '../../../core/models/project-member';
 import { SprintInfo } from '../../../core/models/sprint';
 import { Task, Tasks } from '../../../core/models/task';
-import { CurrentProjectService } from '../../state-services/current-project.service';
 
 @Component({
   selector: 'jira-task-list',
@@ -21,13 +20,10 @@ export class TaskListComponent implements OnInit {
 
   constructor(
     private taskAPI: TaskCommandsAPI,
-    private currentProjectService: CurrentProjectService,
     private taskPositionController: TaskPositionController
   ) {}
 
   ngOnInit(): void {}
-
-  project$ = this.currentProjectService.currentProject$;
 
   trackById = (_index: number, t: Task) => t.Id;
 

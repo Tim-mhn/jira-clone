@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { ICONS } from '@tim-mhn/common/icons';
 import { shareReplay } from 'rxjs';
 import { Project } from '../../../core/models/project';
@@ -11,7 +18,7 @@ import { ProjectMembersService } from '../../state-services/project-members.serv
   selector: 'jira-sprint',
   templateUrl: './sprint.component.html',
 })
-export class SprintComponent implements OnInit {
+export class SprintComponent implements OnInit, AfterViewInit {
   readonly ARROW_RIGHT = ICONS.ARROW_RIGHT_GRAY;
   readonly ARROW_DOWN = ICONS.ARROW_DOWN_GRAY;
 
@@ -20,12 +27,23 @@ export class SprintComponent implements OnInit {
   @Input() project: Project;
   @Output() taskClicked = new EventEmitter<Task>();
 
+  renderTaskList = false;
+
   constructor(
     private membersService: ProjectMembersService,
     private sprintService: CurrentSprintsService
   ) {}
 
   ngOnInit(): void {}
+
+  ngAfterViewInit() {
+    this.delayRenderingOfTaskList();
+  }
+
+  delayRenderingOfTaskList() {
+    const delayMilliseconds = 100;
+    setTimeout(() => (this.renderTaskList = true), delayMilliseconds);
+  }
 
   showList = false;
 

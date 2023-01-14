@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { catchError, filter, of, shareReplay, switchMap } from 'rxjs';
+import {
+  catchError,
+  filter,
+  of,
+  startWith,
+  switchMap,
+  shareReplay,
+} from 'rxjs';
 import { ProjectMembersAPI } from '../../core/apis/project-members.api';
 import { BoardContentProvidersModule } from '../board-providers.module';
 import { CurrentProjectService } from './current-project.service';
@@ -20,6 +27,7 @@ export class ProjectMembersService {
     }),
     filter((id) => !!id),
     switchMap(({ Id }) => this.api.getProjectMembers(Id)),
+    startWith([]),
     shareReplay()
   );
 }

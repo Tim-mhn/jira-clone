@@ -11,9 +11,7 @@ export class GetTasksAPI {
   constructor(private http: HttpClient) {}
 
   getTasksGroupedBySprints(projectId: string) {
-    const endpoint = `${PROJECTS_API_ENDPOINT}/${projectId}/sprints?no-cache=${Math.floor(
-      Math.random() * 1000
-    )}`;
+    const endpoint = `${PROJECTS_API_ENDPOINT}/${projectId}/sprints`;
     return this.http.get<TasksGroupedBySprintsDTO>(endpoint);
   }
 }

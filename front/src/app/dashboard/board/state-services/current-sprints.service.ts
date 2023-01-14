@@ -22,7 +22,6 @@ export class CurrentSprintsService {
   public getSprintsTaskDoesNotBelongTo$(
     taskId: string
   ): Observable<SprintInfo[]> {
-    console.count('getSprintsTaskDoesNotBelongTo');
     return this._sprintList$.pipe(
       map((sprintWithTasksList) =>
         getSprintsTaskDoesNotBelongTo(taskId, sprintWithTasksList)
