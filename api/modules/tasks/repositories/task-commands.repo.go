@@ -43,7 +43,7 @@ func (taskRepo *TaskCommandsRepository) CreateTask(projectID string, sprintID st
 		return "", assignationError
 	}
 
-	createTaskQuery := buildCreateTaskQuery(sprintID, title, assigneeID, points, description)
+	createTaskQuery := buildCreateTaskQuery(projectID, sprintID, title, assigneeID, points, description)
 	log.Printf(`[CreateTask] SQL Query: %s`, createTaskQuery)
 	rows, err := taskRepo.conn.Query(createTaskQuery)
 
@@ -65,14 +65,15 @@ func (taskRepo *TaskCommandsRepository) CreateTask(projectID string, sprintID st
 	return taskID, nil
 }
 
-func buildCreateTaskQuery(sprintID string, title string, assigneeID string, points int, description string) string {
+func buildCreateTaskQuery(projectID string, sprintID string, title string, assigneeID string, points int, description string) string {
 	return fmt.Sprintf(`
 		WITH insert_task AS (
     WITH task_number AS (
-      SELECT MAX(number) + 1 as next_number
-      FROM task
-      WHERE task.sprint_id='%s'
-    )
+		SELECT MAX(number) + 1 as next_number
+		FROM task
+		JOIN sprint ON task.sprint_id=sprint.id
+		JOIN project ON sprint.project_id=project.id
+		WHERE project.id='%s'    )
     INSERT INTO task (title, points, sprint_id, assignee_id, description, status, number) 
     SELECT '%s', %d, '%s', '%s', '%s', %d, task_number.next_number
     FROM  task_number 
@@ -88,7 +89,7 @@ INSERT INTO task_position (position, task_id)
 SELECT positions.next_position, id
 FROM insert_task
 JOIN positions ON true
-RETURNING task_id as id`, sprintID, title, points, sprintID, assigneeID, description, tasks_models.NEW_STATUS, sprintID)
+RETURNING task_id as id`, projectID, title, points, sprintID, assigneeID, description, tasks_models.NEW_STATUS, sprintID)
 }
 
 func (taskRepo *TaskCommandsRepository) checkCanAssignTaskToMember(taskProjectId string, memberId string) error {
