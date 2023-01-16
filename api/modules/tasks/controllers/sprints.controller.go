@@ -49,3 +49,16 @@ func (controller SprintsController) DeleteSprint(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, nil)
 }
+
+func (controller SprintsController) MarkSprintAsCompleted(c *gin.Context) {
+	sprintID := c.Param("sprintID")
+
+	err := controller.sprintRepo.MarkSprintAsCompleted(sprintID)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, nil)
+}

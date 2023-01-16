@@ -32,6 +32,7 @@ func RegisterControllers(singleProjectRoutes *gin.RouterGroup, conn *sql.DB) {
 	singleProjectRoutes.GET("/sprints", tc.GetSprintsWithTasksOfProject)
 	singleProjectRoutes.POST("/sprints", sc.CreateSprint)
 	singleProjectRoutes.DELETE("/sprints/:sprintID", sc.DeleteSprint)
+	singleProjectRoutes.POST("/sprints/:sprintID/complete", sc.MarkSprintAsCompleted)
 
 	singleTaskRoutes := tasksRoutes.Group(fmt.Sprintf(`/:%s`, tasks_controllers.TASK_ID_ROUTE_PARAM))
 	singleTaskRoutes.GET("", tc.GetTaskByID)

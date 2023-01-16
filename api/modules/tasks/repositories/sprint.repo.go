@@ -20,8 +20,8 @@ func NewSprintRepository(conn *sql.DB) *SprintRepository {
 	}
 }
 
-func (sprintRepo SprintRepository) GetSprintsOfProject(projectID string) ([]tasks_models.SprintInfo, error) {
-	query := fmt.Sprintf(`SELECT id, name, is_backlog from sprint WHERE sprint.project_id='%s' AND sprint.deleted=false`, projectID)
+func (sprintRepo SprintRepository) GetActiveSprintsOfProject(projectID string) ([]tasks_models.SprintInfo, error) {
+	query := fmt.Sprintf(`SELECT id, name, is_backlog from sprint WHERE sprint.project_id='%s' AND sprint.deleted=false AND sprint.completed=false`, projectID)
 	rows, err := sprintRepo.conn.Query(query)
 
 	if err != nil {
@@ -92,6 +92,27 @@ func (sprintRepo SprintRepository) DeleteSprint(sprintID string) error {
 	if rowsAffected, _ := res.RowsAffected(); rowsAffected == 0 {
 		noRowsAffectedError := fmt.Errorf("no rows were affected")
 		errorWithContext := sprintRepo.logger.LogAndBuildError("DeleteSprint", noRowsAffectedError)
+		return errorWithContext
+	}
+
+	return nil
+}
+
+func (sprintRepo SprintRepository) MarkSprintAsCompleted(sprintID string) error {
+
+	query := fmt.Sprintf(`UPDATE sprint SET completed=true WHERE id='%s'`, sprintID)
+
+	res, err := sprintRepo.conn.Exec(query)
+
+	if err != nil {
+		errorWithContext := sprintRepo.logger.LogAndBuildError("MarkSprintAsCompleted", err)
+		return errorWithContext
+
+	}
+
+	if rowsAffected, _ := res.RowsAffected(); rowsAffected == 0 {
+		noRowsAffectedError := fmt.Errorf("no rows were affected")
+		errorWithContext := sprintRepo.logger.LogAndBuildError("MarkSprintAsCompleted", noRowsAffectedError)
 		return errorWithContext
 	}
 

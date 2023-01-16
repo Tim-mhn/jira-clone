@@ -25,4 +25,14 @@ export class SprintsAPI {
 
     return this.http.delete<void>(endpoint);
   }
+
+  completeSprint(deleteSprintInput: { sprintId: string; projectId: string }) {
+    const { projectId, sprintId } = deleteSprintInput;
+    const endpoint = `${buildSingleSprintsEndpoint({
+      projectId,
+      sprintId,
+    })}/complete`;
+
+    return this.http.post<void>(endpoint, null);
+  }
 }

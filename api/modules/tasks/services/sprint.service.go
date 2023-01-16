@@ -25,7 +25,7 @@ func NewSprintService(taskRepo *tasks_repositories.TaskQueriesRepository, sprint
 }
 
 func (service *SprintService) GetSprintListWithTasks(projectID string) (tasks_dtos.SprintListWithTasksDTO, error) {
-	sprintList, err := service.sprintRepo.GetSprintsOfProject(projectID)
+	sprintList, err := service.sprintRepo.GetActiveSprintsOfProject(projectID)
 
 	sortedSprints := moveBacklogSprintAtTheEnd(sprintList)
 

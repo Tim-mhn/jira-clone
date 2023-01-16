@@ -11,10 +11,15 @@
     />
     <div>{{ sprint?.Name }}</div>
 
-    <div class="flex flex-grow justify-end gap-2">
+    <div class="flex flex-grow justify-end gap-2 items-center">
       <jira-sprint-points-breakdown
         [points]="sprint?.Points"
       ></jira-sprint-points-breakdown>
+
+      <jira-complete-sprint-button
+        *ngIf="!sprint?.IsBacklog"
+        [sprintId]="sprint?.Id"
+      ></jira-complete-sprint-button>
 
       <jira-sprint-side-actions [sprint]="sprint"></jira-sprint-side-actions>
     </div>

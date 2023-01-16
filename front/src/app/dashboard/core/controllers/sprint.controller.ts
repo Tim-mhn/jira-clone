@@ -47,6 +47,21 @@ export class SprintController {
     );
   }
 
+  completeSprint(sprintId: string, requestState?: RequestState) {
+    const projectId = this._currentProjectId;
+
+    return this.api.completeSprint({ sprintId, projectId }).pipe(
+      this.snackbarFeedback.showFeedbackSnackbars(
+        {
+          successMessage: 'Sprint successfully completed',
+        },
+        { showLoadingMessage: false }
+      ),
+      switchMap(() => this.sprintsController.refreshSprintTasks()),
+      this.requestStateController.handleRequest(requestState)
+    );
+  }
+
   private get _currentProjectId() {
     return this.currentProjectService.currentProject.Id;
   }
