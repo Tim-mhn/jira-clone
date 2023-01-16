@@ -1,0 +1,23 @@
+<div class="flex flex-col gap-2 p-5">
+  <div class="text-lg">
+    Delete sprint <span class="font-bold">{{ dialogInput?.sprintName }}</span>
+  </div>
+
+  <div class="font-light">
+    Are you sure you want to delete the sprint
+    <span class="font-bold">{{ dialogInput?.sprintName }} </span>? This action
+    cannot be reverted
+  </div>
+
+  <div class="flex flex-grow justify-end gap-1">
+    <button tim-simple-button color="neutral" (click)="cancel()">Cancel</button>
+    <button
+      tim-stroked-button
+      color="destructive"
+      (click)="confirmDeletion()"
+      [loading]="requestState?.isPending"
+    >
+      Delete
+    </button>
+  </div>
+</div>

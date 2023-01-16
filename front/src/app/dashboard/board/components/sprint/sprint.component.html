@@ -11,10 +11,12 @@
     />
     <div>{{ sprint?.Name }}</div>
 
-    <div class="flex flex-grow justify-end">
+    <div class="flex flex-grow justify-end gap-2">
       <jira-sprint-points-breakdown
         [points]="sprint?.Points"
       ></jira-sprint-points-breakdown>
+
+      <jira-sprint-side-actions [sprint]="sprint"></jira-sprint-side-actions>
     </div>
   </div>
 

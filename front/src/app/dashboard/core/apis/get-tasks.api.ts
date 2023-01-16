@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { PROJECTS_API_ENDPOINT } from '.';
+import { PROJECTS_API_ENDPOINT } from './endpoints';
 import { BoardContentProvidersModule } from '../../board/board-providers.module';
 import { TasksGroupedBySprintsDTO } from '../dtos/tasks-grouped-by-sprint.dto';
 

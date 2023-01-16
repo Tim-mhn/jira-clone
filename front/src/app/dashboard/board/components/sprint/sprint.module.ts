@@ -4,6 +4,7 @@ import { SprintComponent } from './sprint.component';
 import { TaskListModule } from '../task-list/task-list.module';
 import { CreateTaskRowModule } from './create-task-row/create-task-row.module';
 import { SprintPointsBreakdownModule } from './sprint-points-breakdown/sprint-points-breakdown.module';
+import { SprintSideActionsModule } from './sprint-side-actions/sprint-side-actions.module';
 
 @NgModule({
   declarations: [SprintComponent],
@@ -12,6 +13,7 @@ import { SprintPointsBreakdownModule } from './sprint-points-breakdown/sprint-po
     TaskListModule,
     CreateTaskRowModule,
     SprintPointsBreakdownModule,
+    SprintSideActionsModule,
   ],
   exports: [SprintComponent],
 })

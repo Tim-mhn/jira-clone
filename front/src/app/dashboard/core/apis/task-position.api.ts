@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { buildSingleTaskEndpoint } from '.';
+import { buildSingleTaskEndpoint } from './endpoints';
 import { BoardContentProvidersModule } from '../../board/board-providers.module';
 import { MoveTaskPositionDTO } from '../dtos/move-task.dto';
 

@@ -8,6 +8,7 @@ import { BoardBreadcrumbModule } from '../../components/board-breadcrumb/board-b
 import { TaskListModule } from '../../components/task-list/task-list.module';
 import { TaskDetailsModule } from '../../components/task-details/task-details.module';
 import { SprintModule } from '../../components/sprint/sprint.module';
+import { CreateSprintModule } from '../../../core/components/create-sprint/create-sprint.module';
 
 const routes: Routes = [
   {
@@ -26,6 +27,7 @@ const routes: Routes = [
     TaskDetailsModule,
     SprintModule,
     TimUISpinnerModule,
+    CreateSprintModule,
   ],
   providers: [SingleProjectAPI],
 })

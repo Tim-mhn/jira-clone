@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
-import { buildSingleTaskEndpoint, buildTaskEndpoint } from '.';
+import { buildSingleTaskEndpoint, buildTaskEndpoint } from './endpoints';
 import { removeUndefinedValues } from '../../../shared/utils/object.util';
 import { BoardContentProvidersModule } from '../../board/board-providers.module';
 import { handleNullAssigneeId, PatchTaskDTO } from '../dtos';

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { PROJECTS_API_ENDPOINT } from '.';
+import { PROJECTS_API_ENDPOINT } from './endpoints';
 import { ProjectInfoList } from '../models/project';
 import { DashboardCoreProvidersModule } from '../core-apis-providers.module';
 

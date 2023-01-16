@@ -1,0 +1,14 @@
+<button
+  tim-simple-button
+  iconBtn="dots"
+  color="neutral"
+  size="2xs"
+  timDropdownTrigger
+  [timDropdownMenuTriggerFor]="sideActionsMenu"
+></button>
+
+<tim-dropdown-menu #sideActionsMenu>
+  <tim-dropdown-item delete-sprint-button [sprint]="sprint">
+    Delete sprint
+  </tim-dropdown-item>
+</tim-dropdown-menu>

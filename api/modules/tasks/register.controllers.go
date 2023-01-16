@@ -21,6 +21,7 @@ func RegisterControllers(singleProjectRoutes *gin.RouterGroup, conn *sql.DB) {
 
 	tc := tasks_controllers.NewTasksController(userRepo, projectRepo, sprintRepo, taskQueriesRepo, conn)
 	tsc := tasks_controllers.NewTaskStatusController(taskStatusRepo)
+	sc := tasks_controllers.NewSprintsController(sprintRepo)
 
 	taskStatusRoutes := singleProjectRoutes.Group("/task-status")
 	taskStatusRoutes.GET("", tsc.GetTaskStatusList)
@@ -28,7 +29,9 @@ func RegisterControllers(singleProjectRoutes *gin.RouterGroup, conn *sql.DB) {
 	tasksRoutes := singleProjectRoutes.Group("/tasks")
 	tasksRoutes.POST("", tc.CreateNewTask)
 
-	singleProjectRoutes.GET(`/sprints`, tc.GetSprintsWithTasksOfProject)
+	singleProjectRoutes.GET("/sprints", tc.GetSprintsWithTasksOfProject)
+	singleProjectRoutes.POST("/sprints", sc.CreateSprint)
+	singleProjectRoutes.DELETE("/sprints/:sprintID", sc.DeleteSprint)
 
 	singleTaskRoutes := tasksRoutes.Group(fmt.Sprintf(`/:%s`, tasks_controllers.TASK_ID_ROUTE_PARAM))
 	singleTaskRoutes.GET("", tc.GetTaskByID)

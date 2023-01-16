@@ -5,20 +5,23 @@ import (
 	"fmt"
 
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
+	"github.com/tim-mhn/figma-clone/shared"
 )
 
 type SprintRepository struct {
-	conn *sql.DB
+	conn   *sql.DB
+	logger shared.ErrorBuilder
 }
 
 func NewSprintRepository(conn *sql.DB) *SprintRepository {
 	return &SprintRepository{
-		conn: conn,
+		conn:   conn,
+		logger: shared.GetErrorBuilderForContext("SprintRepository"),
 	}
 }
 
 func (sprintRepo SprintRepository) GetSprintsOfProject(projectID string) ([]tasks_models.SprintInfo, error) {
-	query := fmt.Sprintf(`SELECT id, name, is_backlog from sprint WHERE sprint.project_id='%s'`, projectID)
+	query := fmt.Sprintf(`SELECT id, name, is_backlog from sprint WHERE sprint.project_id='%s' AND sprint.deleted=false`, projectID)
 	rows, err := sprintRepo.conn.Query(query)
 
 	if err != nil {
@@ -42,4 +45,55 @@ func (sprintRepo SprintRepository) GetSprintsOfProject(projectID string) ([]task
 	}
 
 	return sprints, nil
+}
+
+func (sprintRepo SprintRepository) CreateSprint(name string, projectID string) (string, error) {
+	newSprintIsNotBacklog := "false"
+
+	query := fmt.Sprintf(`INSERT INTO sprint (name, project_id, is_backlog)
+	VALUES ('%s', '%s', %s)
+	RETURNING id`, name, projectID, newSprintIsNotBacklog)
+
+	rows, err := sprintRepo.conn.Query(query)
+
+	if err != nil {
+		errorWithContext := sprintRepo.logger.LogAndBuildError("CreateSprint", err)
+		return "", errorWithContext
+
+	}
+	defer rows.Close()
+
+	var sprintID string
+	if rows.Next() {
+		err := rows.Scan(&sprintID)
+
+		if err != nil {
+			errorWithContext := sprintRepo.logger.LogAndBuildError("CreateSprint", err)
+			return "", errorWithContext
+
+		}
+	}
+
+	return sprintID, nil
+}
+
+func (sprintRepo SprintRepository) DeleteSprint(sprintID string) error {
+
+	query := fmt.Sprintf(`UPDATE sprint SET deleted=true WHERE id='%s'`, sprintID)
+
+	res, err := sprintRepo.conn.Exec(query)
+
+	if err != nil {
+		errorWithContext := sprintRepo.logger.LogAndBuildError("DeleteSprint", err)
+		return errorWithContext
+
+	}
+
+	if rowsAffected, _ := res.RowsAffected(); rowsAffected == 0 {
+		noRowsAffectedError := fmt.Errorf("no rows were affected")
+		errorWithContext := sprintRepo.logger.LogAndBuildError("DeleteSprint", noRowsAffectedError)
+		return errorWithContext
+	}
+
+	return nil
 }

@@ -1,0 +1,19 @@
+<div class="flex flex-col gap-4 p-6">
+  <div class="text-xl">Create Sprint</div>
+  <tim-input-field name="Sprint name">
+    <tim-input
+      [formControl]="sprintNameControl"
+      placeholder="Enter the sprint name"
+    ></tim-input>
+  </tim-input-field>
+  <button
+    tim-flat-button
+    color="primary"
+    size="xs"
+    type="submit"
+    [loading]="requestState?.isPending"
+    (click)="createSprint()"
+  >
+    Create
+  </button>
+</div>
