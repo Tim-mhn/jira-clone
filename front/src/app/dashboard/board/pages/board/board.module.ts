@@ -1,14 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { TimUISpinnerModule } from '@tim-mhn/ng-ui/spinner';
 import { BoardComponent } from './board.component';
 import { SingleProjectAPI } from '../../../core/apis/single-project.api';
-import { BoardBreadcrumbModule } from '../../components/board-breadcrumb/board-breadcrumb.module';
-import { TaskListModule } from '../../components/task-list/task-list.module';
-import { TaskDetailsModule } from '../../components/task-details/task-details.module';
-import { SprintModule } from '../../components/sprint/sprint.module';
-import { CreateSprintModule } from '../../../core/components/create-sprint/create-sprint.module';
+import { BoardUiModule } from '../../components/board-ui/board-ui.module';
 
 const routes: Routes = [
   {
@@ -19,16 +14,7 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [BoardComponent],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    BoardBreadcrumbModule,
-    TaskListModule,
-    TaskDetailsModule,
-    SprintModule,
-    TimUISpinnerModule,
-    CreateSprintModule,
-  ],
+  imports: [CommonModule, RouterModule.forChild(routes), BoardUiModule],
   providers: [SingleProjectAPI],
 })
 export class BoardModule {}

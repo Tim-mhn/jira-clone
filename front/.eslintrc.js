@@ -27,6 +27,7 @@ module.exports = {
     'class-methods-use-this': 'off',
     //     'no-underscore-dangle': 'off',
     'no-useless-constructor': 'off',
+    'no-use-before-define': 'off',
     'no-empty-function': 'off',
     'unused-imports/no-unused-imports': 'error',
     'import/no-unresolved': 'error',

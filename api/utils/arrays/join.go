@@ -11,7 +11,7 @@ func Join[T int | string](elements []T, separator string) string {
 			joinedString = stringifiedEl
 
 		} else {
-			joinedString = fmt.Sprintf(`%s,%s`, joinedString, stringifiedEl)
+			joinedString = fmt.Sprintf(`%s%s%s`, joinedString, separator, stringifiedEl)
 
 		}
 	}

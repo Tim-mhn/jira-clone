@@ -1,0 +1,48 @@
+<div class="flex flex-col gap-2 h-full text-gray-800">
+  <jira-board-breadcrumb [project]="project"></jira-board-breadcrumb>
+  <div class="text-3xl font-normal pb-2">Board</div>
+
+  <div class="flex items-center justify-between mb-4">
+    <jira-board-filters
+      [members]="projectMembers"
+      [statusList]="project?.AllTaskStatus"
+      (filtersChange)="filtersChange.emit($event)"
+    ></jira-board-filters>
+
+    <jira-create-sprint-button></jira-create-sprint-button>
+  </div>
+  <ng-container *ngIf="!loading; else spinner">
+    <div class="flex flex-grow gap-4">
+      <div class="flex flex-col flex-grow gap-4">
+        <jira-sprint
+          *ngFor="
+            let sprintWithTasks of sprintWithTasksList;
+            trackBy: trackBySprintId
+          "
+          [project]="project"
+          [tasks]="sprintWithTasks.Tasks"
+          [sprint]="sprintWithTasks.Sprint"
+          (taskClicked)="updateTaskSelected($event)"
+        ></jira-sprint>
+      </div>
+
+      <jira-task-details
+        class="flex-grow-[1] flex-shrink-0"
+        style="flex-basis: 25%; max-width: 24%"
+        *ngIf="taskSelected"
+        [task]="taskSelected"
+        [project]="project"
+        [members]="projectMembers"
+        [sprints]="sprintInfoList"
+        (crossClicked)="resetTaskSelected()"
+      >
+      </jira-task-details>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #spinner>
+  <div class="flex flex-grow justify-center items-center">
+    <tim-spinner></tim-spinner>
+  </div>
+</ng-template>

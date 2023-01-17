@@ -5,13 +5,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
+	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
 	tasks_services "github.com/tim-mhn/figma-clone/modules/tasks/services"
+	"github.com/tim-mhn/figma-clone/utils/arrays"
 )
 
 type tasksController struct {
@@ -83,9 +86,12 @@ func (tc *tasksController) UpdateTask(c *gin.Context) {
 
 func (tc *tasksController) GetSprintsWithTasksOfProject(c *gin.Context) {
 	projectID := c.Param("projectID")
+
+	taskFilters := buildTasksFiltersFromRequest(c)
+
 	log.Printf(`[tasksController.GetSprintsWithTasksOfProject] projectID=%s`, projectID)
 
-	sprintListWithTasksDTO, err := tc.sprintService.GetSprintListWithTasks(projectID)
+	sprintListWithTasksDTO, err := tc.sprintService.GetSprintListWithTasks(projectID, taskFilters)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
@@ -93,6 +99,22 @@ func (tc *tasksController) GetSprintsWithTasksOfProject(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, sprintListWithTasksDTO)
+}
+
+func buildTasksFiltersFromRequest(c *gin.Context) tasks_models.TaskFilters {
+	assigneeIdList := c.QueryArray("assigneeId[]")
+	statusStringList := c.QueryArray("status[]")
+
+	statusListInts := arrays.MapArray(statusStringList, func(status string) int {
+		statusInt, _ := strconv.Atoi(status)
+		return statusInt
+	})
+
+	return tasks_models.TaskFilters{
+		AssigneeIds:  assigneeIdList,
+		TaskStatuses: statusListInts,
+	}
+
 }
 
 func (tc *tasksController) DeleteTask(c *gin.Context) {

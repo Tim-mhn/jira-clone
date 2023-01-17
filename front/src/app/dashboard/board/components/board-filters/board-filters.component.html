@@ -1,0 +1,42 @@
+<div class="flex gap-2 items-center" [formGroup]="filtersForm">
+  <tim-select
+    formControlName="assigneeId"
+    [defaultWidth]="false"
+    class="w-40 border rounded-lg border-gray-200"
+    [showErrorMessage]="false"
+    [sameWidthAsTrigger]="true"
+    placeholder="Assignee"
+    variant="simple"
+    [multiple]="true"
+  >
+    <tim-option *ngFor="let member of members" [value]="member?.Id">
+      <div class="flex items-center gap-1">
+        <jira-member-icon [member]="member"></jira-member-icon>
+        <div>{{ member?.Name }}</div>
+      </div></tim-option
+    >
+  </tim-select>
+
+  <tim-select
+    formControlName="status"
+    class="w-40 border rounded-lg border-gray-200"
+    [defaultWidth]="false"
+    [showErrorMessage]="false"
+    placeholder="Task status"
+    [sameWidthAsTrigger]="true"
+    variant="simple"
+    [multiple]="true"
+  >
+    <tim-option *ngFor="let status of statusList" [value]="status.Id"
+      >{{ status.Label }}
+    </tim-option>
+  </tim-select>
+
+  <button
+    tim-simple-button
+    *ngIf="showResetFiltersButton"
+    (click)="resetForm()"
+  >
+    Reset filters
+  </button>
+</div>

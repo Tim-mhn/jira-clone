@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
@@ -29,15 +30,17 @@ func addContextToError(contextErrorMessage string, sourceError error) error {
 	return fmt.Errorf(`%s Details: %s `, contextErrorMessage, sourceError.Error())
 }
 
-func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string) ([]tasks_models.Task, error) {
+func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.Task, error) {
 
+	fmt.Print(filters)
+
+	tasksOfSprintsQueryBuilder := tasksOfSprintsQueryBuilder(sprintID, filters)
 	BASE_ERROR_MESSAGE := fmt.Sprintf(`error  when fetching list of tasks of sprint %s`, sprintID)
 
-	tasksOfProjectQuery := buildGetTasksOfSprintQuery(sprintID)
+	sqlQuery, _, _ := tasksOfSprintsQueryBuilder.ToSql()
+	log.Printf(`[GetProjectTasks] SQL Query: %s`, sqlQuery)
 
-	log.Printf(`[GetProjectTasks] SQL Query: %s`, tasksOfProjectQuery)
-
-	rows, err := taskRepo.conn.Query(tasksOfProjectQuery)
+	rows, err := tasksOfSprintsQueryBuilder.RunWith(taskRepo.conn).Query()
 
 	if err != nil {
 
@@ -86,9 +89,9 @@ func getTaskDataFromRow(rows *sql.Rows) (tasks_models.Task, error) {
 }
 
 func (taskRepo *TaskQueriesRepository) GetTaskById(taskID string) (tasks_models.Task, error) {
-	getTaskRequest := buildSingleTaskQuery(taskID)
+	singleTaskQueryBuilder := singleTaskByIdQueryBuilder(taskID)
 
-	rows, err := taskRepo.conn.Query(getTaskRequest)
+	rows, err := singleTaskQueryBuilder.RunWith(taskRepo.conn).Query()
 
 	if err != nil {
 		return tasks_models.Task{}, addContextToError(fmt.Sprintf(`error when querying task %s `, taskID), err)
@@ -110,28 +113,54 @@ func (taskRepo *TaskQueriesRepository) GetTaskById(taskID string) (tasks_models.
 
 }
 
-const TASK_REQUEST string = `SELECT task.id as task_id, 
-	task.title as task_title,
-	task.points as task_points,
-	task.description as task_description,
-	COALESCE(task.status, 0) as task_status,
-	COALESCE(task_status.label, '') as task_status_label,
-	task_status.color as task_status_color,
-	assignee_id,
-	COALESCE("user".name, '') as user_name,
-	COALESCE("user".email, '') as user_email,
-	CONCAT(project.key, '-', task.number) as task_key
-	from task
-	LEFT JOIN "user" ON assignee_id="user".id
-	LEFT JOIN task_status ON task_status.id=task.status
-	LEFT JOIN sprint ON sprint.id=task.sprint_id
-	LEFT JOIN project ON sprint.project_id=project.id
-	`
+func tasksBaseQueryBuilder() sq.SelectBuilder {
+	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 
-func buildGetTasksOfSprintQuery(sprintID string) string {
-	return fmt.Sprintf(`%s LEFT JOIN task_position ON task_position.task_id=task.id WHERE task.sprint_id='%s' ORDER BY task_position.position ASC`, TASK_REQUEST, sprintID)
+	selectBuilder := psql.Select(
+		"task.id AS task_id",
+		"title",
+		"points",
+		"description",
+		"COALESCE(task.status, 0) as task_status",
+		"COALESCE(task_status.label, '') AS task_status_label",
+		"task_status.color AS task_status_color",
+		"assignee_id",
+		`COALESCE("user".name, '') as user_name`,
+		`COALESCE("user".email, '') as user_email`,
+		"project.key as task_key").
+		From("task").
+		LeftJoin(`"user" ON assignee_id="user".id`).
+		LeftJoin("task_status ON task_status.id=task.status").
+		LeftJoin("sprint ON sprint.id=task.sprint_id").
+		LeftJoin("project ON sprint.project_id=project.id")
+
+	return selectBuilder
 }
 
-func buildSingleTaskQuery(taskID string) string {
-	return fmt.Sprintf(`%s WHERE task.id='%s' LIMIT 1 `, TASK_REQUEST, taskID)
+func tasksOfSprintsQueryBuilder(sprintID string, filters tasks_models.TaskFilters) sq.SelectBuilder {
+	selectBuilder := tasksBaseQueryBuilder().
+		LeftJoin("task_position ON task_position.task_id=task.id").
+		Where(sq.Eq{"sprint_id": sprintID})
+
+	if len(filters.AssigneeIds) > 0 {
+		selectBuilder = selectBuilder.Where(sq.Eq{
+			"assignee_id": filters.AssigneeIds,
+		})
+	}
+
+	if len(filters.TaskStatuses) > 0 {
+		selectBuilder = selectBuilder.Where(sq.Eq{
+			"status": filters.TaskStatuses,
+		})
+	}
+
+	selectBuilder = selectBuilder.OrderBy("task_position.position ASC")
+
+	return selectBuilder
+}
+
+func singleTaskByIdQueryBuilder(taskID string) sq.SelectBuilder {
+	return tasksBaseQueryBuilder().Where(sq.Eq{
+		"task.id": taskID,
+	}).Limit(1)
 }

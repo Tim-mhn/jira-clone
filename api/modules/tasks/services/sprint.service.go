@@ -24,7 +24,7 @@ func NewSprintService(taskRepo *tasks_repositories.TaskQueriesRepository, sprint
 	}
 }
 
-func (service *SprintService) GetSprintListWithTasks(projectID string) (tasks_dtos.SprintListWithTasksDTO, error) {
+func (service *SprintService) GetSprintListWithTasks(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error) {
 	sprintList, err := service.sprintRepo.GetActiveSprintsOfProject(projectID)
 
 	sortedSprints := moveBacklogSprintAtTheEnd(sprintList)
@@ -38,7 +38,7 @@ func (service *SprintService) GetSprintListWithTasks(projectID string) (tasks_dt
 	for _, sprint := range sortedSprints {
 
 		//todo: execute these in parallel
-		sprintTasks, err := service.taskRepo.GetSprintTasks(sprint.Id)
+		sprintTasks, err := service.taskRepo.GetSprintTasks(sprint.Id, taskFilters)
 
 		pointsBreakdown, _ := service.sprintPointsRepo.GetSprintPointsBreakdown(sprint.Id)
 

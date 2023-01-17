@@ -8,6 +8,7 @@ import { Task } from '../models/task';
 import { CurrentProjectService } from '../../board/state-services/current-project.service';
 import { TasksGroupedBySprintsDTO } from '../dtos';
 import { logMethod } from '../../../shared/utils/log-method.decorator';
+import { BoardFilters } from '../models/board-filters';
 
 @Injectable({
   providedIn: BoardContentProvidersModule,
@@ -22,10 +23,11 @@ export class GetSprintsController {
 
   getSprintsTasksForProject(
     projectId: string,
+    filters: BoardFilters,
     requestState?: RequestState
   ): Observable<void> {
     return this.api
-      .getTasksGroupedBySprints(projectId)
+      .getTasksGroupedBySprints(projectId, filters)
       .pipe(this._mapDataAndUpdateSprintListState(requestState));
   }
 

@@ -2,18 +2,21 @@ import { Component, OnDestroy, OnInit, TrackByFunction } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import {
+  combineLatest,
   filter,
   map,
   Observable,
   shareReplay,
+  startWith,
+  Subject,
   switchMap,
   takeUntil,
 } from 'rxjs';
 import { SubscriptionHandler } from '../../../../shared/services/subscription-handler.service';
 import { GetSprintsController } from '../../../core/controllers/get-sprints.controller';
 import { ProjectController } from '../../../core/controllers/project.controller';
+import { BoardFilters } from '../../../core/models/board-filters';
 import { SprintWithTasks } from '../../../core/models/sprint';
-import { Task } from '../../../core/models/task';
 import { CurrentProjectService } from '../../state-services/current-project.service';
 import { CurrentSprintsService } from '../../state-services/current-sprints.service';
 import { ProjectMembersService } from '../../state-services/project-members.service';
@@ -36,13 +39,12 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   private _subscriptionHandler = new SubscriptionHandler();
 
-  project$ = this.currentProjectService.currentProject$.pipe(shareReplay());
-  taskSelected: Task;
-
   requestState = new RequestState();
 
-  projectMembers$ = this.membersService.projectMembers$;
+  private _filtersChange = new Subject<BoardFilters>();
 
+  project$ = this.currentProjectService.currentProject$.pipe(shareReplay());
+  projectMembers$ = this.membersService.projectMembers$;
   sprintInfoList$ = this.sprintsService.sprintInfoList$;
 
   ngOnInit(): void {
@@ -51,7 +53,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       filter((projectId) => !!projectId)
     );
 
-    this._getSprintsOnRouteChange(projectId$);
+    this._getSprintsOnRouteOrFiltersChange(projectId$);
     this._getProjectOnRouteChange(projectId$);
   }
 
@@ -77,23 +79,21 @@ export class BoardComponent implements OnInit, OnDestroy {
       });
   }
 
-  private _getSprintsOnRouteChange(projectId$: Observable<string>) {
-    projectId$
+  onFiltersChange(newFilters: BoardFilters) {
+    this._filtersChange.next(newFilters);
+  }
+
+  private _getSprintsOnRouteOrFiltersChange(projectId$: Observable<string>) {
+    const filters$ = this._filtersChange.pipe(startWith(null));
+
+    combineLatest({ projectId: projectId$, filters: filters$ })
       .pipe(
-        switchMap((projectID) =>
-          this.sprintsController.getSprintsTasksForProject(projectID)
+        switchMap(({ projectId, filters }) =>
+          this.sprintsController.getSprintsTasksForProject(projectId, filters)
         ),
         takeUntil(this._subscriptionHandler.onDestroy$)
       )
       .subscribe();
-  }
-
-  updateTaskSelected(task: Task) {
-    this.taskSelected = task;
-  }
-
-  resetTaskSelected() {
-    this.taskSelected = null;
   }
 
   ngOnDestroy() {
