@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/tim-mhn/figma-clone/modules/auth"
@@ -32,6 +33,7 @@ func addContextToError(contextErrorMessage string, sourceError error) error {
 
 func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.Task, error) {
 
+	start := time.Now()
 	fmt.Print(filters)
 
 	tasksOfSprintsQueryBuilder := tasksOfSprintsQueryBuilder(sprintID, filters)
@@ -40,8 +42,10 @@ func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters ta
 	sqlQuery, _, _ := tasksOfSprintsQueryBuilder.ToSql()
 	log.Printf(`[GetProjectTasks] SQL Query: %s`, sqlQuery)
 
+	startQuery := time.Now()
 	rows, err := tasksOfSprintsQueryBuilder.RunWith(taskRepo.conn).Query()
 
+	log.Printf(`tasks query took %d ms`, time.Since(startQuery).Milliseconds())
 	if err != nil {
 
 		return []tasks_models.Task{}, addContextToError(BASE_ERROR_MESSAGE, err)
@@ -63,6 +67,10 @@ func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters ta
 
 	}
 
+	elapsed := time.Since(start).Milliseconds()
+	fmt.Println("-----")
+	fmt.Printf(`GetSprintTasks took %d ms`, elapsed)
+	fmt.Println("-----")
 	return tasks, nil
 }
 
@@ -127,7 +135,7 @@ func tasksBaseQueryBuilder() sq.SelectBuilder {
 		"assignee_id",
 		`COALESCE("user".name, '') as user_name`,
 		`COALESCE("user".email, '') as user_email`,
-		"project.key as task_key").
+		"CONCAT(project.key, '-', task.number) as task_key").
 		From("task").
 		LeftJoin(`"user" ON assignee_id="user".id`).
 		LeftJoin("task_status ON task_status.id=task.status").

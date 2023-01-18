@@ -1,3 +1,5 @@
 {
-  "cSpell.words": ["dtos", "middlewares"]
+  "cSpell.words": ["dtos", "middlewares"],
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 140
 }

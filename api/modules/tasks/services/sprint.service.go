@@ -2,6 +2,7 @@ package tasks_services
 
 import (
 	"log"
+	"sync"
 
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
@@ -33,34 +34,81 @@ func (service *SprintService) GetSprintListWithTasks(projectID string, taskFilte
 		return tasks_dtos.SprintListWithTasksDTO{}, err
 	}
 
-	var sprintListWithTasks tasks_dtos.SprintListWithTasksDTO
+	var wg sync.WaitGroup
+	wg.Add(len(sortedSprints))
+
+	sprintWithTasksChan := make(chan tasks_dtos.SprintWithTasks, len(sortedSprints))
 
 	for _, sprint := range sortedSprints {
 
-		//todo: execute these in parallel
-		sprintTasks, err := service.taskRepo.GetSprintTasks(sprint.Id, taskFilters)
+		go func(sprint tasks_models.SprintInfo) {
+			sprintTasks, pointsBreakdown, _ := service.getSprintTasksAndPointsBreakdown(sprint.Id, taskFilters)
 
-		pointsBreakdown, _ := service.sprintPointsRepo.GetSprintPointsBreakdown(sprint.Id)
+			sprintWithTasks := tasks_dtos.SprintWithTasks{
+				Tasks: sprintTasks,
+				Sprint: tasks_models.Sprint{
+					SprintInfo: sprint,
+					Points:     pointsBreakdown,
+				},
+			}
 
-		log.Default().Print(pointsBreakdown)
+			sprintWithTasksChan <- sprintWithTasks
+			wg.Done()
 
-		if err != nil {
-			return tasks_dtos.SprintListWithTasksDTO{}, err
-		}
-
-		sprintWithTasks := tasks_dtos.SprintWithTasks{
-			Tasks: sprintTasks,
-			Sprint: tasks_models.Sprint{
-				SprintInfo: sprint,
-				Points:     pointsBreakdown,
-			},
-		}
-
-		sprintListWithTasks = append(sprintListWithTasks, sprintWithTasks)
+		}(sprint)
 
 	}
 
+	wg.Wait()
+	close(sprintWithTasksChan)
+
+	var sprintListWithTasks tasks_dtos.SprintListWithTasksDTO
+
+	for sprintWithTasks := range sprintWithTasksChan {
+		sprintListWithTasks = append(sprintListWithTasks, sprintWithTasks)
+	}
+
 	return sprintListWithTasks, nil
+}
+
+func (service SprintService) getSprintTasksAndPointsBreakdown(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.Task, tasks_models.SprintPointsBreakdown, error) {
+
+	var syncGroup sync.WaitGroup
+	tasksChan := make(chan []tasks_models.Task)
+	pointsChan := make(chan tasks_models.SprintPointsBreakdown)
+
+	var err error
+	syncGroup.Add(2)
+
+	go func() {
+		tasks, tasksError := service.taskRepo.GetSprintTasks(sprintID, filters)
+		if err != nil {
+			err = tasksError
+		}
+		tasksChan <- tasks
+		syncGroup.Done()
+	}()
+
+	go func() {
+		pointsBreakdown, pointsError := service.sprintPointsRepo.GetSprintPointsBreakdown(sprintID)
+		if pointsError != nil {
+			err = pointsError
+		}
+		pointsChan <- pointsBreakdown
+		syncGroup.Done()
+	}()
+
+	sprintTasks := <-tasksChan
+	pointsBreakdown := <-pointsChan
+
+	syncGroup.Wait()
+
+	if err != nil {
+		log.Printf(`Error when fetching tasks or points breakdown from sprint %s. Error: %s`, sprintID, err.Error())
+		return nil, tasks_models.SprintPointsBreakdown{}, err
+	}
+
+	return sprintTasks, pointsBreakdown, nil
 }
 
 func moveBacklogSprintAtTheEnd(sprintList []tasks_models.SprintInfo) []tasks_models.SprintInfo {
