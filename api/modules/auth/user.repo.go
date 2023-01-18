@@ -73,33 +73,36 @@ func (um *UserRepository) GetUserByID(userID string) (User, error) {
 
 }
 
-func (um *UserRepository) getUserInfoByEmail(email string) (UserWithPassword, error) {
+func (um *UserRepository) getUserInfoByEmail(email string) (UserWithPassword, UsersError, error) {
 
 	var userWithPwd UserWithPassword
 	query := fmt.Sprintf(`SELECT password, email, id, name FROM "user" WHERE email='%s' LIMIT 1;`, email)
 	rows, err := um.conn.Query(query)
 
 	if err != nil {
-		return UserWithPassword{}, err
+		return UserWithPassword{}, NoUserError, err
 	}
 
 	defer rows.Close()
 
-	if rows.Next() {
-		err := rows.Scan(&userWithPwd.Password, &userWithPwd.Email, &userWithPwd.Id, &userWithPwd.Name)
+	userFound := rows.Next()
 
-		if err != nil {
-			return UserWithPassword{}, err
-		}
-
+	if !userFound {
+		return UserWithPassword{}, UserNotFound, nil
 	}
 
-	return userWithPwd, nil
+	err = rows.Scan(&userWithPwd.Password, &userWithPwd.Email, &userWithPwd.Id, &userWithPwd.Name)
+
+	if err != nil {
+		return UserWithPassword{}, NoUserError, err
+	}
+
+	return userWithPwd, NoUserError, nil
 }
 
 func (um *UserRepository) SignInByEmail(email string, password string) (User, error) {
 
-	userWithPwd, err := um.getUserInfoByEmail(email)
+	userWithPwd, _, err := um.getUserInfoByEmail(email)
 
 	if err != nil {
 		return User{}, err

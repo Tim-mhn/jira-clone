@@ -17,3 +17,7 @@ type ProjectInvitation struct {
 	used       bool
 	expired    bool
 }
+
+type AcceptInvitationOutput struct {
+	NoUserWithEmail bool
+}

@@ -141,19 +141,25 @@ func (pc *projectController) GetUserProjects(c *gin.Context) {
 
 func (pc *projectController) AcceptInvitation(c *gin.Context) {
 	projectID := GetProjectIDParam(c)
-	token := c.Query("token")
-	guestEmail := c.Query("guestEmail")
 
-	err := pc.invitationService.acceptInvitationIfGuestWithEmailExists(projectID, ProjectInvitationCheck{
-		guestEmail: guestEmail,
-		token:      token,
+	var dto AcceptInvitationInputDTO
+	if err := c.BindJSON(&dto); err != nil {
+		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	invitationOutput, err := pc.invitationService.acceptInvitationIfGuestWithEmailExists(projectID, ProjectInvitationCheck{
+		guestEmail: dto.GuestEmail,
+		token:      dto.Token,
 	})
+
+	outputDTO := AcceptInvitationOutputDTO(invitationOutput)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, nil)
+	c.IndentedJSON(http.StatusOK, outputDTO)
 
 }

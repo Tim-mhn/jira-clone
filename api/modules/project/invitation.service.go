@@ -20,24 +20,26 @@ func NewProjectInvitationService(repo *ProjectInvitationRepository, projectRepo 
 	}
 }
 
-func (service *ProjectInvitationService) acceptInvitationIfGuestWithEmailExists(projectID string, invitation ProjectInvitationCheck) error {
+func (service *ProjectInvitationService) acceptInvitationIfGuestWithEmailExists(projectID string, invitation ProjectInvitationCheck) (AcceptInvitationOutput, error) {
 
-	invitationId, invitationCheck := service.repo.CheckInvitationIsValid(invitation)
+	invitationID, invitationCheck := service.repo.CheckInvitationIsValid(invitation)
 
 	if invitationCheck != InvitationValid {
-		return fmt.Errorf("error invitation not valid %d", invitationCheck)
+		return AcceptInvitationOutput{}, fmt.Errorf("error invitation not valid %d", invitationCheck)
 	}
 
-	service.repo.MarkInvitationAsUsed(invitationId)
+	service.repo.MarkInvitationAsUsed(invitationID)
 
-	user, err := service.userService.GetUserFromEmail(invitation.guestEmail)
+	user, userError, _ := service.userService.GetUserFromEmail(invitation.guestEmail)
 
-	if err != nil {
-		return err
+	if userError == auth.UserNotFound {
+		return AcceptInvitationOutput{
+			NoUserWithEmail: true,
+		}, nil
 	}
 
-	err = service.projectRepo.AddMemberToProject(projectID, user.Id)
-	return err
+	err := service.projectRepo.AddMemberToProject(projectID, user.Id)
+	return AcceptInvitationOutput{}, err
 	// err := repo.checkInvitationIsValid()
 	/*
 		if err return

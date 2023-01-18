@@ -9,18 +9,19 @@ func NewUserService(repo *UserRepository) *UserService {
 		repo: repo,
 	}
 }
-func (service UserService) GetUserFromEmail(email string) (User, error) {
+func (service UserService) GetUserFromEmail(email string) (User, UsersError, error) {
 
-	userWithPwd, err := service.repo.getUserInfoByEmail(email)
+	userWithPwd, userError, err := service.repo.getUserInfoByEmail(email)
 
 	if err != nil {
-		return User{}, err
+		return User{}, userError, err
 	}
 
-	return User{
+	user := User{
 		Id:    userWithPwd.Id,
 		Name:  userWithPwd.Name,
 		Email: userWithPwd.Email,
 		Icon:  userWithPwd.Icon,
-	}, nil
+	}
+	return user, userError, nil
 }

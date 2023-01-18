@@ -1,6 +1,6 @@
 package project
 
-type ProjectInvitationError int64
+type ProjectInvitationError int
 
 const (
 	InvitationTokenNotFound ProjectInvitationError = iota

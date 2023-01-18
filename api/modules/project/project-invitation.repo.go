@@ -2,12 +2,9 @@ package project
 
 import (
 	"database/sql"
-	"fmt"
-	"math/rand"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/tim-mhn/figma-clone/database"
-	strings_utils "github.com/tim-mhn/figma-clone/utils/strings"
 )
 
 type ProjectInvitationRepository struct {
@@ -26,33 +23,25 @@ func NewProjectInvitationRepository(conn *sql.DB) *ProjectInvitationRepository {
 
 type InvitationToken string
 
-func randomIntBetween(min int, max int) int {
-	return rand.Intn(max-min) + min
-}
-func generateToken() InvitationToken {
-	tokenLength := randomIntBetween(10, INVITATION_TOKEN_LENGTH)
-	token := InvitationToken(strings_utils.RandomString(tokenLength))
-	return token
-}
 func (repo *ProjectInvitationRepository) CreateProjectInvitation(input ProjectInvitationInput) (InvitationToken, error) {
 	psql := database.GetPsqlQueryBuilder()
-	token := generateToken()
-	query := psql.Insert("project_invitation").Columns("project_id", "token", "guest_email").Values(input.projectID, token, input.guestEmail)
+	query := psql.
+		Insert("project_invitation").
+		Columns("project_id", "guest_email").
+		Values(input.projectID, input.guestEmail).
+		Suffix("RETURNING token")
 
-	res, err := query.RunWith(repo.conn).Exec()
-
-	if err != nil {
-		return "", err
-	}
-
-	rowsAffected, err := res.RowsAffected()
+	var token InvitationToken
+	res, err := query.RunWith(repo.conn).Query()
 
 	if err != nil {
 		return "", err
 	}
 
-	if rowsAffected == 0 {
-		return "", fmt.Errorf("error no rows affected")
+	defer res.Close()
+
+	if res.Next() {
+		res.Scan(&token)
 	}
 
 	return token, err

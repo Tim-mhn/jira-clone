@@ -1,1 +1,7 @@
 <div class="text-gray-800"><router-outlet></router-outlet></div>
+
+<!-- DONT DO THIS  -->
+<div [class]="'text-' + color + '-500'"></div>
+
+<!-- DO THIS  -->
+<div [class]="color === 'red' ? 'text-red-500' : 'text-blue-500'"></div>
