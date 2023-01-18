@@ -7,6 +7,7 @@ import (
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/tim-mhn/figma-clone/database"
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
@@ -122,7 +123,7 @@ func (taskRepo *TaskQueriesRepository) GetTaskById(taskID string) (tasks_models.
 }
 
 func tasksBaseQueryBuilder() sq.SelectBuilder {
-	psql := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	psql := database.GetPsqlQueryBuilder()
 
 	selectBuilder := psql.Select(
 		"task.id AS task_id",

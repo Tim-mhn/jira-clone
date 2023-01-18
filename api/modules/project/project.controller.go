@@ -9,7 +9,9 @@ import (
 )
 
 type projectController struct {
-	projectRepo *ProjectRepository
+	projectRepo           *ProjectRepository
+	projectInvitationRepo *ProjectInvitationRepository
+	invitationService     *ProjectInvitationService
 }
 
 type NewProjectDTO struct {
@@ -20,9 +22,11 @@ type AddMemberToProjectDTO struct {
 	MemberID string `json:"memberID"`
 }
 
-func NewProjectController(projectRepo *ProjectRepository) *projectController {
+func NewProjectController(projectRepo *ProjectRepository, projectInvitationRepo *ProjectInvitationRepository, userService *auth.UserService) *projectController {
 	return &projectController{
-		projectRepo: projectRepo,
+		projectRepo:           projectRepo,
+		projectInvitationRepo: projectInvitationRepo,
+		invitationService:     NewProjectInvitationService(projectInvitationRepo, projectRepo, userService),
 	}
 }
 
@@ -49,6 +53,28 @@ func (pc *projectController) CreateProject(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusCreated, newProject)
+}
+
+func (pc *projectController) InviteUserToProject(c *gin.Context) {
+	projectID := GetProjectIDParam(c)
+	var projectInvitationDTO ProjectInvitationDTO
+	if err := c.BindJSON(&projectInvitationDTO); err != nil {
+		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	token, err := pc.projectInvitationRepo.CreateProjectInvitation(ProjectInvitationInput{
+		guestEmail: projectInvitationDTO.GuestEmail,
+		projectID:  projectID,
+	})
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusCreated, token)
+
 }
 
 func (pc *projectController) AddMemberToProject(c *gin.Context) {
@@ -110,5 +136,24 @@ func (pc *projectController) GetUserProjects(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, userProjects)
+
+}
+
+func (pc *projectController) AcceptInvitation(c *gin.Context) {
+	projectID := GetProjectIDParam(c)
+	token := c.Query("token")
+	guestEmail := c.Query("guestEmail")
+
+	err := pc.invitationService.acceptInvitationIfGuestWithEmailExists(projectID, ProjectInvitationCheck{
+		guestEmail: guestEmail,
+		token:      token,
+	})
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, nil)
 
 }
