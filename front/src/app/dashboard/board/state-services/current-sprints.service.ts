@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { map, Observable, ReplaySubject } from 'rxjs';
 import { SprintInfo, SprintWithTasks } from '../../core/models/sprint';
-import { getSprintsTaskDoesNotBelongTo } from '../../core/utilts/get-other-sprints.util';
+import { getSprintsTaskDoesNotBelongTo } from '../../core/utils/get-other-sprints.util';
 import { BoardContentProvidersModule } from '../board-providers.module';
 
 @Injectable({

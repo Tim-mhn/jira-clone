@@ -1,16 +1,25 @@
 <form
-  [formGroup]="loginForm"
-  (ngSubmit)="login()"
+  [formGroup]="signUpForm"
+  (ngSubmit)="signUp()"
   class="flex flex-col justify-center items-center flex-grow p-32 gap-4"
 >
+  <tim-input-field name="Username">
+    <tim-input-label>Username</tim-input-label>
+    <tim-input
+      color="primary"
+      formControlName="name"
+      placeholder="Username"
+    ></tim-input>
+  </tim-input-field>
+
   <tim-input-field name="Email">
     <tim-input-label>Email</tim-input-label>
 
     <tim-input
       color="primary"
-      [type]="EMAIL_INPUT"
       formControlName="email"
-      placeholder="example@jira.com"
+      placeholder="user@jira.com"
+      [type]="EMAIL_INPUT"
     ></tim-input>
   </tim-input-field>
 
@@ -18,17 +27,16 @@
     <tim-input-label>Password</tim-input-label>
 
     <tim-password-input
+      color="primary"
       formControlName="password"
-      type="password"
     ></tim-password-input>
   </tim-input-field>
-
   <button
     tim-flat-button
     color="primary"
     type="submit"
     [loading]="requestState.isPending"
   >
-    Login
+    Sign up
   </button>
 </form>

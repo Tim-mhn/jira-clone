@@ -1,4 +1,3 @@
-export interface LoginDTO {
-  password: string;
-  email: string;
-}
+import { LoginCredentials } from '../models/credentials';
+
+export type LoginDTO = LoginCredentials;

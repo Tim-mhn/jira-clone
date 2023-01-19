@@ -1,33 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { switchMap, tap } from 'rxjs';
 import { AuthAPI } from '../../apis/auth.api';
+import { OnSignUpFn } from '../../components/sign-up-ui/sign-up.component';
 
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.component.html',
-  styleUrls: ['./sign-up.component.scss'],
 })
-export class SignUpComponent implements OnInit {
-  constructor(
-    private authAPI: AuthAPI,
-    private fb: FormBuilder,
-    private router: Router
-  ) {}
+export class SignUpComponent {
+  constructor(private authAPI: AuthAPI, private router: Router) {}
 
-  signupForm = this.fb.group({
-    name: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
-  });
-
-  ngOnInit(): void {}
-
-  signUp() {
-    if (this.signupForm.valid) {
-      this.authAPI.signUp(this.signupForm.value).subscribe(() => {
-        this.router.navigate(['auth', 'login']);
-      });
-    }
-  }
+  onSignUpFn: OnSignUpFn = (signUpForm) =>
+    this.authAPI.signUp(signUpForm).pipe(
+      tap(() => console.log('SignUpComponent')),
+      switchMap(() => this.router.navigate(['auth', 'login']))
+    );
 }

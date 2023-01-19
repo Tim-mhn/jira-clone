@@ -1,10 +1,7 @@
 import { Component, OnDestroy, OnInit, TrackByFunction } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import {
   combineLatest,
-  filter,
-  map,
   Observable,
   shareReplay,
   startWith,
@@ -17,6 +14,7 @@ import { GetSprintsController } from '../../../core/controllers/get-sprints.cont
 import { ProjectController } from '../../../core/controllers/project.controller';
 import { BoardFilters } from '../../../core/models/board-filters';
 import { SprintWithTasks } from '../../../core/models/sprint';
+import { RouteProjectIdService } from '../../../core/state-services/route-project-id.service';
 import { CurrentProjectService } from '../../state-services/current-project.service';
 import { CurrentSprintsService } from '../../state-services/current-sprints.service';
 import { ProjectMembersService } from '../../state-services/project-members.service';
@@ -28,13 +26,13 @@ import { ProjectMembersService } from '../../state-services/project-members.serv
 })
 export class BoardComponent implements OnInit, OnDestroy {
   constructor(
-    private route: ActivatedRoute,
     private controller: ProjectController,
     private currentProjectService: CurrentProjectService,
     private requestStateController: RequestStateController,
     public sprintsService: CurrentSprintsService,
     private sprintsController: GetSprintsController,
-    private membersService: ProjectMembersService
+    private membersService: ProjectMembersService,
+    private routeProjectIdService: RouteProjectIdService
   ) {}
 
   private _subscriptionHandler = new SubscriptionHandler();
@@ -48,10 +46,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   sprintInfoList$ = this.sprintsService.sprintInfoList$;
 
   ngOnInit(): void {
-    const projectId$ = this.route.params.pipe(
-      map((params) => params['projectId']),
-      filter((projectId) => !!projectId)
-    );
+    // eslint-disable-next-line prefer-destructuring
+    const projectId$ = this.routeProjectIdService.projectId$;
 
     this._getSprintsOnRouteOrFiltersChange(projectId$);
     this._getProjectOnRouteChange(projectId$);

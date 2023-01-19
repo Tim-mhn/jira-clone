@@ -43,10 +43,11 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
 	projectsRoutes.GET("", pc.GetUserProjects)
 
 	projectsRoutes.POST("", pc.CreateProject)
+	projectsRoutes.POST("/invitation/accept", pc.AcceptInvitation)
 	singleProjectRoutes.GET("", pc.GetProject)
 	singleProjectRoutes.GET("/members", pc.GetProjectMembers)
 	singleProjectRoutes.POST("/members/invite", pc.InviteUserToProject)
-	singleProjectRoutes.POST("/members/invitation/accept", pc.AcceptInvitation)
+	// singleProjectRoutes.POST("/members/invitation/accept", pc.AcceptInvitation)
 
 	return projectRouteGroups
 

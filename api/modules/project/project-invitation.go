@@ -1,8 +1,7 @@
 package project
 
 type ProjectInvitationInput struct {
-	guestEmail string
-	projectID  string
+	guestEmail, projectID string
 }
 
 type ProjectInvitationCheck struct {
@@ -11,13 +10,10 @@ type ProjectInvitationCheck struct {
 }
 
 type ProjectInvitation struct {
-	id         string
-	guestEmail string
-	token      string
-	used       bool
-	expired    bool
+	id, projectID, guestEmail, token string
+	used, expired                    bool
 }
 
 type AcceptInvitationOutput struct {
-	NoUserWithEmail bool
+	ProjectId string
 }

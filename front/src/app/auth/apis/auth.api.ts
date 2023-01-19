@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { AuthProvidersModule } from '../auth.providers.module';
 import { LoginDTO } from '../dtos/login.dto';
 import { SignUpDTO } from '../dtos/sign-up.dto';
 import { UserDTO } from '../dtos/user.dto';
 
-@Injectable()
+@Injectable({ providedIn: AuthProvidersModule })
 export class AuthAPI {
   private readonly SIGN_UP_ENDPOINT = `${environment.apiUrl}sign-up`;
   private readonly LOGIN_ENDPOINT = `${environment.apiUrl}sign-in`;

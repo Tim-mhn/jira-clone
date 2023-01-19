@@ -140,15 +140,13 @@ func (pc *projectController) GetUserProjects(c *gin.Context) {
 }
 
 func (pc *projectController) AcceptInvitation(c *gin.Context) {
-	projectID := GetProjectIDParam(c)
-
 	var dto AcceptInvitationInputDTO
 	if err := c.BindJSON(&dto); err != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
 
-	invitationOutput, err := pc.invitationService.acceptInvitationIfGuestWithEmailExists(projectID, ProjectInvitationCheck{
+	invitationOutput, err := pc.invitationService.AcceptProjectInvitation(ProjectInvitationCheck{
 		guestEmail: dto.GuestEmail,
 		token:      dto.Token,
 	})

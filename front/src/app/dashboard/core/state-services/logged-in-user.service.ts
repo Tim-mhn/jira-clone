@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
-import { User } from '../../auth/models/user';
+import { User } from '../../../auth/models/user';
 
 @Injectable()
 export class LoggedInUserService {

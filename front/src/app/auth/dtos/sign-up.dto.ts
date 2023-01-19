@@ -1,5 +1,3 @@
-export interface SignUpDTO {
-  name: string;
-  email: string;
-  password: string;
-}
+import { SignUpCredentials } from '../models/credentials';
+
+export type SignUpDTO = SignUpCredentials;

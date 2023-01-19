@@ -48,9 +48,9 @@ func (repo *ProjectInvitationRepository) CreateProjectInvitation(input ProjectIn
 
 }
 
-func (repo *ProjectInvitationRepository) CheckInvitationIsValid(invitationCheck ProjectInvitationCheck) (string, ProjectInvitationError) {
+func (repo *ProjectInvitationRepository) CheckInvitationIsValid(invitationCheck ProjectInvitationCheck) (ProjectInvitation, ProjectInvitationError) {
 	psql := database.GetPsqlQueryBuilder()
-	query := psql.Select("id", "token", "used", "guest_email", "expiration_date < now() as expired").
+	query := psql.Select("id", "project_id", "token", "used", "guest_email", "expiration_date < now() as expired").
 		From("project_invitation").
 		Limit(1).
 		Where(sq.Eq{"token": invitationCheck.token})
@@ -61,24 +61,24 @@ func (repo *ProjectInvitationRepository) CheckInvitationIsValid(invitationCheck 
 
 	var invitation ProjectInvitation
 	if rows.Next() {
-		rows.Scan(&invitation.id, &invitation.token, &invitation.used, &invitation.guestEmail, &invitation.expired)
+		rows.Scan(&invitation.id, &invitation.projectID, &invitation.token, &invitation.used, &invitation.guestEmail, &invitation.expired)
 	} else {
-		return "", InvitationTokenNotFound
+		return ProjectInvitation{}, InvitationTokenNotFound
 	}
 
 	if invitation.guestEmail != invitationCheck.guestEmail {
-		return "", InvitationEmailMismatch
+		return ProjectInvitation{}, InvitationEmailMismatch
 	}
 
 	if invitation.used {
-		return "", InvitationAlreadyUsed
+		return ProjectInvitation{}, InvitationAlreadyUsed
 	}
 
 	if invitation.expired {
-		return "", InvitationExpired
+		return ProjectInvitation{}, InvitationExpired
 	}
 
-	return invitation.id, InvitationValid
+	return invitation, InvitationValid
 
 }
 

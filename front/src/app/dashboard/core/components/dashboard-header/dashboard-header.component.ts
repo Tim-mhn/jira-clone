@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthAPI } from '../../../../auth/apis/auth.api';
-import { LoggedInUserService } from '../../../services/logged-in-user.service';
+import { LoggedInUserService } from '../../state-services/logged-in-user.service';
 
 @Component({
   selector: 'jira-dashboard-header',
