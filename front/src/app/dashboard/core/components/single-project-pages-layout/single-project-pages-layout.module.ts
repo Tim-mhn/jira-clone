@@ -2,11 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SingleProjectPagesLayoutComponent } from './single-project-pages-layout.component';
-import { BoardSideNavModule } from '../../../board/components/board-side-nav/board-side-nav.module';
+import { ProjectSideNavModule } from '../project-side-nav/project-side-nav.module';
 
 @NgModule({
   declarations: [SingleProjectPagesLayoutComponent],
-  imports: [CommonModule, BoardSideNavModule, RouterModule],
+  imports: [CommonModule, ProjectSideNavModule, RouterModule],
   exports: [SingleProjectPagesLayoutComponent],
 })
 export class SingleProjectPagesLayoutModule {}

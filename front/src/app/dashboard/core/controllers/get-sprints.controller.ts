@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { map, Observable, tap } from 'rxjs';
-import { BoardContentProvidersModule } from '../../board/board-providers.module';
-import { CurrentSprintsService } from '../../board/state-services/current-sprints.service';
 import { GetTasksAPI } from '../apis/get-tasks.api';
 import { Task } from '../models/task';
-import { CurrentProjectService } from '../../board/state-services/current-project.service';
 import { TasksGroupedBySprintsDTO } from '../dtos';
 import { logMethod } from '../../../shared/utils/log-method.decorator';
 import { BoardFilters } from '../models/board-filters';
+import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
+import { CurrentProjectService } from '../state-services/current-project.service';
+import { CurrentSprintsService } from '../../features/board/state-services/current-sprints.service';
 
 @Injectable({
   providedIn: BoardContentProvidersModule,

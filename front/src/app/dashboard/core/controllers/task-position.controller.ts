@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BoardContentProvidersModule } from '../../board/board-providers.module';
-import { CurrentProjectService } from '../../board/state-services/current-project.service';
+import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
 import { TaskPositionAPI } from '../apis/task-position.api';
 import { MoveTaskPositionDTO } from '../dtos/move-task.dto';
+import { CurrentProjectService } from '../state-services/current-project.service';
 
 @Injectable({
   providedIn: BoardContentProvidersModule,

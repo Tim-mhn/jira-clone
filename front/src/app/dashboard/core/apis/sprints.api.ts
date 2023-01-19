@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
+import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
 import { buildSingleSprintsEndpoint, buildSprintsEndpoint } from './endpoints';
-import { BoardContentProvidersModule } from '../../board/board-providers.module';
 
 @Injectable({
   providedIn: BoardContentProvidersModule,

@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { TypedChanges } from '@tim-mhn/common/extra-types';
 import { TimUIDropdownMenu } from '@tim-mhn/ng-ui/dropdown-menu';
 import { Observable } from 'rxjs';
-import { CurrentSprintsService } from '../../../board/state-services/current-sprints.service';
+import { CurrentSprintsService } from '../../../features/board/state-services/current-sprints.service';
 import { DeleteTaskController } from '../../controllers/delete-task.controller';
 import { UpdateTaskController } from '../../controllers/update-task.controller';
 import { SprintInfo } from '../../models/sprint';

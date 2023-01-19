@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { switchMap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
-import { BoardContentProvidersModule } from '../../board/board-providers.module';
-import { CurrentProjectService } from '../../board/state-services/current-project.service';
+import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
 import { TaskCommandsAPI } from '../apis/task-commands.api';
+import { CurrentProjectService } from '../state-services/current-project.service';
 import { GetSprintsController } from './get-sprints.controller';
 
 @Injectable({

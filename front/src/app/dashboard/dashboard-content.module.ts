@@ -7,14 +7,16 @@ const routes: Routes = [
     path: '',
     pathMatch: 'full',
     loadChildren: () =>
-      import('./projects/pages/project-list/project-list.module').then(
+      import('./features/project-list/project-list/project-list.module').then(
         (m) => m.ProjectListModule
       ),
   },
   {
     path: '',
     loadChildren: () =>
-      import('./board/board-content.module').then((m) => m.BoardContentModule),
+      import('./single-project-content.module').then(
+        (m) => m.SingleProjectContentModule
+      ),
   },
 ];
 @NgModule({

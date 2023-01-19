@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { objectKeys } from '@tim-mhn/common/objects';
 import { PROJECTS_API_ENDPOINT } from './endpoints';
-import { BoardContentProvidersModule } from '../../board/board-providers.module';
+import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
 import { TasksGroupedBySprintsDTO } from '../dtos/tasks-grouped-by-sprint.dto';
 import { BoardFilters } from '../models/board-filters';
 

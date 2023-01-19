@@ -5,7 +5,6 @@ import { DashboardCoreProvidersModule } from '../core-apis-providers.module';
 import { ProjectListAPI } from '../apis/project-list.api';
 import { SingleProjectAPI } from '../apis/single-project.api';
 import { TaskStatusAPI } from '../apis/task-status.api';
-import { ProjectMapper } from '../mappers/project.mapper';
 import { Project, ProjectInfoList } from '../models/project';
 
 @Injectable({
@@ -15,7 +14,6 @@ export class ProjectController {
   constructor(
     private projectApi: SingleProjectAPI,
     private taskStatusApi: TaskStatusAPI,
-    private mapper: ProjectMapper,
     private requestStateController: RequestStateController,
     private projectListAPI: ProjectListAPI
   ) {}
