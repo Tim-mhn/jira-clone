@@ -29,12 +29,12 @@ func GetProjectRouterGroups(router *gin.Engine, conn *sql.DB) ProjectRouterGroup
 		SingleProjectRoutes: singleProjectRoutes,
 	}
 }
-func RegisterControllers(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
+func RegisterProjectsEndpoints(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
 	userRepo := auth.NewUserRepository(conn)
 	projectRepo := NewProjectRepository(userRepo, conn)
-	projectInvitationRepo := NewProjectInvitationRepository(conn)
-	userService := auth.NewUserService(userRepo)
-	pc := NewProjectController(projectRepo, projectInvitationRepo, userService)
+	// projectInvitationRepo := NewProjectInvitationRepository(conn)
+	// userService := auth.NewUserService(userRepo)
+	pc := NewProjectController(projectRepo)
 
 	projectRouteGroups := GetProjectRouterGroups(router, conn)
 	singleProjectRoutes := projectRouteGroups.SingleProjectRoutes
@@ -43,10 +43,10 @@ func RegisterControllers(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
 	projectsRoutes.GET("", pc.GetUserProjects)
 
 	projectsRoutes.POST("", pc.CreateProject)
-	projectsRoutes.POST("/invitation/accept", pc.AcceptInvitation)
+	// projectsRoutes.POST("/invitation/accept", pc.AcceptInvitation)
 	singleProjectRoutes.GET("", pc.GetProject)
 	singleProjectRoutes.GET("/members", pc.GetProjectMembers)
-	singleProjectRoutes.POST("/members/invite", pc.InviteUserToProject)
+	// singleProjectRoutes.POST("/members/invite", pc.InviteUserToProject)
 	// singleProjectRoutes.POST("/members/invitation/accept", pc.AcceptInvitation)
 
 	return projectRouteGroups

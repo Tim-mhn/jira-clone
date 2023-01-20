@@ -11,7 +11,7 @@ import (
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
 )
 
-func RegisterControllers(singleProjectRoutes *gin.RouterGroup, conn *sql.DB) {
+func RegisterTasksEndpoints(singleProjectRoutes *gin.RouterGroup, conn *sql.DB) {
 	userRepo := auth.NewUserRepository(conn)
 
 	projectRepo := project.NewProjectRepository(userRepo, conn)

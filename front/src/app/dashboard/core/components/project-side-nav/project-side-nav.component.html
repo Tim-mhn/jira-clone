@@ -3,10 +3,13 @@
 >
   <div class="text-md font-medium">{{ (currentProject$ | async)?.Name }}</div>
 
-  <a
-    [routerLink]="['/', 'projects', (currentProject$ | async)?.Id]"
-    class="p-2 pl-3 text-gray-600 font-thin rounded-r-sm hover:border-blue-800"
-    routerLinkActive="bg-blue-100 border-l-2 border-blue-800 font-medium text-blue-800 hover:bg-blue-100 hover:text-blue-900"
-    >Board
-  </a>
+  <jira-side-nav-item
+    [link]="['/', 'projects', (currentProject$ | async)?.Id, 'board']"
+    >Board</jira-side-nav-item
+  >
+
+  <jira-side-nav-item
+    [link]="['/', 'projects', (currentProject$ | async)?.Id, 'settings']"
+    >Settings</jira-side-nav-item
+  >
 </div>

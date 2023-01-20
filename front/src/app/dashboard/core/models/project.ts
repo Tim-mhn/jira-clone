@@ -1,8 +1,9 @@
 import { ProjectMember } from './project-member';
 import { TaskStatus } from './task-status';
 
+export type ProjectId = string;
 export interface ProjectInfo {
-  Id: string;
+  Id: ProjectId;
   Name: string;
   Key: string;
   Icon: string;

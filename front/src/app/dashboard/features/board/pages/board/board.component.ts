@@ -11,7 +11,6 @@ import {
 } from 'rxjs';
 import { SubscriptionHandler } from '../../../../../shared/services/subscription-handler.service';
 import { GetSprintsController } from '../../../../core/controllers/get-sprints.controller';
-import { ProjectController } from '../../../../core/controllers/project.controller';
 import { BoardFilters } from '../../../../core/models/board-filters';
 import { SprintWithTasks } from '../../../../core/models/sprint';
 import { RouteProjectIdService } from '../../../../core/state-services/route-project-id.service';
@@ -26,9 +25,7 @@ import { ProjectMembersService } from '../../state-services/project-members.serv
 })
 export class BoardComponent implements OnInit, OnDestroy {
   constructor(
-    private controller: ProjectController,
     private currentProjectService: CurrentProjectService,
-    private requestStateController: RequestStateController,
     public sprintsService: CurrentSprintsService,
     private sprintsController: GetSprintsController,
     private membersService: ProjectMembersService,
@@ -50,30 +47,12 @@ export class BoardComponent implements OnInit, OnDestroy {
     const projectId$ = this.routeProjectIdService.projectId$;
 
     this._getSprintsOnRouteOrFiltersChange(projectId$);
-    this._getProjectOnRouteChange(projectId$);
   }
 
   trackBySprintId: TrackByFunction<SprintWithTasks> = (
     _index: number,
     s: SprintWithTasks
   ) => s.Sprint.Id;
-
-  private _getProjectOnRouteChange(projectId$: Observable<string>) {
-    projectId$
-      .pipe(
-        switchMap((projectId) =>
-          this.controller
-            .getProject(projectId)
-            .pipe(this.requestStateController.handleRequest(this.requestState))
-        ),
-        takeUntil(this._subscriptionHandler.onDestroy$)
-      )
-      .subscribe({
-        next: (projectInfo) => {
-          this.currentProjectService.updateCurrentProject(projectInfo);
-        },
-      });
-  }
 
   onFiltersChange(newFilters: BoardFilters) {
     this._filtersChange.next(newFilters);

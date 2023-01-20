@@ -1,7 +1,7 @@
 package project
 
-type ProjectInvitationDTO struct {
-	GuestEmail string `json:"guestEmail"`
+type SendInvitationsDTO struct {
+	GuestEmails []string `json:"guestEmails"`
 }
 
 type AcceptInvitationInputDTO struct {

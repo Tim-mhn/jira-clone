@@ -1,1 +1,4 @@
-<p>project-settings works!</p>
+<jira-project-settings-ui
+  [members]="members$ | async"
+  [projectInfo]="projectService.currentProject$ | async"
+></jira-project-settings-ui>

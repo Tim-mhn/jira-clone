@@ -1,5 +1,19 @@
-<div class="flex flex-col gap-2 h-full text-gray-800">
-  <jira-board-breadcrumb [project]="project"></jira-board-breadcrumb>
+<jira-feature-page-container
+  [breadcrumbs]="[
+    {
+      label: 'Projects',
+      route: 'projects'
+    },
+    {
+      label: project?.Name,
+      route: project?.Id
+    },
+    {
+      label: 'Board',
+      route: 'board'
+    }
+  ]"
+>
   <div class="text-3xl font-normal pb-2">Board</div>
 
   <div class="flex items-center justify-between mb-4">
@@ -39,7 +53,7 @@
       </jira-task-details>
     </div>
   </ng-container>
-</div>
+</jira-feature-page-container>
 
 <ng-template #spinner>
   <div class="flex flex-grow justify-center items-center">

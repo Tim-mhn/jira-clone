@@ -1,0 +1,8 @@
+<div class="flex gap-2 text-sm text-gray-500">
+  <ng-container *ngFor="let part of breadcrumbs; let isLast = last">
+    <a class="cursor-pointer hover:underline" [routerLink]="part.route">
+      {{ part.label }}
+    </a>
+    <div *ngIf="!isLast">/</div>
+  </ng-container>
+</div>

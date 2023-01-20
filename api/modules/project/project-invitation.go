@@ -1,9 +1,5 @@
 package project
 
-type ProjectInvitationInput struct {
-	guestEmail, projectID string
-}
-
 type ProjectInvitationCheck struct {
 	guestEmail string
 	token      string

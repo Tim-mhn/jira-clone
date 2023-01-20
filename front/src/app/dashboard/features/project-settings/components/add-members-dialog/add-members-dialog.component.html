@@ -1,0 +1,23 @@
+<div class="flex flex-col p-4 text-gray-800 gap-4 w-100">
+  <div class="text-lg font-medium">Add people</div>
+  <tim-input-field name="Emails" [errorMessageMap]="VALIDATION_ERROR_MESSAGES">
+    <!-- <tim-input-hint>Member emails</tim-input-hint> -->
+    <tim-email-list-input
+      [formControl]="membersEmailsControl"
+    ></tim-email-list-input>
+  </tim-input-field>
+  <div class="flex flex-grow justify-end gap-2 items-center">
+    <button tim-simple-button timCloseDialogButton color="neutral" size="xs">
+      Cancel
+    </button>
+    <button
+      tim-flat-button
+      size="xs"
+      (click)="sendInvites()"
+      [disabled]="membersEmailsControl.invalid"
+      [loading]="requestState?.isPending"
+    >
+      Add
+    </button>
+  </div>
+</div>

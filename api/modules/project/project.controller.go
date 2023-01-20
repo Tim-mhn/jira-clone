@@ -9,9 +9,7 @@ import (
 )
 
 type projectController struct {
-	projectRepo           *ProjectRepository
-	projectInvitationRepo *ProjectInvitationRepository
-	invitationService     *ProjectInvitationService
+	projectRepo *ProjectRepository
 }
 
 type NewProjectDTO struct {
@@ -22,11 +20,9 @@ type AddMemberToProjectDTO struct {
 	MemberID string `json:"memberID"`
 }
 
-func NewProjectController(projectRepo *ProjectRepository, projectInvitationRepo *ProjectInvitationRepository, userService *auth.UserService) *projectController {
+func NewProjectController(projectRepo *ProjectRepository) *projectController {
 	return &projectController{
-		projectRepo:           projectRepo,
-		projectInvitationRepo: projectInvitationRepo,
-		invitationService:     NewProjectInvitationService(projectInvitationRepo, projectRepo, userService),
+		projectRepo: projectRepo,
 	}
 }
 
@@ -53,28 +49,6 @@ func (pc *projectController) CreateProject(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusCreated, newProject)
-}
-
-func (pc *projectController) InviteUserToProject(c *gin.Context) {
-	projectID := GetProjectIDParam(c)
-	var projectInvitationDTO ProjectInvitationDTO
-	if err := c.BindJSON(&projectInvitationDTO); err != nil {
-		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
-		return
-	}
-
-	token, err := pc.projectInvitationRepo.CreateProjectInvitation(ProjectInvitationInput{
-		guestEmail: projectInvitationDTO.GuestEmail,
-		projectID:  projectID,
-	})
-
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	c.IndentedJSON(http.StatusCreated, token)
-
 }
 
 func (pc *projectController) AddMemberToProject(c *gin.Context) {
@@ -139,25 +113,25 @@ func (pc *projectController) GetUserProjects(c *gin.Context) {
 
 }
 
-func (pc *projectController) AcceptInvitation(c *gin.Context) {
-	var dto AcceptInvitationInputDTO
-	if err := c.BindJSON(&dto); err != nil {
-		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
-		return
-	}
+// func (pc *projectController) AcceptInvitation(c *gin.Context) {
+// 	var dto AcceptInvitationInputDTO
+// 	if err := c.BindJSON(&dto); err != nil {
+// 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
+// 		return
+// 	}
 
-	invitationOutput, err := pc.invitationService.AcceptProjectInvitation(ProjectInvitationCheck{
-		guestEmail: dto.GuestEmail,
-		token:      dto.Token,
-	})
+// 	invitationOutput, err := pc.invitationService.AcceptProjectInvitation(ProjectInvitationCheck{
+// 		guestEmail: dto.GuestEmail,
+// 		token:      dto.Token,
+// 	})
 
-	outputDTO := AcceptInvitationOutputDTO(invitationOutput)
+// 	outputDTO := AcceptInvitationOutputDTO(invitationOutput)
 
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, err.Error())
-		return
-	}
+// 	if err != nil {
+// 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+// 		return
+// 	}
 
-	c.IndentedJSON(http.StatusOK, outputDTO)
+// 	c.IndentedJSON(http.StatusOK, outputDTO)
 
-}
+// }

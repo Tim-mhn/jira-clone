@@ -1,4 +1,4 @@
-package project
+package invitations
 
 type ProjectInvitationError int
 
@@ -8,4 +8,5 @@ const (
 	InvitationExpired
 	InvitationAlreadyUsed
 	InvitationValid
+	OtherInvitationError
 )
