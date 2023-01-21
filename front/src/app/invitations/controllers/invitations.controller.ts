@@ -32,15 +32,12 @@ export class InvitationsController {
     requestState?: RequestState
   ) {
     return this.api.acceptInvitation(dto).pipe(
-      switchMap(({ ProjectId: projectId }) =>
-        this._navigateToProjectPage(projectId)
-      ),
+      switchMap((res) => this._navigateToProjectPage(res?.ProjectId)),
       this.snackbarFeedback.showFeedbackSnackbars<boolean, HttpErrorResponse>(
         {
-          errorMessage: (err: MyHttpErrorResponse<APIErrorResponse>) => {
-            console.log(err);
-            return err.error.Message;
-          },
+          errorMessage: (err: MyHttpErrorResponse<APIErrorResponse>) =>
+            err.error.Message,
+          successMessage: "You've successfully joined the project",
         },
         {
           showLoadingMessage: false,

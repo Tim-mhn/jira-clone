@@ -18,5 +18,5 @@ type ProjectInvitation struct {
 }
 
 type AcceptInvitationOutput struct {
-	ProjectID string
+	ProjectId string
 }

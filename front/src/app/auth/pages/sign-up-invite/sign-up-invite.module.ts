@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { TimUISnackbarModule } from '@tim-mhn/ng-ui/snackbar';
 import { TimUICardModule } from '@tim-mhn/ng-ui/card';
+import { TimUISpinnerModule } from '@tim-mhn/ng-ui/spinner';
 import { SignUpInviteComponent } from './sign-up-invite.component';
 import { ProjectInvitationsProvidersModule } from '../../../invitations/invitations.providers.module';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
@@ -28,6 +29,7 @@ const routes: Routes = [
     TimUICardModule,
     JiraLogoModule,
     AuthDirectivesModule,
+    TimUISpinnerModule,
   ],
   providers: [SnackbarFeedbackService],
 })

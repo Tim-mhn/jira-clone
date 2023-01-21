@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { RequestState } from '@tim-mhn/common/http';
 import { InvitationsController } from '../../../invitations/controllers/invitations.controller';
 import { AuthAPI } from '../../apis/auth.api';
 import { SignUpForm } from '../../models/sign-up';
@@ -19,22 +20,35 @@ export class SignUpInviteComponent implements OnInit {
 
   showSignUpPage = false;
 
+  acceptInvitationRequestState = new RequestState();
+
   acceptInvitationAndNavigateToProject(signUpForm: SignUpForm) {
-    this.controller.acceptInvitationAndNavigateToProject({
+    this.showSignUpPage = false;
+    const acceptInvitationPayload = {
       email: signUpForm.email,
       token: this.token,
-    });
+    };
+    this.controller
+      .acceptInvitationAndNavigateToProject(
+        acceptInvitationPayload,
+        this.acceptInvitationRequestState
+      )
+      .subscribe();
   }
 
   ngOnInit(): void {
     this.authAPI.me().subscribe({
       next: (u) => {
         const { Email } = u;
+        const invitationPayload = {
+          email: Email,
+          token: this.token,
+        };
         this.controller
-          .acceptInvitationAndNavigateToProject({
-            email: Email,
-            token: this.token,
-          })
+          .acceptInvitationAndNavigateToProject(
+            invitationPayload,
+            this.acceptInvitationRequestState
+          )
           .subscribe();
       },
       error: () => {

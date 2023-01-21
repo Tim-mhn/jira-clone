@@ -2,6 +2,17 @@
   <div jiraAuthPageTitle>Sign up to join the project</div>
   <!-- <div class -->
   <jira-sign-up-form
+    *ngIf="showSignUpPage"
     (successSignUp)="acceptInvitationAndNavigateToProject($event)"
   ></jira-sign-up-form>
+
+  <div
+    *ngIf="acceptInvitationRequestState.isPending"
+    class="flex flex-col items-center mt-4 gap-4"
+  >
+    <tim-spinner size="lg"></tim-spinner>
+    <div class="text-gray-600 text-xs font-light">
+      Accepting the invitation and joining the project ...
+    </div>
+  </div>
 </div>

@@ -133,7 +133,7 @@ func (service *ProjectInvitationService) AcceptProjectInvitation(invitationTicke
 		}
 	}
 	return AcceptInvitationOutput{
-			ProjectID: invitation.ProjectID,
+			ProjectId: invitation.ProjectID,
 		}, InvitationError{
 			NoError: true,
 		}
