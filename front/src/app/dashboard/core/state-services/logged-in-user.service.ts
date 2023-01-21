@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import { User } from '../../../auth/models/user';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class LoggedInUserService {
   constructor() {}
 

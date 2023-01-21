@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { tap } from 'rxjs';
 import { InvitationsController } from '../../../invitations/controllers/invitations.controller';
 import { AuthAPI } from '../../apis/auth.api';
-import { OnSignUpFn } from '../../components/sign-up-ui/sign-up.component';
 import { SignUpForm } from '../../models/sign-up';
 
 @Component({
@@ -21,22 +19,23 @@ export class SignUpInviteComponent implements OnInit {
 
   showSignUpPage = false;
 
-  onSignUpFn: OnSignUpFn = (signupForm: SignUpForm) =>
-    this.controller
-      .signUpAndAcceptInvitation(signupForm, {
-        guestEmail: signupForm.email,
-        token: this.token,
-      })
-      .pipe(tap(() => console.log('SignUpInviteComponent')));
+  acceptInvitationAndNavigateToProject(signUpForm: SignUpForm) {
+    this.controller.acceptInvitationAndNavigateToProject({
+      email: signUpForm.email,
+      token: this.token,
+    });
+  }
 
   ngOnInit(): void {
     this.authAPI.me().subscribe({
       next: (u) => {
         const { Email } = u;
-        this.controller.acceptInvitationAndNavigateToProject({
-          guestEmail: Email,
-          token: this.token,
-        });
+        this.controller
+          .acceptInvitationAndNavigateToProject({
+            email: Email,
+            token: this.token,
+          })
+          .subscribe();
       },
       error: () => {
         // do nothing

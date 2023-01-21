@@ -4,7 +4,7 @@ import "testing"
 
 func TestDomainError(t *testing.T) {
 
-	t.Run("it should have NoError=false by default", func(t *testing.T) {
+	t.Run("DomainError should have NoError=false by default", func(t *testing.T) {
 		domainError := testDomainError{
 			Source: nil,
 			Code:   ERROR_1,

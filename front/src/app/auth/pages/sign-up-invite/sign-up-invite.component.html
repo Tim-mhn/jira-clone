@@ -1,5 +1,7 @@
-<div class="flex flex-col">You have been invited to project xxx</div>
-<jira-sign-up-ui
-  *ngIf="showSignUpPage"
-  [onSignUpFn]="onSignUpFn"
-></jira-sign-up-ui>
+<div class="flex flex-col gap-8 p-2">
+  <div jiraAuthPageTitle>Sign up to join the project</div>
+  <!-- <div class -->
+  <jira-sign-up-form
+    (successSignUp)="acceptInvitationAndNavigateToProject($event)"
+  ></jira-sign-up-form>
+</div>

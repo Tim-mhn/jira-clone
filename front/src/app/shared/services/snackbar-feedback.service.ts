@@ -32,8 +32,8 @@ export class SnackbarFeedbackService {
   private DEFAULT_SNACKBAR_TIMEOUT = 200;
   constructor(private _snackbar: TimUISnackbar) {}
 
-  showFeedbackSnackbars<T>(
-    _messages?: SnackbarMessages<T>,
+  showFeedbackSnackbars<T, ErrorType = Error>(
+    _messages?: SnackbarMessages<T, ErrorType>,
     opts?: SnackbarFeedbackOptions
   ): (source: Observable<T>) => Observable<T> {
     const snackbarMessages = {

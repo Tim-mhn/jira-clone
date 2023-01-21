@@ -7,10 +7,11 @@ import { TimInputFieldModule } from '@tim-mhn/ng-forms/input-field';
 import { TimUIButtonModule } from '@tim-mhn/ng-ui/button';
 import { TypedFormsModule } from '@tim-mhn/common/typed-forms';
 import { TimPasswordInputModule } from '@tim-mhn/ng-forms/password-input';
-import { SignUpUIComponent } from './sign-up.component';
+import { TimUILinkModule } from '@tim-mhn/ng-ui/link';
+import { SignUpFormComponent } from './sign-up-form.component';
 
 @NgModule({
-  declarations: [SignUpUIComponent],
+  declarations: [SignUpFormComponent],
   imports: [
     CommonModule,
     RouterModule,
@@ -20,7 +21,8 @@ import { SignUpUIComponent } from './sign-up.component';
     TimUIButtonModule,
     TypedFormsModule,
     TimPasswordInputModule,
+    TimUILinkModule,
   ],
-  exports: [SignUpUIComponent],
+  exports: [SignUpFormComponent],
 })
-export class SignUpUIModule {}
+export class SignUpFormModule {}

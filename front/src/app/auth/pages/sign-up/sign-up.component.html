@@ -1,1 +1,6 @@
-<jira-sign-up-ui [onSignUpFn]="onSignUpFn"></jira-sign-up-ui>
+<div class="flex flex-col gap-8">
+  <div jiraAuthPageTitle>Sign up</div>
+  <jira-sign-up-form
+    (successSignUp)="navigateToProjectsPage()"
+  ></jira-sign-up-form>
+</div>

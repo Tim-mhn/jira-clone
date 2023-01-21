@@ -1,10 +1,14 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { switchMap } from 'rxjs';
 import { AuthController } from '../../auth/controllers/auth.controller';
-import { SignUpDTO } from '../../auth/dtos/sign-up.dto';
 import { ProjectId } from '../../dashboard/core/models';
+import {
+  APIErrorResponse,
+  MyHttpErrorResponse,
+} from '../../shared/errors/api-error';
 import { SnackbarFeedbackService } from '../../shared/services/snackbar-feedback.service';
 import { InvitationsAPI } from '../apis/invitations.api';
 import { AcceptInvitationInputDTO } from '../dtos/invitations.dtos';
@@ -31,19 +35,16 @@ export class InvitationsController {
       switchMap(({ ProjectId: projectId }) =>
         this._navigateToProjectPage(projectId)
       ),
-      this.requestStateController.handleRequest(requestState)
-    );
-  }
-
-  signUpAndAcceptInvitation(
-    credentials: SignUpDTO,
-    invitation: AcceptInvitationInputDTO,
-    requestState?: RequestState
-  ) {
-    return this.authController.signUpAndLogin(credentials).pipe(
-      switchMap(() => this.api.acceptInvitation(invitation)),
-      switchMap(({ ProjectId: projectId }) =>
-        this._navigateToProjectPage(projectId)
+      this.snackbarFeedback.showFeedbackSnackbars<boolean, HttpErrorResponse>(
+        {
+          errorMessage: (err: MyHttpErrorResponse<APIErrorResponse>) => {
+            console.log(err);
+            return err.error.Message;
+          },
+        },
+        {
+          showLoadingMessage: false,
+        }
       ),
       this.requestStateController.handleRequest(requestState)
     );

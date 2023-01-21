@@ -1,34 +1,41 @@
-<form
-  [formGroup]="loginForm"
-  (ngSubmit)="login()"
-  class="flex flex-col justify-center items-center flex-grow p-32 gap-4"
->
-  <tim-input-field name="Email">
-    <tim-input-label>Email</tim-input-label>
+<div class="flex flex-col gap-8 p-2">
+  <div jiraAuthPageTitle>Login</div>
 
-    <tim-input
-      color="primary"
-      [type]="EMAIL_INPUT"
-      formControlName="email"
-      placeholder="example@jira.com"
-    ></tim-input>
-  </tim-input-field>
-
-  <tim-input-field name="Password">
-    <tim-input-label>Password</tim-input-label>
-
-    <tim-password-input
-      formControlName="password"
-      type="password"
-    ></tim-password-input>
-  </tim-input-field>
-
-  <button
-    tim-flat-button
-    color="primary"
-    type="submit"
-    [loading]="requestState.isPending"
+  <form
+    [formGroup]="loginForm"
+    (ngSubmit)="login()"
+    class="flex flex-col justify-center items-center flex-grow gap-4"
   >
-    Login
-  </button>
-</form>
+    <tim-input-field name="Email">
+      <tim-input-label>Email</tim-input-label>
+
+      <tim-input
+        color="primary"
+        [type]="EMAIL_INPUT"
+        formControlName="email"
+        placeholder="example@jira.com"
+      ></tim-input>
+    </tim-input-field>
+
+    <tim-input-field name="Password">
+      <tim-input-label>Password</tim-input-label>
+
+      <tim-password-input
+        formControlName="password"
+        type="password"
+      ></tim-password-input>
+    </tim-input-field>
+
+    <button
+      tim-flat-button
+      class="w-full"
+      color="primary"
+      type="submit"
+      [loading]="requestState.isPending"
+    >
+      Login
+    </button>
+
+    <a tim-link [routerLink]="['/', 'auth', 'sign-up']">Back to Sign Up</a>
+  </form>
+</div>

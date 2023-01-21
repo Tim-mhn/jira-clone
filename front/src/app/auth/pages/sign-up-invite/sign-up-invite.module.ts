@@ -1,9 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
+import { TimUISnackbarModule } from '@tim-mhn/ng-ui/snackbar';
+import { TimUICardModule } from '@tim-mhn/ng-ui/card';
 import { SignUpInviteComponent } from './sign-up-invite.component';
 import { ProjectInvitationsProvidersModule } from '../../../invitations/invitations.providers.module';
-import { SignUpUIModule } from '../../components/sign-up-ui/sign-up.module';
+import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
+import { JiraLogoModule } from '../../../shared/components/jira-logo/logo.module';
+import { SignUpFormModule } from '../../components/sign-up-form/sign-up-form.module';
+import { AuthDirectivesModule } from '../../directives/auth-directives.module';
 
 const routes: Routes = [
   {
@@ -18,7 +23,12 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     ProjectInvitationsProvidersModule,
-    SignUpUIModule,
+    SignUpFormModule,
+    TimUISnackbarModule,
+    TimUICardModule,
+    JiraLogoModule,
+    AuthDirectivesModule,
   ],
+  providers: [SnackbarFeedbackService],
 })
 export class SignUpInviteModule {}

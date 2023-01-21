@@ -1,7 +1,7 @@
 <form
   [formGroup]="signUpForm"
   (ngSubmit)="signUp()"
-  class="flex flex-col justify-center items-center flex-grow p-32 gap-4"
+  class="flex flex-col justify-center items-center flex-grow gap-4"
 >
   <tim-input-field name="Username">
     <tim-input-label>Username</tim-input-label>
@@ -33,10 +33,13 @@
   </tim-input-field>
   <button
     tim-flat-button
+    class="w-full"
     color="primary"
     type="submit"
     [loading]="requestState.isPending"
   >
     Sign up
   </button>
+
+  <a tim-link [routerLink]="['/', 'auth', 'login']">Back to Login</a>
 </form>

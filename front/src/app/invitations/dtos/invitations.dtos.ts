@@ -1,5 +1,5 @@
 export type AcceptInvitationInputDTO = {
-  guestEmail: string;
+  email: string;
   token: string;
 };
 

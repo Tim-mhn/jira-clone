@@ -17,7 +17,7 @@ import { InvitationEmailList } from '../models/invitation-email';
 export class InvitationsAPI {
   constructor(private mock: MockAPI, private http: HttpClient) {}
 
-  private readonly ENDPOINT = `${environment.apiUrl}projects/invitation/accept`;
+  private readonly ENDPOINT = `${environment.apiUrl}projects/members/invite/accept`;
   acceptInvitation(dto: AcceptInvitationInputDTO) {
     // return this.mock.post<AcceptInvitationInputDTO, void>(dto, null);
     return this.http.post<AcceptInvitationOutputDTO>(this.ENDPOINT, dto);
