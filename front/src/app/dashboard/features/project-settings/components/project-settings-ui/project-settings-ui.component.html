@@ -1,3 +1,5 @@
 <jira-feature-page-container [breadcrumbs]="breadcrumbs">
-  <button (click)="openAddMembersDialog()">add members</button>
+  <jira-invite-people-button
+    [projectId]="projectInfo?.Id"
+  ></jira-invite-people-button>
 </jira-feature-page-container>

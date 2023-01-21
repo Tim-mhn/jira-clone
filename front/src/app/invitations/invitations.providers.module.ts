@@ -4,5 +4,6 @@ import { AuthProvidersModule } from '../auth/auth.providers.module';
 
 @NgModule({
   imports: [TimHttpModule, AuthProvidersModule],
+  declarations: [],
 })
 export class ProjectInvitationsProvidersModule {}

@@ -5,6 +5,7 @@ import { switchMap } from 'rxjs';
 import { AuthController } from '../../auth/controllers/auth.controller';
 import { SignUpDTO } from '../../auth/dtos/sign-up.dto';
 import { ProjectId } from '../../dashboard/core/models';
+import { SnackbarFeedbackService } from '../../shared/services/snackbar-feedback.service';
 import { InvitationsAPI } from '../apis/invitations.api';
 import { AcceptInvitationInputDTO } from '../dtos/invitations.dtos';
 import { ProjectInvitationsProvidersModule } from '../invitations.providers.module';
@@ -18,7 +19,8 @@ export class InvitationsController {
     private api: InvitationsAPI,
     private authController: AuthController,
     private requestStateController: RequestStateController,
-    private router: Router
+    private router: Router,
+    private snackbarFeedback: SnackbarFeedbackService
   ) {}
 
   acceptInvitationAndNavigateToProject(
@@ -56,8 +58,16 @@ export class InvitationsController {
     emails: InvitationEmailList,
     requestState?: RequestState
   ) {
-    return this.api
-      .sendInvitation(projectId, emails)
-      .pipe(this.requestStateController.handleRequest(requestState));
+    return this.api.sendInvitation(projectId, emails).pipe(
+      this.snackbarFeedback.showFeedbackSnackbars(
+        {
+          successMessage: 'Invitation emails successfully sent',
+        },
+        {
+          showLoadingMessage: false,
+        }
+      ),
+      this.requestStateController.handleRequest(requestState)
+    );
   }
 }
