@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	"github.com/tim-mhn/figma-clone/modules/project"
+	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 )
 
 type InvitationsController struct {
@@ -47,14 +48,16 @@ func (controller *InvitationsController) AcceptInvitation(c *gin.Context) {
 
 	var acceptInvitationDTO AcceptInvitationDTO
 	if err := c.BindJSON(&acceptInvitationDTO); err != nil {
-		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
+		apiErrorResponse := shared_errors.UNPROCESSABLE_ENTITY_API_ERROR_RESPONSE()
+		c.IndentedJSON(http.StatusUnprocessableEntity, apiErrorResponse)
 		return
 	}
 
 	output, err := controller.service.AcceptProjectInvitation(InvitationTicket(acceptInvitationDTO))
 
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+	if !err.NoError {
+		apiErrorResponse := shared_errors.BuildAPIErrorFromDomainError(err)
+		c.IndentedJSON(http.StatusInternalServerError, apiErrorResponse)
 		return
 	}
 

@@ -1,9 +1,9 @@
 package project
 
-type ProjectInvitationError int
+type InvitationErrorCode int
 
 const (
-	InvitationTokenNotFound ProjectInvitationError = iota
+	InvitationTokenNotFound InvitationErrorCode = iota
 	InvitationEmailMismatch
 	InvitationExpired
 	InvitationAlreadyUsed

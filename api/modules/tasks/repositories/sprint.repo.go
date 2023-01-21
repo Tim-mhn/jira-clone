@@ -5,18 +5,18 @@ import (
 	"fmt"
 
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
-	"github.com/tim-mhn/figma-clone/shared"
+	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 )
 
 type SprintRepository struct {
 	conn   *sql.DB
-	logger shared.ErrorBuilder
+	logger shared_errors.ErrorBuilder
 }
 
 func NewSprintRepository(conn *sql.DB) *SprintRepository {
 	return &SprintRepository{
 		conn:   conn,
-		logger: shared.GetErrorBuilderForContext("SprintRepository"),
+		logger: shared_errors.GetErrorBuilderForContext("SprintRepository"),
 	}
 }
 

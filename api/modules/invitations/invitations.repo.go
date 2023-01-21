@@ -54,7 +54,7 @@ func (repo *ProjectInvitationRepository) CreateProjectInvitations(input ProjectI
 
 }
 
-func (repo *ProjectInvitationRepository) CheckInvitationIsValid(invitationTicket InvitationTicket) (ProjectInvitation, ProjectInvitationError) {
+func (repo *ProjectInvitationRepository) CheckInvitationIsValid(invitationTicket InvitationTicket) (ProjectInvitation, InvitationError) {
 	psql := database.GetPsqlQueryBuilder()
 	query := psql.Select("id", "project_id", "token", "used", "guest_email", "expiration_date < now() as expired").
 		From("project_invitation").
@@ -64,7 +64,10 @@ func (repo *ProjectInvitationRepository) CheckInvitationIsValid(invitationTicket
 	rows, err := query.RunWith(repo.conn).Query()
 
 	if err != nil {
-		return ProjectInvitation{}, OtherInvitationError
+		return ProjectInvitation{}, InvitationError{
+			Source: err,
+			Code:   OtherInvitationError,
+		}
 	}
 	defer rows.Close()
 
@@ -72,22 +75,36 @@ func (repo *ProjectInvitationRepository) CheckInvitationIsValid(invitationTicket
 	if rows.Next() {
 		rows.Scan(&invitation.ID, &invitation.ProjectID, &invitation.Token, &invitation.Used, &invitation.GuestEmail, &invitation.Expired)
 	} else {
-		return ProjectInvitation{}, InvitationTokenNotFound
+		return ProjectInvitation{}, InvitationError{
+			Code:   InvitationTokenNotFound,
+			Source: nil,
+		}
 	}
 
 	if invitation.GuestEmail != invitationTicket.Email {
-		return ProjectInvitation{}, InvitationEmailMismatch
+		return ProjectInvitation{}, InvitationError{
+			Code:   InvitationEmailMismatch,
+			Source: nil,
+		}
 	}
 
 	if invitation.Used {
-		return ProjectInvitation{}, InvitationAlreadyUsed
+		return ProjectInvitation{}, InvitationError{
+			Code:   InvitationAlreadyUsed,
+			Source: nil,
+		}
 	}
 
 	if invitation.Expired {
-		return ProjectInvitation{}, InvitationExpired
+		return ProjectInvitation{}, InvitationError{
+			Code:   InvitationExpired,
+			Source: nil,
+		}
 	}
 
-	return invitation, InvitationValid
+	return invitation, InvitationError{
+		NoError: true,
+	}
 
 }
 
