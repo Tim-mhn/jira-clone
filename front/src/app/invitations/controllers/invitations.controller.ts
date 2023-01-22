@@ -5,10 +5,7 @@ import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { switchMap } from 'rxjs';
 import { AuthController } from '../../auth/controllers/auth.controller';
 import { ProjectId } from '../../dashboard/core/models';
-import {
-  APIErrorResponse,
-  MyHttpErrorResponse,
-} from '../../shared/errors/api-error';
+import { APIErrorBody, APIErrorResponse } from '../../shared/errors/api-error';
 import { SnackbarFeedbackService } from '../../shared/services/snackbar-feedback.service';
 import { InvitationsAPI } from '../apis/invitations.api';
 import { AcceptInvitationInputDTO } from '../dtos/invitations.dtos';
@@ -35,7 +32,7 @@ export class InvitationsController {
       switchMap((res) => this._navigateToProjectPage(res?.ProjectId)),
       this.snackbarFeedback.showFeedbackSnackbars<boolean, HttpErrorResponse>(
         {
-          errorMessage: (err: MyHttpErrorResponse<APIErrorResponse>) =>
+          errorMessage: (err: APIErrorResponse<APIErrorBody>) =>
             err.error.Message,
           successMessage: "You've successfully joined the project",
         },

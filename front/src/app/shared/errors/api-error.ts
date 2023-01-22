@@ -1,10 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-export type APIErrorResponse = {
+export type APIErrorBody = {
   Code: string;
   Message: string;
 };
 
-export class MyHttpErrorResponse<ErrorType = Error> extends HttpErrorResponse {
+export class APIErrorResponse<
+  ErrorType = APIErrorBody
+> extends HttpErrorResponse {
   override error: ErrorType;
 }
