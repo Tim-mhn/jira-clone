@@ -1,7 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { RequestState } from '@tim-mhn/common/http';
+import { TimUIDialogService } from '@tim-mhn/ng-ui/dialog';
 import { ProjectController } from '../../../controllers/project.controller';
 import { ProjectInfo } from '../../../models';
+import {
+  DeleteProjectDialogComponent,
+  DeleteProjectDialogInput,
+  DeleteProjectDialogOutput,
+} from '../delete-project-dialog/delete-project-dialog.component';
 
 @Component({
   selector: 'jira-delete-project-button',
@@ -11,13 +17,24 @@ export class DeleteProjectButtonComponent implements OnInit {
   @Input() project: ProjectInfo;
 
   requestState = new RequestState();
-  constructor(private controller: ProjectController) {}
+  constructor(
+    private controller: ProjectController,
+    private _dialogService: TimUIDialogService
+  ) {}
 
   ngOnInit(): void {}
 
-  deleteProject() {
-    this.controller
-      .deleteProjectAndUpdateList(this.project, this.requestState)
-      .subscribe();
+  openDeleteDialog() {
+    const deleteDialog = this._dialogService.open<
+      DeleteProjectDialogOutput,
+      DeleteProjectDialogInput
+    >(DeleteProjectDialogComponent, this.project);
+
+    deleteDialog.closed$.subscribe((output) => {
+      if (output?.delete)
+        this.controller
+          .deleteProjectAndUpdateList(this.project, this.requestState)
+          .subscribe();
+    });
   }
 }

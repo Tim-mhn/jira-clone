@@ -1,0 +1,17 @@
+<simple-dialog>
+  <simple-dialog-title>Delete project</simple-dialog-title>
+  <simple-dialog-description
+    >Are you sure you want to delete the project
+    <span class="font-bold italic">{{ dialogData.Name }} </span> ? This action
+    cannot be reverted.</simple-dialog-description
+  >
+
+  <simple-dialog-actions>
+    <button tim-simple-button color="neutral" timCloseDialogButton="">
+      Cancel
+    </button>
+    <button tim-flat-button color="destructive" (click)="confirmDeletion()">
+      Delete
+    </button>
+  </simple-dialog-actions>
+</simple-dialog>

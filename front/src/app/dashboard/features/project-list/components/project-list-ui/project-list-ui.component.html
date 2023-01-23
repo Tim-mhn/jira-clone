@@ -17,7 +17,7 @@
     <ng-container *ngIf="projectList?.length > 0; else noProjects">
       <div
         *ngFor="let project of projectList"
-        class="flex flex-row flex-grow children:w-1/3"
+        class="flex flex-row flex-grow items-center children:w-1/3"
       >
         <a
           [routerLink]="[project.Id, 'board']"
@@ -34,9 +34,11 @@
           [showTooltip]="true"
         ></jira-member-icon>
 
-        <jira-delete-project-button
-          [project]="project"
-        ></jira-delete-project-button>
+        <div class="flex flex-grow justify-end">
+          <jira-delete-project-button
+            [project]="project"
+          ></jira-delete-project-button>
+        </div>
       </div>
     </ng-container>
   </div>
