@@ -4,8 +4,10 @@ import { Router } from '@angular/router';
 import { RequestState } from '@tim-mhn/common/http';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
 import { InputType } from '@tim-mhn/ng-forms/input';
+import { PASSWORD_VALIDATION_ERRORS } from '../../constants/error-messages.constants';
 import { AuthController } from '../../controllers/auth.controller';
 import { LoginCredentials } from '../../models/credentials';
+import { PasswordValidator } from '../../validators/password.validator';
 
 @Component({
   selector: 'jira-login-form',
@@ -18,10 +20,12 @@ export class LoginFormComponent implements OnInit {
     private router: Router
   ) {}
 
+  readonly PASSWORD_VALIDATION_ERROR_MESSAGES = PASSWORD_VALIDATION_ERRORS;
+
   readonly EMAIL_INPUT = InputType.EMAIL;
   loginForm = this.tfb.group<LoginCredentials>({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
+    password: ['', PasswordValidator],
   });
 
   requestState = new RequestState();
@@ -31,6 +35,8 @@ export class LoginFormComponent implements OnInit {
   login() {
     this.controller
       .login(this.loginForm.value, this.requestState)
-      .subscribe(() => this.router.navigate(['/', 'projects']));
+      .subscribe(() => {
+        this.router.navigate(['/', 'projects']);
+      });
   }
 }

@@ -23,7 +23,11 @@
     ></tim-input>
   </tim-input-field>
 
-  <tim-input-field name="Password">
+  <tim-input-field
+    class="w-80 mb-2"
+    name="Password"
+    [errorMessageMap]="PASSWORD_VALIDATION_ERROR_MESSAGES"
+  >
     <tim-input-label>Password</tim-input-label>
 
     <tim-password-input
@@ -31,6 +35,11 @@
       formControlName="password"
     ></tim-password-input>
   </tim-input-field>
+
+  <tim-alert *ngIf="requestState?.isError" color="destructive" class="w-full">
+    <tim-alert-title> {{ requestState?.error?.message }}</tim-alert-title>
+  </tim-alert>
+
   <button
     tim-flat-button
     class="w-full"

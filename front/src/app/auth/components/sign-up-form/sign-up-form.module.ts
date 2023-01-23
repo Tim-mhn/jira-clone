@@ -8,6 +8,7 @@ import { TimUIButtonModule } from '@tim-mhn/ng-ui/button';
 import { TypedFormsModule } from '@tim-mhn/common/typed-forms';
 import { TimPasswordInputModule } from '@tim-mhn/ng-forms/password-input';
 import { TimUILinkModule } from '@tim-mhn/ng-ui/link';
+import { TimUIAlertModule } from '@tim-mhn/ng-ui/alert';
 import { SignUpFormComponent } from './sign-up-form.component';
 
 @NgModule({
@@ -22,6 +23,7 @@ import { SignUpFormComponent } from './sign-up-form.component';
     TypedFormsModule,
     TimPasswordInputModule,
     TimUILinkModule,
+    TimUIAlertModule,
   ],
   exports: [SignUpFormComponent],
 })

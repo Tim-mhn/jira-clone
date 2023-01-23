@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { SharedProvidersModule } from './shared/shared.providers.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -14,6 +15,7 @@ import { AppComponent } from './app.component';
     BrowserAnimationsModule,
     HttpClientModule,
     OverlayModule,
+    SharedProvidersModule,
   ],
   bootstrap: [AppComponent],
 })

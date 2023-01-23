@@ -18,6 +18,7 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     LoginFormModule,
+
     AuthPageLayoutModule,
     AuthDirectivesModule,
   ],

@@ -3,8 +3,10 @@ import { Validators } from '@angular/forms';
 import { RequestState } from '@tim-mhn/common/http';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
 import { InputType } from '@tim-mhn/ng-forms/input';
+import { PASSWORD_VALIDATION_ERRORS } from '../../constants/error-messages.constants';
 import { AuthController } from '../../controllers/auth.controller';
 import { SignUpForm } from '../../models/sign-up';
+import { PasswordValidator } from '../../validators/password.validator';
 
 @Component({
   selector: 'jira-sign-up-form',
@@ -23,11 +25,11 @@ export class SignUpFormComponent implements OnInit {
   signUpForm = this.tfb.group<SignUpForm>({
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
+    password: ['', PasswordValidator],
   });
 
   readonly EMAIL_INPUT: InputType.EMAIL;
-
+  readonly PASSWORD_VALIDATION_ERROR_MESSAGES = PASSWORD_VALIDATION_ERRORS;
   ngOnInit(): void {}
 
   signUp() {

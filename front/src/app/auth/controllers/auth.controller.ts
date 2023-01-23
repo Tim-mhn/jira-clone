@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { switchMap, tap } from 'rxjs';
 import { LoggedInUserService } from '../../dashboard/core/state-services/logged-in-user.service';
+import { APIErrorMapper } from '../../shared/errors/api-error.mapper';
 import { AuthAPI } from '../apis/auth.api';
 import { AuthProvidersModule } from '../auth.providers.module';
 import { LoginCredentials, SignUpCredentials } from '../models/credentials';
@@ -15,7 +16,8 @@ export class AuthController {
     private api: AuthAPI,
     private requestStateController: RequestStateController,
     private loggedInUserService: LoggedInUserService,
-    private router: Router
+    private router: Router,
+    private errorMapper: APIErrorMapper
   ) {}
 
   fetchCurrentUserOrGoBackToLogin() {
@@ -36,6 +38,7 @@ export class AuthController {
   signUpAndLogin(credentials: SignUpCredentials, requestState?: RequestState) {
     return this.api.signUp(credentials).pipe(
       switchMap(() => this.api.login(credentials)),
+      this.errorMapper.mapToErrorMessage,
       this.requestStateController.handleRequest(requestState)
     );
   }
@@ -43,6 +46,9 @@ export class AuthController {
   login(credentials: LoginCredentials, requestState?: RequestState) {
     return this.api
       .login(credentials)
-      .pipe(this.requestStateController.handleRequest(requestState));
+      .pipe(
+        this.errorMapper.mapToErrorMessage,
+        this.requestStateController.handleRequest(requestState)
+      );
   }
 }
