@@ -10,19 +10,21 @@
   </div>
 
   <div class="flex flex-col gap-4" *ngIf="!loading; else spinner">
-    <div
-      *ngFor="let project of projectList"
-      class="flex flex-row flex-grow children:w-1/3"
-    >
-      <a
-        [routerLink]="[project.Id, 'board']"
-        class="flex gap-2 items-center text-blue-600 hover:underline cursor-pointer"
+    <ng-container *ngIf="projectList?.length > 0; else noProjects">
+      <div
+        *ngFor="let project of projectList"
+        class="flex flex-row flex-grow children:w-1/3"
       >
-        <img [src]="project.Icon" class="w-5 h-5" />
-        <div>{{ project.Name }}</div>
-      </a>
-      <div>{{ project.Key }}</div>
-    </div>
+        <a
+          [routerLink]="[project.Id, 'board']"
+          class="flex gap-2 items-center text-blue-600 hover:underline cursor-pointer"
+        >
+          <img [src]="project.Icon" class="w-5 h-5" />
+          <div>{{ project.Name }}</div>
+        </a>
+        <div>{{ project.Key }}</div>
+      </div>
+    </ng-container>
   </div>
 
   <ng-template #spinner>
@@ -31,3 +33,14 @@
     </div>
   </ng-template>
 </div>
+
+<ng-template #noProjects>
+  <tim-alert color="warn" class="mt-4 shadow-md">
+    <tim-alert-title>You are not a member of any projects</tim-alert-title>
+
+    <tim-alert-description
+      >In order to start collaborating, create a project of your own or ask your
+      teammates to invite you to their project</tim-alert-description
+    >
+  </tim-alert>
+</ng-template>

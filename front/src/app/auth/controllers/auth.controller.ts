@@ -21,7 +21,7 @@ export class AuthController {
   ) {}
 
   fetchCurrentUserOrGoBackToLogin() {
-    return this.api.me().pipe(
+    return this.fetchAndUpdateCurrentUser().pipe(
       tap({
         next: (u) => this.loggedInUserService.setLoggedInUser(u),
         error: (err) => {
@@ -31,8 +31,18 @@ export class AuthController {
       })
     );
   }
+
+  fetchAndUpdateCurrentUser() {
+    return this.api.me().pipe(
+      tap({
+        next: (u) => this.loggedInUserService.setLoggedInUser(u),
+      })
+    );
+  }
   signOut() {
-    return this.api.signOut();
+    return this.api
+      .signOut()
+      .pipe(tap(() => this.loggedInUserService.setNoUser()));
   }
 
   signUpAndLogin(credentials: SignUpCredentials, requestState?: RequestState) {

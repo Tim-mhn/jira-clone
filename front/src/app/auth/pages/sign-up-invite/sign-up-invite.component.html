@@ -1,11 +1,17 @@
 <div class="flex flex-col gap-8 p-2">
   <div jiraAuthPageTitle>Sign up to join the project</div>
-  <!-- <div class -->
+
+  <ng-container *ngTemplateOutlet="error"></ng-container>
+
   <jira-sign-up-form
     *ngIf="showSignUpPage"
-    (successSignUp)="acceptInvitationAndNavigateToProject($event)"
+    (successSignUp)="acceptInvitationAfterSignUp($event)"
   ></jira-sign-up-form>
 
+  <ng-container *ngTemplateOutlet="loadingSpinner"></ng-container>
+</div>
+
+<ng-template #loadingSpinner>
   <div
     *ngIf="acceptInvitationRequestState.isPending"
     class="flex flex-col items-center mt-4 gap-4"
@@ -15,4 +21,20 @@
       Accepting the invitation and joining the project ...
     </div>
   </div>
-</div>
+</ng-template>
+
+<ng-template #error>
+  <div class="flex flex-col gap-4" *ngIf="acceptInvitationRequestState.isError">
+    <tim-alert color="destructive" class="w-full">
+      <tim-alert-title>
+        {{ acceptInvitationRequestState?.error?.message }}</tim-alert-title
+      >
+    </tim-alert>
+
+    <div class="flex flex-grow justify-center">
+      <a tim-link *ngIf="isLoggedIn$ | async" [routerLink]="['/']"
+        >Go to home page</a
+      >
+    </div>
+  </div>
+</ng-template>

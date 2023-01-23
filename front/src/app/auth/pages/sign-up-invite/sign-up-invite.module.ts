@@ -4,6 +4,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { TimUISnackbarModule } from '@tim-mhn/ng-ui/snackbar';
 import { TimUICardModule } from '@tim-mhn/ng-ui/card';
 import { TimUISpinnerModule } from '@tim-mhn/ng-ui/spinner';
+import { TimUIAlertModule } from '@tim-mhn/ng-ui/alert';
+import { TimUILinkModule } from '@tim-mhn/ng-ui/link';
 import { SignUpInviteComponent } from './sign-up-invite.component';
 import { ProjectInvitationsProvidersModule } from '../../../invitations/invitations.providers.module';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
@@ -25,11 +27,13 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     ProjectInvitationsProvidersModule,
     SignUpFormModule,
+    AuthDirectivesModule,
+    JiraLogoModule,
     TimUISnackbarModule,
     TimUICardModule,
-    JiraLogoModule,
-    AuthDirectivesModule,
+    TimUIAlertModule,
     TimUISpinnerModule,
+    TimUILinkModule,
   ],
   providers: [SnackbarFeedbackService],
 })

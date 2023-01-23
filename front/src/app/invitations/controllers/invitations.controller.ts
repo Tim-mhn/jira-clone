@@ -3,9 +3,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { switchMap } from 'rxjs';
-import { AuthController } from '../../auth/controllers/auth.controller';
 import { ProjectId } from '../../dashboard/core/models';
-import { APIErrorBody, APIErrorResponse } from '../../shared/errors/api-error';
+import { APIErrorMapper } from '../../shared/errors/api-error.mapper';
 import { SnackbarFeedbackService } from '../../shared/services/snackbar-feedback.service';
 import { InvitationsAPI } from '../apis/invitations.api';
 import { AcceptInvitationInputDTO } from '../dtos/invitations.dtos';
@@ -18,7 +17,7 @@ import { InvitationEmailList } from '../models/invitation-email';
 export class InvitationsController {
   constructor(
     private api: InvitationsAPI,
-    private authController: AuthController,
+    private errorMapper: APIErrorMapper,
     private requestStateController: RequestStateController,
     private router: Router,
     private snackbarFeedback: SnackbarFeedbackService
@@ -29,15 +28,15 @@ export class InvitationsController {
     requestState?: RequestState
   ) {
     return this.api.acceptInvitation(dto).pipe(
+      this.errorMapper.mapToErrorMessage,
       switchMap((res) => this._navigateToProjectPage(res?.ProjectId)),
       this.snackbarFeedback.showFeedbackSnackbars<boolean, HttpErrorResponse>(
         {
-          errorMessage: (err: APIErrorResponse<APIErrorBody>) =>
-            err.error.Message,
           successMessage: "You've successfully joined the project",
         },
         {
           showLoadingMessage: false,
+          showErrorMessage: false,
         }
       ),
       this.requestStateController.handleRequest(requestState)
@@ -54,6 +53,7 @@ export class InvitationsController {
     requestState?: RequestState
   ) {
     return this.api.sendInvitation(projectId, emails).pipe(
+      this.errorMapper.mapToErrorMessage,
       this.snackbarFeedback.showFeedbackSnackbars(
         {
           successMessage: 'Invitation emails successfully sent',
