@@ -15,7 +15,7 @@ type ProjectRouterGroups struct {
 
 func GetProjectRouterGroups(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
 	userRepo := auth.NewUserRepository(conn)
-	projectRepo := NewProjectRepository(userRepo, conn)
+	projectRepo := NewProjectCommandsRepository(userRepo, conn)
 	requiresAuthRoutes := router.Group("", auth.IsAuthenticatedMiddleware())
 
 	projectsRoutes := requiresAuthRoutes.Group("/projects")
@@ -31,10 +31,10 @@ func GetProjectRouterGroups(router *gin.Engine, conn *sql.DB) ProjectRouterGroup
 }
 func RegisterProjectsEndpoints(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
 	userRepo := auth.NewUserRepository(conn)
-	projectRepo := NewProjectRepository(userRepo, conn)
-	// projectInvitationRepo := NewProjectInvitationRepository(conn)
-	// userService := auth.NewUserService(userRepo)
-	pc := NewProjectController(projectRepo)
+	projectRepo := NewProjectCommandsRepository(userRepo, conn)
+	projectQueriesRepo := NewProjectQueriesRepository(conn)
+
+	pc := NewProjectController(projectRepo, projectQueriesRepo)
 
 	projectRouteGroups := GetProjectRouterGroups(router, conn)
 	singleProjectRoutes := projectRouteGroups.SingleProjectRoutes
@@ -43,11 +43,8 @@ func RegisterProjectsEndpoints(router *gin.Engine, conn *sql.DB) ProjectRouterGr
 	projectsRoutes.GET("", pc.GetUserProjects)
 
 	projectsRoutes.POST("", pc.CreateProject)
-	// projectsRoutes.POST("/invitation/accept", pc.AcceptInvitation)
 	singleProjectRoutes.GET("", pc.GetProject)
 	singleProjectRoutes.GET("/members", pc.GetProjectMembers)
-	// singleProjectRoutes.POST("/members/invite", pc.InviteUserToProject)
-	// singleProjectRoutes.POST("/members/invitation/accept", pc.AcceptInvitation)
 
 	return projectRouteGroups
 

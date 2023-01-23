@@ -6,4 +6,5 @@ export type ProjectDTO = {
   Key: string;
   Icon: string;
   Members: ProjectMember[];
+  Creator: ProjectMember;
 };

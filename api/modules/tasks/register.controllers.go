@@ -14,7 +14,7 @@ import (
 func RegisterTasksEndpoints(singleProjectRoutes *gin.RouterGroup, conn *sql.DB) {
 	userRepo := auth.NewUserRepository(conn)
 
-	projectRepo := project.NewProjectRepository(userRepo, conn)
+	projectRepo := project.NewProjectCommandsRepository(userRepo, conn)
 	taskStatusRepo := tasks_repositories.NewTaskStatusRepository(conn)
 	sprintRepo := tasks_repositories.NewSprintRepository(conn)
 	taskQueriesRepo := tasks_repositories.NewTaskQueriesRepository(userRepo, projectRepo, conn)

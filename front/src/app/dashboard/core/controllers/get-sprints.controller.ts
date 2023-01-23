@@ -42,14 +42,14 @@ export class GetSprintsController {
     return (source: Observable<TasksGroupedBySprintsDTO>) =>
       source.pipe(
         map((tasksGroupedBySprint) => {
-          const sprintsTasks = tasksGroupedBySprint.map(
+          const sprintsTasks = tasksGroupedBySprint?.map(
             ({ Sprint, Tasks }) => ({
               Sprint,
               Tasks: Tasks.map((t) => new Task(t)),
             })
           );
 
-          return sprintsTasks;
+          return sprintsTasks || [];
         }),
         tap((sprintsTasks) =>
           this.sprintsService.updateSprintList(sprintsTasks)

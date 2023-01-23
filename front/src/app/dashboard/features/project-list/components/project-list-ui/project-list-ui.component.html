@@ -10,6 +10,7 @@
   >
     <div>Name</div>
     <div>Key</div>
+    <div>Creator</div>
   </div>
 
   <div class="flex flex-col gap-4" *ngIf="!loading; else spinner">
@@ -26,6 +27,12 @@
           <div>{{ project.Name }}</div>
         </a>
         <div>{{ project.Key }}</div>
+
+        <jira-member-icon
+          class="w-fit"
+          [member]="project?.Creator"
+          [showTooltip]="true"
+        ></jira-member-icon>
       </div>
     </ng-container>
   </div>

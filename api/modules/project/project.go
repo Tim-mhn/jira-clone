@@ -6,10 +6,11 @@ import (
 )
 
 type Project struct {
-	Id   string
-	Name string
-	Key  string
-	Icon string
+	Id      string
+	Name    string
+	Key     string
+	Icon    string
+	Creator auth.User
 }
 
 type ProjectWithMembers struct {

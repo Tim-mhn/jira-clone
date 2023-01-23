@@ -15,11 +15,11 @@ import (
 
 type TaskQueriesRepository struct {
 	um   *auth.UserRepository
-	pm   *project.ProjectRepository
+	pm   *project.ProjectCommandsRepository
 	conn *sql.DB
 }
 
-func NewTaskQueriesRepository(um *auth.UserRepository, pm *project.ProjectRepository, conn *sql.DB) *TaskQueriesRepository {
+func NewTaskQueriesRepository(um *auth.UserRepository, pm *project.ProjectCommandsRepository, conn *sql.DB) *TaskQueriesRepository {
 	taskRepo := TaskQueriesRepository{}
 	taskRepo.um = um
 	taskRepo.pm = pm

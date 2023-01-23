@@ -13,6 +13,8 @@ export class MemberIconComponent implements OnInit {
     this.classes = s === 'md' ? 'h-6 w-6' : 'h-5 w-5';
   }
 
+  @Input() showTooltip = false;
+
   classes: string;
   imgSize: number;
   constructor() {}

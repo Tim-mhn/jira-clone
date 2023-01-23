@@ -1,7 +1,12 @@
 <img
+  [timTooltipOrigin]="showTooltip ? memberNameTooltip : null"
   [src]="member?.Icon || EMPTY_MEMBER_ICON"
   [height]="imgSize"
   [width]="imgSize"
   class="w-5 h-5 border border-gray-100 rounded-full"
   [ngClass]="classes"
 />
+
+<tim-tooltip #memberNameTooltip>
+  {{ member?.Name }}
+</tim-tooltip>

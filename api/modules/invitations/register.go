@@ -18,7 +18,7 @@ func RegisterInvitationsEndpoints(conn *sql.DB, projectRouterGroups project.Proj
 func buildInvitationsController(conn *sql.DB) *InvitationsController {
 	invitationsRepo := NewProjectInvitationRepository(conn)
 	userRepo := auth.NewUserRepository(conn)
-	projectRepo := project.NewProjectRepository(userRepo, conn)
+	projectRepo := project.NewProjectCommandsRepository(userRepo, conn)
 	controller := NewInvitationsController(invitationsRepo, projectRepo, userRepo)
 	return controller
 }

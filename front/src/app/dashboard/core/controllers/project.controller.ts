@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { forkJoin, map, Observable, switchMap, tap } from 'rxjs';
 import { DashboardCoreProvidersModule } from '../core-apis-providers.module';
@@ -22,7 +22,7 @@ export class ProjectController {
     private projectListAPI: ProjectListAPI,
     private projectCommandsAPI: ProjectCommandsAPI,
     private feedbackSnackbars: SnackbarFeedbackService,
-    private projectListService: ProjectListService
+    @Optional() private projectListService: ProjectListService
   ) {}
 
   getProject(projectId: string): Observable<Project> {
@@ -34,14 +34,8 @@ export class ProjectController {
       allTaskStatus: allTaskStatus$,
     }).pipe(
       map(({ projectInfo, allTaskStatus }) => {
-        const { Id, Name, Members, Key, Icon } = projectInfo;
-
         const projectData: Project = {
-          Id,
-          Name,
-          Members,
-          Key,
-          Icon,
+          ...projectInfo,
           AllTaskStatus: allTaskStatus,
         };
         return projectData;

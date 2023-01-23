@@ -7,6 +7,7 @@ export interface ProjectInfo {
   Name: string;
   Key: string;
   Icon: string;
+  Creator: ProjectMember;
 }
 
 export type ProjectInfoList = ProjectInfo[];

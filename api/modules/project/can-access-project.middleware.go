@@ -8,7 +8,7 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
 )
 
-func CanAccessProjectMiddleware(pm *ProjectRepository) gin.HandlerFunc {
+func CanAccessProjectMiddleware(pm *ProjectCommandsRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		projectID := c.Param("projectID")

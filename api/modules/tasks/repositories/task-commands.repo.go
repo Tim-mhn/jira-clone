@@ -14,11 +14,11 @@ import (
 
 type TaskCommandsRepository struct {
 	um   *auth.UserRepository
-	pm   *project.ProjectRepository
+	pm   *project.ProjectCommandsRepository
 	conn *sql.DB
 }
 
-func NewTaskCommandsRepository(um *auth.UserRepository, pm *project.ProjectRepository, conn *sql.DB) *TaskCommandsRepository {
+func NewTaskCommandsRepository(um *auth.UserRepository, pm *project.ProjectCommandsRepository, conn *sql.DB) *TaskCommandsRepository {
 	taskRepo := TaskCommandsRepository{}
 	taskRepo.um = um
 	taskRepo.pm = pm
