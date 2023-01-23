@@ -20,8 +20,8 @@ func NewProjectRepository(um *auth.UserRepository, conn *sql.DB) *ProjectReposit
 
 }
 
-func (pm *ProjectRepository) CreateProject(name string) (Project, error) {
-	query := fmt.Sprintf(`INSERT INTO project (name) VALUES ('%s') RETURNING id`, name)
+func (pm *ProjectRepository) CreateProject(name string, key string) (Project, error) {
+	query := fmt.Sprintf(`INSERT INTO project (name, key) VALUES ('%s', '%s') RETURNING id`, name, key)
 
 	var projectID string
 
@@ -46,6 +46,7 @@ func (pm *ProjectRepository) CreateProject(name string) (Project, error) {
 	return Project{
 		Id:   projectID,
 		Name: name,
+		Key:  key,
 	}, nil
 }
 

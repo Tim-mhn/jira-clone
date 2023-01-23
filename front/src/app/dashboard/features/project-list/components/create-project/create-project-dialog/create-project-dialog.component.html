@@ -1,0 +1,39 @@
+<jira-dialog-container [formGroup]="newProjectForm">
+  <div class="flex flex-col gap-4 relative pb-16">
+    <simple-dialog-title>Create a new project</simple-dialog-title>
+    <tim-input-field name="Project name">
+      <tim-input-label>Name</tim-input-label>
+      <tim-input
+        [flexWidth]="true"
+        formControlName="name"
+        placeholder="My new project"
+      ></tim-input>
+    </tim-input-field>
+
+    <tim-input-field name="Key">
+      <tim-input-label>Key</tim-input-label>
+      <tim-input
+        [flexWidth]="true"
+        formControlName="key"
+        placeholder=""
+      ></tim-input>
+    </tim-input-field>
+  </div>
+</jira-dialog-container>
+
+<tim-dialog-footer>
+  <div class="flex flex-grow justify-end gap-2">
+    <button tim-faint-button color="primary" timCloseDialogButton>
+      Cancel
+    </button>
+    <button
+      tim-flat-button
+      color="primary"
+      [loading]="requestState?.isPending"
+      type="submit"
+      (click)="createProject()"
+    >
+      Create
+    </button>
+  </div>
+</tim-dialog-footer>

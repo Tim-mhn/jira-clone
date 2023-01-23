@@ -1,4 +1,4 @@
 <jira-project-list-ui
-  [projectList]="projectList"
+  [projectList]="projectList$ | async"
   [loading]="requestState.isPending"
 ></jira-project-list-ui>

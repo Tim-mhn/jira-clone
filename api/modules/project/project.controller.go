@@ -14,6 +14,7 @@ type projectController struct {
 
 type NewProjectDTO struct {
 	Name string `json:"name"`
+	Key  string `json:"key"`
 }
 
 type AddMemberToProjectDTO struct {
@@ -33,7 +34,7 @@ func (pc *projectController) CreateProject(c *gin.Context) {
 		return
 	}
 
-	newProject, err := pc.projectRepo.CreateProject(newProjectDTO.Name)
+	newProject, err := pc.projectRepo.CreateProject(newProjectDTO.Name, newProjectDTO.Key)
 	user, _ := auth.GetUserFromRequestContext(c)
 
 	if err != nil {

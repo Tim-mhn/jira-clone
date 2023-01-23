@@ -2,9 +2,10 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { ProjectListComponent } from './project-list.page';
-import { ProjectListUiModule } from '../project-list-ui/project-list-ui.module';
+import { ProjectListUiModule } from '../components/project-list-ui/project-list-ui.module';
 import { ProjectListAPI } from '../../../core/apis/project-list.api';
 import { DashboardCoreProvidersModule } from '../../../core/core-apis-providers.module';
+import { ProjectListProvidersModule } from '../project-list-providers.module';
 
 const routes: Routes = [
   {
@@ -19,6 +20,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     ProjectListUiModule,
     DashboardCoreProvidersModule,
+    ProjectListProvidersModule,
   ],
   providers: [ProjectListAPI],
 })
