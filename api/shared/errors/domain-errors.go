@@ -9,10 +9,13 @@ type DomainErrorCode interface {
 	String() string
 	UserFriendlyString() string
 }
+
+const ()
+
 type DomainError[T DomainErrorCode] struct {
-	Source  error
-	Code    T
-	NoError bool
+	Source   error
+	Code     T
+	HasError bool
 }
 
 type ErrorBuilder struct {
@@ -29,5 +32,27 @@ func (b ErrorBuilder) LogAndBuildError(functionName string, rootError error) err
 func GetErrorBuilderForContext(context string) ErrorBuilder {
 	return ErrorBuilder{
 		context: context,
+	}
+}
+
+func UnexpectedErrorCode() string {
+	return "UnexpectedError"
+}
+
+func UnexpectedErrorMessage() string {
+	return "An unexpected error has occurred"
+}
+
+func NoError[T DomainErrorCode]() DomainError[T] {
+	return DomainError[T]{
+		HasError: false,
+	}
+}
+
+func BuildError[T DomainErrorCode](code T, source error) DomainError[T] {
+	return DomainError[T]{
+		Source:   source,
+		Code:     code,
+		HasError: true,
 	}
 }

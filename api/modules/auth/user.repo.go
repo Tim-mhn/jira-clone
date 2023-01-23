@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,7 +19,7 @@ func NewUserRepository(conn *sql.DB) *UserRepository {
 	return &um
 }
 
-func (um *UserRepository) CreateUser(username string, email string, password string) (string, error) {
+func (um *UserRepository) CreateUser(username string, email string, password string) (string, UsersError) {
 
 	hashedPwd, _ := hashAndSalt(password)
 	query := fmt.Sprintf(`INSERT INTO "user" (name, email, password) VALUES ('%s', '%s', '%s') RETURNING id, name, email;`, username, email, hashedPwd)
@@ -26,7 +27,7 @@ func (um *UserRepository) CreateUser(username string, email string, password str
 	rows, err := um.conn.Query(query)
 
 	if err != nil {
-		return "", err
+		return "", shared_errors.BuildError(OtherUserError, err)
 	}
 
 	defer rows.Close()
@@ -35,52 +36,53 @@ func (um *UserRepository) CreateUser(username string, email string, password str
 		err := rows.Scan(&newUser.Id, &newUser.Name, &newUser.Email)
 
 		if err != nil {
-			return "", err
+			return "", shared_errors.BuildError(OtherUserError, err)
 		}
 		fmt.Println(newUser)
 
 	}
 
-	return newUser.Id, err
+	return newUser.Id, NoUsersError()
+
 }
 
-func (um *UserRepository) GetUserByID(userID string) (User, error) {
+func (um *UserRepository) GetUserByID(userID string) (User, UsersError) {
 
 	var user User
 	query := fmt.Sprintf(`SELECT id, name, email FROM "user" WHERE id='%s' LIMIT 1;`, userID)
 	rows, err := um.conn.Query(query)
 
 	if err != nil {
-		return user, err
+		return user, shared_errors.BuildError(OtherUserError, err)
 	}
 
 	defer rows.Close()
 
 	if !rows.Next() {
 
-		return User{}, fmt.Errorf(`could not find user %s`, userID)
+		return User{}, shared_errors.BuildError(UserNotFound, nil)
 
 	}
 
 	scanError := rows.Scan(&user.Id, &user.Name, &user.Email)
 
 	if scanError != nil {
-		return User{}, scanError
+		return User{}, shared_errors.BuildError(OtherUserError, scanError)
 	}
 
 	userWithIcon := BuildUserWithIcon(user.Id, user.Name, user.Email)
-	return userWithIcon, scanError
+	return userWithIcon, NoUsersError()
 
 }
 
-func (um *UserRepository) getUserInfoByEmail(email string) (UserWithPassword, UsersError, error) {
+func (um *UserRepository) getUserInfoByEmail(email string) (UserWithPassword, UsersError) {
 
 	var userWithPwd UserWithPassword
 	query := fmt.Sprintf(`SELECT password, email, id, name FROM "user" WHERE email='%s' LIMIT 1;`, email)
 	rows, err := um.conn.Query(query)
 
 	if err != nil {
-		return UserWithPassword{}, NoUserError, err
+		return UserWithPassword{}, shared_errors.BuildError(UserNotFound, err)
 	}
 
 	defer rows.Close()
@@ -88,33 +90,33 @@ func (um *UserRepository) getUserInfoByEmail(email string) (UserWithPassword, Us
 	userFound := rows.Next()
 
 	if !userFound {
-		return UserWithPassword{}, UserNotFound, nil
+		return UserWithPassword{}, shared_errors.BuildError(UserNotFound, nil)
 	}
 
 	err = rows.Scan(&userWithPwd.Password, &userWithPwd.Email, &userWithPwd.Id, &userWithPwd.Name)
 
 	if err != nil {
-		return UserWithPassword{}, NoUserError, err
+		return UserWithPassword{}, shared_errors.BuildError(OtherUserError, err)
 	}
 
-	return userWithPwd, NoUserError, nil
+	return userWithPwd, NoUsersError()
 }
 
-func (um *UserRepository) SignInByEmail(email string, password string) (User, error) {
+func (um *UserRepository) SignInByEmail(email string, password string) (User, UsersError) {
 
-	userWithPwd, _, err := um.getUserInfoByEmail(email)
+	userWithPwd, userError := um.getUserInfoByEmail(email)
 
-	if err != nil {
-		return User{}, err
+	if userError.HasError {
+		return User{}, userError
 	}
 
 	if !passwordIsCorrect(password, userWithPwd.Password) {
-		return User{}, fmt.Errorf("invalid password")
+		return User{}, shared_errors.BuildError(InvalidCredentials, nil)
 	}
 
 	user := BuildUserWithIcon(userWithPwd.Id, userWithPwd.Name, userWithPwd.Email)
 
-	return user, nil
+	return user, NoUsersError()
 }
 
 func hashAndSalt(pwd string) (string, error) {

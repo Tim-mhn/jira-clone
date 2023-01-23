@@ -64,10 +64,7 @@ func (repo *ProjectInvitationRepository) CheckInvitationIsValid(invitationTicket
 	rows, err := query.RunWith(repo.conn).Query()
 
 	if err != nil {
-		return ProjectInvitation{}, InvitationError{
-			Source: err,
-			Code:   OtherInvitationError,
-		}
+		return ProjectInvitation{}, buildInvitationsError(OtherInvitationError, err)
 	}
 	defer rows.Close()
 
@@ -75,36 +72,22 @@ func (repo *ProjectInvitationRepository) CheckInvitationIsValid(invitationTicket
 	if rows.Next() {
 		rows.Scan(&invitation.ID, &invitation.ProjectID, &invitation.Token, &invitation.Used, &invitation.GuestEmail, &invitation.Expired)
 	} else {
-		return ProjectInvitation{}, InvitationError{
-			Code:   InvitationTokenNotFound,
-			Source: nil,
-		}
+		return ProjectInvitation{}, buildInvitationsError(InvitationTokenNotFound, nil)
 	}
 
 	if invitation.GuestEmail != invitationTicket.Email {
-		return ProjectInvitation{}, InvitationError{
-			Code:   InvitationEmailMismatch,
-			Source: nil,
-		}
+		return ProjectInvitation{}, buildInvitationsError(InvitationEmailMismatch, nil)
 	}
 
 	if invitation.Used {
-		return ProjectInvitation{}, InvitationError{
-			Code:   InvitationAlreadyUsed,
-			Source: nil,
-		}
+		return ProjectInvitation{}, buildInvitationsError(InvitationAlreadyUsed, nil)
 	}
 
 	if invitation.Expired {
-		return ProjectInvitation{}, InvitationError{
-			Code:   InvitationExpired,
-			Source: nil,
-		}
+		return ProjectInvitation{}, buildInvitationsError(InvitationExpired, nil)
 	}
 
-	return invitation, InvitationError{
-		NoError: true,
-	}
+	return invitation, NoInvitationsError()
 
 }
 

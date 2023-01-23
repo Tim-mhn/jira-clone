@@ -35,10 +35,10 @@ func (err InvitationErrorCode) String() string {
 		return "InvitationValid"
 
 	case OtherInvitationError:
-		return "OtherInvitationError"
+		return shared_errors.UnexpectedErrorCode()
 	}
 
-	return ""
+	return shared_errors.UnexpectedErrorCode()
 
 }
 
@@ -60,8 +60,16 @@ func (err InvitationErrorCode) UserFriendlyString() string {
 		return ""
 
 	case OtherInvitationError:
-		return "An unexpected error has occurred"
+		return shared_errors.UnexpectedErrorMessage()
 	}
 
-	return ""
+	return shared_errors.UnexpectedErrorMessage()
+}
+
+func NoInvitationsError() InvitationError {
+	return shared_errors.NoError[InvitationErrorCode]()
+}
+
+func buildInvitationsError(code InvitationErrorCode, source error) InvitationError {
+	return shared_errors.BuildError(code, source)
 }

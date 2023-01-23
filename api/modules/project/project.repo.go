@@ -107,8 +107,8 @@ func (pm *ProjectRepository) AddMemberToProject(projectID string, userID string)
 
 	_, getUserErr := pm.um.GetUserByID(userID)
 
-	if getUserErr != nil {
-		return getUserErr
+	if getUserErr.HasError {
+		return getUserErr.Source
 	}
 
 	isInProject, err := pm.MemberIsInProject(projectID, userID)

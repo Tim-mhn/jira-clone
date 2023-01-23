@@ -110,32 +110,21 @@ func buildInvitationEmailInfoList(projectName string, tokens InvitationTokens, g
 func (service *ProjectInvitationService) AcceptProjectInvitation(invitationTicket InvitationTicket) (AcceptInvitationOutput, InvitationError) {
 	invitation, invitationError := service.repo.CheckInvitationIsValid(invitationTicket)
 
-	if !invitationError.NoError {
+	if invitationError.HasError {
 		return AcceptInvitationOutput{}, invitationError
 	}
 
 	service.repo.MarkInvitationAsUsed(invitation.ID)
 
-	user, _, err := service.userService.GetUserFromEmail(invitationTicket.Email)
+	user, _ := service.userService.GetUserFromEmail(invitationTicket.Email)
+
+	err := service.projectRepo.AddMemberToProject(invitation.ProjectID, user.Id)
 
 	if err != nil {
-		return AcceptInvitationOutput{}, InvitationError{
-			Source: err,
-			Code:   OtherInvitationError,
-		}
-	}
-	err = service.projectRepo.AddMemberToProject(invitation.ProjectID, user.Id)
-
-	if err != nil {
-		return AcceptInvitationOutput{}, InvitationError{
-			Source: err,
-			Code:   OtherInvitationError,
-		}
+		return AcceptInvitationOutput{}, buildInvitationsError(OtherInvitationError, err)
 	}
 	return AcceptInvitationOutput{
-			ProjectId: invitation.ProjectID,
-		}, InvitationError{
-			NoError: true,
-		}
+		ProjectId: invitation.ProjectID,
+	}, NoInvitationsError()
 
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 )
 
 type userController struct {
@@ -22,10 +23,10 @@ func (uc *userController) SignUp(c *gin.Context) {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
-	userId, dbError := uc.um.CreateUser(userDTO.Name, userDTO.Email, userDTO.Password)
+	userId, userError := uc.um.CreateUser(userDTO.Name, userDTO.Email, userDTO.Password)
 
-	if dbError != nil {
-		c.IndentedJSON(http.StatusUnprocessableEntity, dbError.Error())
+	if userError.HasError {
+		c.IndentedJSON(http.StatusUnprocessableEntity, userError.Code.UserFriendlyString())
 		return
 
 	}
@@ -42,8 +43,9 @@ func (uc *userController) SignIn(c *gin.Context) {
 
 	user, signInErr := uc.um.SignInByEmail(signInDTO.Email, signInDTO.Password)
 
-	if signInErr != nil {
-		c.IndentedJSON(http.StatusForbidden, signInErr.Error())
+	if signInErr.HasError {
+		apiError := shared_errors.BuildAPIErrorFromDomainError(signInErr)
+		c.IndentedJSON(http.StatusForbidden, apiError)
 		return
 	}
 

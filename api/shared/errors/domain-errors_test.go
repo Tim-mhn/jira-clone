@@ -4,14 +4,11 @@ import "testing"
 
 func TestDomainError(t *testing.T) {
 
-	t.Run("DomainError should have NoError=false by default", func(t *testing.T) {
-		domainError := testDomainError{
-			Source: nil,
-			Code:   ERROR_1,
-		}
+	t.Run("BuildError should set HasError=true ", func(t *testing.T) {
+		domainError := BuildError(ERROR_1, nil)
 
-		if domainError.NoError {
-			t.Fatalf("NoError should be false. Got %t", domainError.NoError)
+		if !domainError.HasError {
+			t.Fatalf("HasError should be true. Got %t", domainError.HasError)
 		}
 	})
 }

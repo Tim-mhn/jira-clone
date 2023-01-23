@@ -55,7 +55,7 @@ func (controller *InvitationsController) AcceptInvitation(c *gin.Context) {
 
 	output, err := controller.service.AcceptProjectInvitation(InvitationTicket(acceptInvitationDTO))
 
-	if !err.NoError {
+	if err.HasError {
 		apiErrorResponse := shared_errors.BuildAPIErrorFromDomainError(err)
 		c.IndentedJSON(http.StatusInternalServerError, apiErrorResponse)
 		return
