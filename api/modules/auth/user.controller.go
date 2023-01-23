@@ -26,7 +26,8 @@ func (uc *userController) SignUp(c *gin.Context) {
 	userId, userError := uc.um.CreateUser(userDTO.Name, userDTO.Email, userDTO.Password)
 
 	if userError.HasError {
-		c.IndentedJSON(http.StatusUnprocessableEntity, userError.Code.UserFriendlyString())
+		apiError := shared_errors.BuildAPIErrorFromDomainError(userError)
+		c.IndentedJSON(http.StatusInternalServerError, apiError)
 		return
 
 	}

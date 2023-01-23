@@ -27,7 +27,8 @@ func (um *UserRepository) CreateUser(username string, email string, password str
 	rows, err := um.conn.Query(query)
 
 	if err != nil {
-		return "", shared_errors.BuildError(OtherUserError, err)
+		userError := mapDBToDomainError(err)
+		return "", userError
 	}
 
 	defer rows.Close()
@@ -82,7 +83,7 @@ func (um *UserRepository) getUserInfoByEmail(email string) (UserWithPassword, Us
 	rows, err := um.conn.Query(query)
 
 	if err != nil {
-		return UserWithPassword{}, shared_errors.BuildError(UserNotFound, err)
+		return UserWithPassword{}, shared_errors.BuildError(UserEmailNotFound, err)
 	}
 
 	defer rows.Close()
@@ -90,7 +91,7 @@ func (um *UserRepository) getUserInfoByEmail(email string) (UserWithPassword, Us
 	userFound := rows.Next()
 
 	if !userFound {
-		return UserWithPassword{}, shared_errors.BuildError(UserNotFound, nil)
+		return UserWithPassword{}, shared_errors.BuildError(UserEmailNotFound, nil)
 	}
 
 	err = rows.Scan(&userWithPwd.Password, &userWithPwd.Email, &userWithPwd.Id, &userWithPwd.Name)

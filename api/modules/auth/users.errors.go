@@ -6,7 +6,9 @@ type UsersErrorCode int
 
 const (
 	UserNotFound UsersErrorCode = iota
+	UserEmailNotFound
 	InvalidCredentials
+	DuplicateEmail
 	OtherUserError
 )
 
@@ -16,8 +18,13 @@ func (code UsersErrorCode) String() string {
 	case UserNotFound:
 		return "NoUserError"
 
+	case UserEmailNotFound:
+		return "UserEmailNotFound"
 	case InvalidCredentials:
 		return "InvalidCredentials"
+
+	case DuplicateEmail:
+		return "DuplicateEmail"
 
 	}
 
@@ -29,10 +36,12 @@ func (code UsersErrorCode) UserFriendlyString() string {
 
 	case UserNotFound:
 		return "User not found"
-
+	case UserEmailNotFound:
+		return "No account with this email exists"
 	case InvalidCredentials:
-		return "Invalid credentials"
-
+		return "Password is incorrect"
+	case DuplicateEmail:
+		return "This email has already been taken"
 	}
 
 	return shared_errors.UnexpectedErrorMessage()
