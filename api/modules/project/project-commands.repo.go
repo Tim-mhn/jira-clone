@@ -10,14 +10,16 @@ import (
 )
 
 type ProjectCommandsRepository struct {
-	um   *auth.UserRepository
-	conn *sql.DB
+	um      *auth.UserRepository
+	queries *ProjectQueriesRepository
+	conn    *sql.DB
 }
 
 func NewProjectCommandsRepository(um *auth.UserRepository, conn *sql.DB) *ProjectCommandsRepository {
 	return &ProjectCommandsRepository{
-		um:   um,
-		conn: conn,
+		um:      um,
+		queries: NewProjectQueriesRepository(conn),
+		conn:    conn,
 	}
 
 }
@@ -93,30 +95,6 @@ func (pm *ProjectCommandsRepository) GetProjectByID(projectID string) (Project, 
 
 }
 
-func (pm *ProjectCommandsRepository) MemberIsInProject(projectID string, memberID string) (bool, error) {
-
-	var resultsCount int
-	query := fmt.Sprintf(`SELECT COUNT(*) FROM "project_user" WHERE project_id='%s' AND user_id='%s' LIMIT 1`, projectID, memberID)
-
-	rows, err := pm.conn.Query(query)
-
-	if err != nil {
-		return false, err
-	}
-
-	defer rows.Close()
-
-	if rows.Next() {
-		err := rows.Scan(&resultsCount)
-
-		if err != nil {
-			return false, err
-		}
-	}
-
-	return resultsCount > 0, nil
-}
-
 func (pm *ProjectCommandsRepository) AddMemberToProject(projectID string, userID string) error {
 
 	_, getProjectErr := pm.GetProjectByID(projectID)
@@ -131,7 +109,7 @@ func (pm *ProjectCommandsRepository) AddMemberToProject(projectID string, userID
 		return getUserErr.Source
 	}
 
-	isInProject, err := pm.MemberIsInProject(projectID, userID)
+	isInProject, err := pm.queries.MemberIsInProject(projectID, userID)
 
 	if err != nil {
 		return err
@@ -150,5 +128,18 @@ func (pm *ProjectCommandsRepository) AddMemberToProject(projectID string, userID
 	defer rows.Close()
 
 	return nil
+
+}
+
+func (pm *ProjectCommandsRepository) DeleteProjectByID(projectID string) error {
+
+	psql := database.GetPsqlQueryBuilder()
+	sql := psql.Update("project").Set("deleted", true).Where(sq.Eq{
+		"id": projectID,
+	})
+
+	_, err := sql.RunWith(pm.conn).Exec()
+
+	return err
 
 }

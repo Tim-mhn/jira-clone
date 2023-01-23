@@ -5,7 +5,7 @@ import { DashboardCoreProvidersModule } from '../core-apis-providers.module';
 import { ProjectListAPI } from '../apis/project-list.api';
 import { SingleProjectAPI } from '../apis/single-project.api';
 import { TaskStatusAPI } from '../apis/task-status.api';
-import { Project, ProjectInfoList } from '../models/project';
+import { Project, ProjectInfo, ProjectInfoList } from '../models/project';
 import { ProjectCommandsAPI } from '../apis/project-commands.api';
 import { NewProjectDTO } from '../dtos';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
@@ -62,6 +62,20 @@ export class ProjectController {
         loadingMessage: 'Creating project ...',
         successMessage: `${newProject.name} successfully created`,
       }),
+      this.requestStateController.handleRequest(requestState)
+    );
+  }
+
+  deleteProjectAndUpdateList(
+    projectInfo: ProjectInfo,
+    requestState: RequestState
+  ) {
+    return this.projectCommandsAPI.deleteProject(projectInfo.Id).pipe(
+      this.feedbackSnackbars.showFeedbackSnackbars({
+        loadingMessage: 'Deleting project ...',
+        successMessage: `Project ${projectInfo.Name} successfully deleted`,
+      }),
+      switchMap(() => this.getUserProjectsAndUpdateList()),
       this.requestStateController.handleRequest(requestState)
     );
   }

@@ -9,20 +9,17 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/tim-mhn/figma-clone/database"
 	"github.com/tim-mhn/figma-clone/modules/auth"
-	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 )
 
 type TaskQueriesRepository struct {
 	um   *auth.UserRepository
-	pm   *project.ProjectCommandsRepository
 	conn *sql.DB
 }
 
-func NewTaskQueriesRepository(um *auth.UserRepository, pm *project.ProjectCommandsRepository, conn *sql.DB) *TaskQueriesRepository {
+func NewTaskQueriesRepository(um *auth.UserRepository, conn *sql.DB) *TaskQueriesRepository {
 	taskRepo := TaskQueriesRepository{}
 	taskRepo.um = um
-	taskRepo.pm = pm
 	taskRepo.conn = conn
 
 	return &taskRepo

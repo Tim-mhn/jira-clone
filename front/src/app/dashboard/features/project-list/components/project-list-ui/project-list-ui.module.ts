@@ -7,6 +7,7 @@ import { ProjectListUiComponent } from './project-list-ui.component';
 import { CreateProjectModule } from '../create-project/create-project.module';
 import { BoardContentProvidersModule } from '../../../board/board-providers.module';
 import { MemberComponentsModule } from '../../../../../shared/components/member/member-components.module';
+import { DeleteProjectModule } from '../../../../core/components/delete-project/delete-project.module';
 
 @NgModule({
   declarations: [ProjectListUiComponent],
@@ -18,6 +19,7 @@ import { MemberComponentsModule } from '../../../../../shared/components/member/
     CreateProjectModule,
     BoardContentProvidersModule,
     MemberComponentsModule,
+    DeleteProjectModule,
   ],
   exports: [ProjectListUiComponent],
 })

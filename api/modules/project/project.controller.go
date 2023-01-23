@@ -107,3 +107,19 @@ func (pc *projectController) GetUserProjects(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, userProjects)
 
 }
+
+func (pc *projectController) DeleteProject(c *gin.Context) {
+
+	projectID := GetProjectIDParam(c)
+
+	err := pc.projectCommands.DeleteProjectByID(projectID)
+
+	if err != nil {
+		if err != nil {
+			c.IndentedJSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		c.IndentedJSON(http.StatusOK, nil)
+	}
+}

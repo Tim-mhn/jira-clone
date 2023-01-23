@@ -14,15 +14,15 @@ type ProjectRouterGroups struct {
 }
 
 func GetProjectRouterGroups(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
-	userRepo := auth.NewUserRepository(conn)
-	projectRepo := NewProjectCommandsRepository(userRepo, conn)
+	projectQueries := NewProjectQueriesRepository(conn)
+
 	requiresAuthRoutes := router.Group("", auth.IsAuthenticatedMiddleware())
 
 	projectsRoutes := requiresAuthRoutes.Group("/projects")
 
 	singleProjectRoutes := projectsRoutes.Group(
 		fmt.Sprintf(`/:%s`, PROJECT_ID_ROUTE_PARAM),
-		CanAccessProjectMiddleware(projectRepo))
+		CanAccessProjectMiddleware(projectQueries))
 
 	return ProjectRouterGroups{
 		ProjectsRoutes:      projectsRoutes,
@@ -31,10 +31,10 @@ func GetProjectRouterGroups(router *gin.Engine, conn *sql.DB) ProjectRouterGroup
 }
 func RegisterProjectsEndpoints(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
 	userRepo := auth.NewUserRepository(conn)
+	projectQueries := NewProjectQueriesRepository(conn)
 	projectRepo := NewProjectCommandsRepository(userRepo, conn)
-	projectQueriesRepo := NewProjectQueriesRepository(conn)
 
-	pc := NewProjectController(projectRepo, projectQueriesRepo)
+	pc := NewProjectController(projectRepo, projectQueries)
 
 	projectRouteGroups := GetProjectRouterGroups(router, conn)
 	singleProjectRoutes := projectRouteGroups.SingleProjectRoutes
@@ -44,6 +44,8 @@ func RegisterProjectsEndpoints(router *gin.Engine, conn *sql.DB) ProjectRouterGr
 
 	projectsRoutes.POST("", pc.CreateProject)
 	singleProjectRoutes.GET("", pc.GetProject)
+	singleProjectRoutes.DELETE("", pc.DeleteProject)
+
 	singleProjectRoutes.GET("/members", pc.GetProjectMembers)
 
 	return projectRouteGroups

@@ -13,15 +13,15 @@ import (
 )
 
 type TaskCommandsRepository struct {
-	um   *auth.UserRepository
-	pm   *project.ProjectCommandsRepository
-	conn *sql.DB
+	um             *auth.UserRepository
+	projectQueries *project.ProjectQueriesRepository
+	conn           *sql.DB
 }
 
-func NewTaskCommandsRepository(um *auth.UserRepository, pm *project.ProjectCommandsRepository, conn *sql.DB) *TaskCommandsRepository {
+func NewTaskCommandsRepository(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, conn *sql.DB) *TaskCommandsRepository {
 	taskRepo := TaskCommandsRepository{}
 	taskRepo.um = um
-	taskRepo.pm = pm
+	taskRepo.projectQueries = projectQueries
 	taskRepo.conn = conn
 
 	return &taskRepo
@@ -31,7 +31,7 @@ func (taskRepo *TaskCommandsRepository) CreateTask(projectID string, sprintID st
 
 	log.Printf("create task called")
 
-	_, getProjectErr := taskRepo.pm.GetProjectByID(projectID)
+	_, getProjectErr := taskRepo.projectQueries.GetProjectByID(projectID)
 
 	if getProjectErr != nil {
 		return "", getProjectErr
@@ -98,7 +98,7 @@ func (taskRepo *TaskCommandsRepository) checkCanAssignTaskToMember(taskProjectId
 	if noAssignee {
 		return nil
 	}
-	isInProject, err := taskRepo.pm.MemberIsInProject(taskProjectId, memberId)
+	isInProject, err := taskRepo.projectQueries.MemberIsInProject(taskProjectId, memberId)
 
 	if err != nil {
 		return err

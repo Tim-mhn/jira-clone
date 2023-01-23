@@ -14,12 +14,12 @@ import (
 func RegisterTasksEndpoints(singleProjectRoutes *gin.RouterGroup, conn *sql.DB) {
 	userRepo := auth.NewUserRepository(conn)
 
-	projectRepo := project.NewProjectCommandsRepository(userRepo, conn)
+	projectQueriesRepo := project.NewProjectQueriesRepository(conn)
 	taskStatusRepo := tasks_repositories.NewTaskStatusRepository(conn)
 	sprintRepo := tasks_repositories.NewSprintRepository(conn)
-	taskQueriesRepo := tasks_repositories.NewTaskQueriesRepository(userRepo, projectRepo, conn)
+	taskQueriesRepo := tasks_repositories.NewTaskQueriesRepository(userRepo, conn)
 
-	tc := tasks_controllers.NewTasksController(userRepo, projectRepo, sprintRepo, taskQueriesRepo, conn)
+	tc := tasks_controllers.NewTasksController(userRepo, projectQueriesRepo, sprintRepo, taskQueriesRepo, conn)
 	tsc := tasks_controllers.NewTaskStatusController(taskStatusRepo)
 	sc := tasks_controllers.NewSprintsController(sprintRepo)
 

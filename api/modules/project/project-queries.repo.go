@@ -112,6 +112,30 @@ func (pm *ProjectQueriesRepository) GetProjectsOfUser(userID string) ([]Project,
 
 }
 
+func (pm *ProjectQueriesRepository) MemberIsInProject(projectID string, memberID string) (bool, error) {
+
+	var resultsCount int
+	query := fmt.Sprintf(`SELECT COUNT(*) FROM "project_user" WHERE project_id='%s' AND user_id='%s' LIMIT 1`, projectID, memberID)
+
+	rows, err := pm.conn.Query(query)
+
+	if err != nil {
+		return false, err
+	}
+
+	defer rows.Close()
+
+	if rows.Next() {
+		err := rows.Scan(&resultsCount)
+
+		if err != nil {
+			return false, err
+		}
+	}
+
+	return resultsCount > 0, nil
+}
+
 func getProjectsQueryBuilder() sq.SelectBuilder {
 	psql := database.GetPsqlQueryBuilder()
 
@@ -124,7 +148,10 @@ func getProjectsQueryBuilder() sq.SelectBuilder {
 		`COALESCE("user".email, '') as creator_email`).
 		From("project").
 		Join("project_user ON project_user.project_id=project.id").
-		LeftJoin(`"user" ON project.creator_id="user".id`)
+		LeftJoin(`"user" ON project.creator_id="user".id`).
+		Where(sq.Eq{
+			"deleted": false,
+		})
 
 	return builder
 }
