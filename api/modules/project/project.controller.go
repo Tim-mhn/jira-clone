@@ -13,15 +13,6 @@ type projectController struct {
 	projectQueries  *ProjectQueriesRepository
 }
 
-type NewProjectDTO struct {
-	Name string `json:"name"`
-	Key  string `json:"key"`
-}
-
-type AddMemberToProjectDTO struct {
-	MemberID string `json:"memberID"`
-}
-
 func NewProjectController(projectCommands *ProjectCommandsRepository, projectQueries *ProjectQueriesRepository) *projectController {
 	return &projectController{
 		projectCommands: projectCommands,

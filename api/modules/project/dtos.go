@@ -1,11 +1,10 @@
 package project
 
-type SendInvitationsDTO struct {
-	GuestEmails []string `json:"guestEmails"`
+type NewProjectDTO struct {
+	Name string `json:"name"`
+	Key  string `json:"key"`
 }
 
-type AcceptInvitationInputDTO struct {
-	GuestEmail string `json:"guestEmail"`
-	Token      string `json:"token"`
+type AddMemberToProjectDTO struct {
+	MemberID string `json:"memberID"`
 }
-type AcceptInvitationOutputDTO AcceptInvitationOutput
