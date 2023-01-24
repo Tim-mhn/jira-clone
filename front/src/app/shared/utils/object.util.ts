@@ -1,4 +1,4 @@
-import { objectEntries } from '@tim-mhn/common/objects';
+import { objectEntries, objectValues } from '@tim-mhn/common/objects';
 
 export function concatObjectsIf<U, V, R extends U & V = U & V>(
   obj: U,
@@ -21,4 +21,9 @@ export function removeUndefinedValues<T>(_object: T): Partial<T> {
   });
 
   return objectWithoutUndefinedValues;
+}
+
+export function objectHasOnlyNullOrEmptyStringValues<T>(object: T): boolean {
+  if (!object) return true;
+  return objectValues(object)?.every((value) => !value);
 }

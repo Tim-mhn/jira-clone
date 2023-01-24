@@ -1,5 +1,6 @@
 <img
-  [timTooltipOrigin]="showTooltip ? memberNameTooltip : null"
+  [timTooltipOrigin]="memberNameTooltip"
+  [disabled]="!showTooltip || !member"
   [src]="member?.Icon || EMPTY_MEMBER_ICON"
   [height]="imgSize"
   [width]="imgSize"
