@@ -9,6 +9,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/tim-mhn/figma-clone/database"
 	"github.com/tim-mhn/figma-clone/modules/auth"
+	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 )
 
@@ -46,7 +47,7 @@ func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters ta
 	log.Printf(`tasks query took %d ms`, time.Since(startQuery).Milliseconds())
 	if err != nil {
 
-		return []tasks_models.Task{}, addContextToError(BASE_ERROR_MESSAGE, err)
+		return errorWithEmptyTaskList(addContextToError(BASE_ERROR_MESSAGE, err))
 	}
 
 	defer rows.Close()
@@ -58,7 +59,7 @@ func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters ta
 		task, err := getTaskDataFromRow(rows)
 
 		if err != nil {
-			return []tasks_models.Task{}, addContextToError(BASE_ERROR_MESSAGE, err)
+			return errorWithEmptyTaskList(addContextToError(BASE_ERROR_MESSAGE, err))
 		}
 
 		tasks = append(tasks, task)
@@ -94,31 +95,89 @@ func getTaskDataFromRow(rows *sql.Rows) (tasks_models.Task, error) {
 
 }
 
-func (taskRepo *TaskQueriesRepository) GetTaskById(taskID string) (tasks_models.Task, error) {
+func (taskRepo *TaskQueriesRepository) GetTaskById(taskID string) (tasks_models.Task, tasks_errors.TaskError) {
 	singleTaskQueryBuilder := singleTaskByIdQueryBuilder(taskID)
 
 	rows, err := singleTaskQueryBuilder.RunWith(taskRepo.conn).Query()
 
 	if err != nil {
-		return tasks_models.Task{}, addContextToError(fmt.Sprintf(`error when querying task %s `, taskID), err)
+		return tasks_models.Task{}, tasks_errors.BuildTaskError(tasks_errors.OtherTaskError, err)
 	}
 
 	defer rows.Close()
 
 	if !rows.Next() {
-		return tasks_models.Task{}, fmt.Errorf(`no data found for task %s`, taskID)
+		return tasks_models.Task{}, tasks_errors.BuildTaskError(tasks_errors.TaskNotFound, err)
 	}
 
 	task, err := getTaskDataFromRow(rows)
 
 	if err != nil {
-		return tasks_models.Task{}, err
+		return tasks_models.Task{}, tasks_errors.BuildTaskError(tasks_errors.OtherTaskError, err)
 	}
 
-	return task, nil
+	return task, tasks_errors.NoTaskError()
 
 }
 
+func errorWithEmptyTaskList(err error) ([]tasks_models.Task, error) {
+	return []tasks_models.Task{}, err
+}
+
+// func (taskRepo *TaskQueriesRepository) SearchTasksWithMatchingContentInUserProjects(userID string, searchText string) ([]tasks_models.TaskInfo, error) {
+// 	searchPattern := "%" + searchText + "%"
+
+// 	psql := database.GetPsqlQueryBuilder()
+
+// 	builder := psql.Select("task.id",
+// 		"title",
+// 		"points",
+// 		"description",
+// 		"CONCAT(project.key, '-', task.number) as task_key",
+// 		"project.name as project_name",
+// 		"project.id as project_id").
+// 		From("task").
+// 		LeftJoin("sprint ON task.sprint_id=sprint.id").
+// 		LeftJoin("project ON sprint.project_id=project.id").
+// 		LeftJoin("project_user ON project.id=project_user.project_id").
+// 		Where(sq.Eq{
+// 			"project_user.user_id": userID,
+// 		}).
+// 		Where(sq.Or{
+// 			sq.ILike{
+// 				"title": searchPattern,
+// 			},
+// 			sq.ILike{
+// 				"description": searchPattern,
+// 			},
+// 		}).
+// 		Limit(15)
+
+// 	rows, err := builder.RunWith(taskRepo.conn).Query()
+
+// 	if err != nil {
+// 		return []tasks_models.TaskInfo{}, err
+// 	}
+
+// 	defer rows.Close()
+
+// 	var taskList []tasks_models.TaskInfo
+// 	for rows.Next() {
+
+// 		var task tasks_models.TaskInfo
+// 		var projectName string
+// 		var projectId string
+// 		rows.Scan(&task.Id, &task.Title, &task.Points, &task.Description, &task.Key, &projectName, &projectId)
+
+// 		if err != nil {
+// 			return []tasks_models.TaskInfo{}, err
+// 		}
+// 		taskList = append(taskList, task)
+
+// 	}
+
+// 	return taskList, err
+// }
 func tasksBaseQueryBuilder() sq.SelectBuilder {
 	psql := database.GetPsqlQueryBuilder()
 

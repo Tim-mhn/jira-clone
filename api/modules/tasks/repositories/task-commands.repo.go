@@ -27,20 +27,20 @@ func NewTaskCommandsRepository(um *auth.UserRepository, projectQueries *project.
 	return &taskRepo
 }
 
-func (taskRepo *TaskCommandsRepository) CreateTask(projectID string, sprintID string, title string, assigneeID string, points int, description string) (string, error) {
+func (taskRepo *TaskCommandsRepository) CreateTask(projectID string, sprintID string, title string, assigneeID string, points int, description string) (tasks_models.Task, error) {
 
 	log.Printf("create task called")
 
 	_, getProjectErr := taskRepo.projectQueries.GetProjectByID(projectID)
 
 	if getProjectErr != nil {
-		return "", getProjectErr
+		return tasks_models.Task{}, getProjectErr
 	}
 
 	assignationError := taskRepo.checkCanAssignTaskToMember(projectID, assigneeID)
 
 	if assignationError != nil {
-		return "", assignationError
+		return tasks_models.Task{}, assignationError
 	}
 
 	createTaskQuery := buildCreateTaskQuery(projectID, sprintID, title, assigneeID, points, description)
@@ -48,21 +48,26 @@ func (taskRepo *TaskCommandsRepository) CreateTask(projectID string, sprintID st
 	rows, err := taskRepo.conn.Query(createTaskQuery)
 
 	if err != nil {
-		return "", err
+		return tasks_models.Task{}, err
 	}
 
 	defer rows.Close()
 
-	var taskID string
+	newTask := tasks_models.Task{
+		Points:      points,
+		Title:       &title,
+		Description: &description,
+	}
+
 	if rows.Next() {
-		err := rows.Scan(&taskID)
+		err := rows.Scan(&newTask.Id)
 
 		if err != nil {
-			return "", err
+			return tasks_models.Task{}, err
 		}
 	}
 
-	return taskID, nil
+	return newTask, nil
 }
 
 func buildCreateTaskQuery(projectID string, sprintID string, title string, assigneeID string, points int, description string) string {

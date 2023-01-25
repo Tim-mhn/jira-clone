@@ -40,8 +40,8 @@ func (tc *tasksController) GetTaskByID(c *gin.Context) {
 
 	task, err := tc.taskQueries.GetTaskById(taskID)
 
-	if err != nil {
-		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
+	if err.HasError {
+		buildAndReturnAPIError(c, err)
 		return
 	}
 	c.IndentedJSON(http.StatusOK, task)
@@ -62,7 +62,16 @@ func (tc *tasksController) CreateNewTask(c *gin.Context) {
 		return
 	}
 
-	c.IndentedJSON(http.StatusCreated, newTask)
+	// searchableTask := search.SearchableTask{
+	// 	Id:          *newTask.Id,
+	// 	Title:       *newTask.Title,
+	// 	Description: *newTask.Description,
+	// 	ProjectID:   projectID,
+	// }
+
+	// search.UploadTask(searchableTask)
+
+	c.IndentedJSON(http.StatusCreated, newTask.Id)
 
 }
 
