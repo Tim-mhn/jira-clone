@@ -1,0 +1,11 @@
+<div class="flex flex-grow justify-between items-center gap-4 overflow-hidden">
+  <div class="text-sm text-gray-600 w-14">{{ taskInfo?.Key }}</div>
+  <div class="text-sm text-gray-800 flex flex-grow truncate">
+    {{ taskInfo?.Title }}
+  </div>
+  <div class="flex flex-grow justify-end">
+    <div class="text-xs text-gray-600 italic truncate">
+      {{ taskInfo?.Project?.Name }}
+    </div>
+  </div>
+</div>

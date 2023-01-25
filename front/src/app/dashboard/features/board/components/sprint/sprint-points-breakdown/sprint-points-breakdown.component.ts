@@ -1,10 +1,16 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { ChipColor } from '@tim-mhn/ng-ui/chip';
 import { SprintPointsBreakdown } from '../../../../../core/models/sprint';
 
 @Component({
   selector: 'jira-sprint-points-breakdown',
   templateUrl: './sprint-points-breakdown.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SprintPointsBreakdownComponent implements OnInit {
   @Input() points: SprintPointsBreakdown;

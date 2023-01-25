@@ -4,6 +4,7 @@ import { TimUIDropdownMenuModule } from '@tim-mhn/ng-ui/dropdown-menu';
 import { TimUIDividerModule } from '@tim-mhn/ng-ui/divider';
 import { DashboardHeaderComponent } from './dashboard-header.component';
 import { MemberComponentsModule } from '../../../../shared/components/member/member-components.module';
+import { SearchModule } from '../../../features/search/search.module';
 
 @NgModule({
   declarations: [DashboardHeaderComponent],
@@ -12,6 +13,7 @@ import { MemberComponentsModule } from '../../../../shared/components/member/mem
     TimUIDropdownMenuModule,
     TimUIDividerModule,
     MemberComponentsModule,
+    SearchModule,
   ],
   exports: [DashboardHeaderComponent],
 })

@@ -1,4 +1,10 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+} from '@angular/core';
 import { Validators } from '@angular/forms';
 import { TypedChanges } from '@tim-mhn/common/extra-types';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
@@ -9,6 +15,7 @@ import { Task } from '../../models/task';
 @Component({
   selector: 'jira-task-points-chip',
   templateUrl: './task-points-chip.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskPointsChipComponent implements OnInit, OnChanges {
   @Input() task: Task;

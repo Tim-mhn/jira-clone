@@ -2,13 +2,16 @@ import { ProjectMember } from './project-member';
 import { TaskStatus } from './task-status';
 
 export type ProjectId = string;
-export interface ProjectInfo {
+
+export type ProjectIdName = {
   Id: ProjectId;
   Name: string;
+};
+export type ProjectInfo = ProjectIdName & {
   Key: string;
   Icon: string;
   Creator: ProjectMember;
-}
+};
 
 export type ProjectInfoList = ProjectInfo[];
 

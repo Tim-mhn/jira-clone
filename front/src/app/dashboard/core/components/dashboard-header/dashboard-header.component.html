@@ -4,7 +4,9 @@
   <div class="flex">
     <ng-container *ngTemplateOutlet="icon"></ng-container>
   </div>
-  <div class="flex flex-grow justify-end">
+  <div class="flex flex-grow"></div>
+  <div class="flex flex-grow justify-end gap-4 items-center">
+    <jira-tasks-search-bar></jira-tasks-search-bar>
     <jira-member-icon
       [member]="loggedUser$ | async"
       size="md"

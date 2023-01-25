@@ -1,5 +1,12 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { TaskCommandsAPI } from '../../../../core/apis/task-commands.api';
 import { TaskPositionController } from '../../../../core/controllers/task-position.controller';
 import {
@@ -13,6 +20,7 @@ import {
 @Component({
   selector: 'jira-task-list',
   templateUrl: './task-list.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskListComponent implements OnInit {
   @Input() project: Project;

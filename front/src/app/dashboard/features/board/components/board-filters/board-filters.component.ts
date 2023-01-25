@@ -1,6 +1,14 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
-import { takeUntil } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
 import { objectValues } from '@tim-mhn/common/objects';
 import {
   BoardFilters,
@@ -12,6 +20,7 @@ import { SubscriptionHandler } from '../../../../../shared/services/subscription
 @Component({
   selector: 'jira-board-filters',
   templateUrl: './board-filters.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BoardFiltersComponent implements OnInit {
   @Input() members: ProjectMembers = [];
@@ -21,7 +30,7 @@ export class BoardFiltersComponent implements OnInit {
 
   private _subHandler = new SubscriptionHandler();
 
-  constructor(private tfb: TypedFormBuilder) {}
+  constructor(private tfb: TypedFormBuilder, private cdr: ChangeDetectorRef) {}
 
   filtersForm = this.tfb.group<BoardFilters>({
     assigneeId: this.tfb.control<string[]>([]),
@@ -52,7 +61,10 @@ export class BoardFiltersComponent implements OnInit {
 
   private _showResetFiltersIfValuesAreSelected() {
     this.filtersForm.valueChanges
-      .pipe(takeUntil(this._subHandler.onDestroy$))
+      .pipe(
+        takeUntil(this._subHandler.onDestroy$),
+        finalize(() => this.cdr.detectChanges())
+      )
       .subscribe((filters) => {
         const someFiltersAreSelected = objectValues(filters)?.some(
           (selectedValues) => selectedValues?.length > 0

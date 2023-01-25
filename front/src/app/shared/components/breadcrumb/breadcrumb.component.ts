@@ -1,9 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { BreadcrumbParts, Breadcrumbs } from './breadcrumbs';
 
 @Component({
   selector: 'jira-breadcrumb',
   templateUrl: './breadcrumb.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreadcrumbComponent implements OnInit {
   @Input('breadcrumbs') set _breadcrumbs(bs: BreadcrumbParts) {

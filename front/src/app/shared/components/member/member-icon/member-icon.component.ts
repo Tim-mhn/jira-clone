@@ -1,9 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { ProjectMember } from '../../../../dashboard/core/models/project-member';
 
 @Component({
   selector: 'jira-member-icon',
   templateUrl: './member-icon.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberIconComponent implements OnInit {
   readonly EMPTY_MEMBER_ICON = 'assets/icons/user.png';

@@ -5,6 +5,7 @@ import {
   Output,
   TrackByFunction,
   EventEmitter,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { BoardFilters } from '../../../../core/models/board-filters';
 import { Project } from '../../../../core/models/project';
@@ -15,6 +16,7 @@ import { Task } from '../../../../core/models/task';
 @Component({
   selector: 'jira-board-ui',
   templateUrl: './board-ui.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BoardUiComponent implements OnInit {
   @Input() project: Project;

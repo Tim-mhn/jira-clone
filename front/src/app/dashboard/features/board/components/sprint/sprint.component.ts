@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -15,6 +16,7 @@ import { ProjectMembersService } from '../../state-services/project-members.serv
 @Component({
   selector: 'jira-sprint',
   templateUrl: './sprint.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SprintComponent implements OnInit, AfterViewInit {
   readonly ARROW_RIGHT = ICONS.ARROW_RIGHT_GRAY;
