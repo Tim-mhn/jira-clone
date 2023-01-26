@@ -1,3 +1,9 @@
 database:
   driver: ""
   url:  ""
+mailjet: 
+  api_key: ""
+  secret_key: ""
+  sender: 
+    email: ""
+    name: ""
