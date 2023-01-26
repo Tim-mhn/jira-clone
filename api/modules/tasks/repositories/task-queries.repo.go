@@ -81,7 +81,7 @@ func getTaskDataFromRow(rows *sql.Rows) (tasks_models.Task, error) {
 	err := rows.Scan(
 		&task.Id, &task.Title, &task.Points, &task.Description,
 		&task.Status.Id, &task.Status.Label, &task.Status.Color,
-		&assigneeIdBytes, &assignee.Name, &assignee.Email, &task.Key)
+		&assigneeIdBytes, &assignee.Name, &assignee.Email, &task.Key, &task.SprintID)
 
 	if err != nil {
 		return tasks_models.Task{}, err
@@ -124,60 +124,6 @@ func errorWithEmptyTaskList(err error) ([]tasks_models.Task, error) {
 	return []tasks_models.Task{}, err
 }
 
-// func (taskRepo *TaskQueriesRepository) SearchTasksWithMatchingContentInUserProjects(userID string, searchText string) ([]tasks_models.TaskInfo, error) {
-// 	searchPattern := "%" + searchText + "%"
-
-// 	psql := database.GetPsqlQueryBuilder()
-
-// 	builder := psql.Select("task.id",
-// 		"title",
-// 		"points",
-// 		"description",
-// 		"CONCAT(project.key, '-', task.number) as task_key",
-// 		"project.name as project_name",
-// 		"project.id as project_id").
-// 		From("task").
-// 		LeftJoin("sprint ON task.sprint_id=sprint.id").
-// 		LeftJoin("project ON sprint.project_id=project.id").
-// 		LeftJoin("project_user ON project.id=project_user.project_id").
-// 		Where(sq.Eq{
-// 			"project_user.user_id": userID,
-// 		}).
-// 		Where(sq.Or{
-// 			sq.ILike{
-// 				"title": searchPattern,
-// 			},
-// 			sq.ILike{
-// 				"description": searchPattern,
-// 			},
-// 		}).
-// 		Limit(15)
-
-// 	rows, err := builder.RunWith(taskRepo.conn).Query()
-
-// 	if err != nil {
-// 		return []tasks_models.TaskInfo{}, err
-// 	}
-
-// 	defer rows.Close()
-
-// 	var taskList []tasks_models.TaskInfo
-// 	for rows.Next() {
-
-// 		var task tasks_models.TaskInfo
-// 		var projectName string
-// 		var projectId string
-// 		rows.Scan(&task.Id, &task.Title, &task.Points, &task.Description, &task.Key, &projectName, &projectId)
-
-// 		if err != nil {
-// 			return []tasks_models.TaskInfo{}, err
-// 		}
-// 		taskList = append(taskList, task)
-
-// 	}
-
-// 	return taskList, err
-// }
 func tasksBaseQueryBuilder() sq.SelectBuilder {
 	psql := database.GetPsqlQueryBuilder()
 
@@ -192,7 +138,8 @@ func tasksBaseQueryBuilder() sq.SelectBuilder {
 		"assignee_id",
 		`COALESCE("user".name, '') as user_name`,
 		`COALESCE("user".email, '') as user_email`,
-		"CONCAT(project.key, '-', task.number) as task_key").
+		"CONCAT(project.key, '-', task.number) as task_key",
+		"sprint.id as sprint_id").
 		From("task").
 		LeftJoin(`"user" ON assignee_id="user".id`).
 		LeftJoin("task_status ON task_status.id=task.status").

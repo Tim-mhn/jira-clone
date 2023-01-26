@@ -17,17 +17,17 @@ import (
 	"github.com/tim-mhn/figma-clone/utils/arrays"
 )
 
-type tasksController struct {
+type TasksController struct {
 	taskQueries      *tasks_repositories.TaskQueriesRepository
 	taskCommands     *tasks_repositories.TaskCommandsRepository
 	sprintService    *tasks_services.SprintService
 	taskPositionRepo *tasks_repositories.TaskPositionRepository
 }
 
-func NewTasksController(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, sprintRepo *tasks_repositories.SprintRepository, taskRepo *tasks_repositories.TaskQueriesRepository, conn *sql.DB) *tasksController {
+func NewTasksController(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, sprintRepo *tasks_repositories.SprintRepository, taskRepo *tasks_repositories.TaskQueriesRepository, conn *sql.DB) *TasksController {
 	sprintPointsRepo := tasks_repositories.NewSprintPointsRepository(conn)
 
-	return &tasksController{
+	return &TasksController{
 		taskQueries:      tasks_repositories.NewTaskQueriesRepository(um, conn),
 		taskCommands:     tasks_repositories.NewTaskCommandsRepository(um, projectQueries, conn),
 		sprintService:    tasks_services.NewSprintService(taskRepo, sprintRepo, sprintPointsRepo),
@@ -35,7 +35,7 @@ func NewTasksController(um *auth.UserRepository, projectQueries *project.Project
 	}
 }
 
-func (tc *tasksController) GetTaskByID(c *gin.Context) {
+func (tc *TasksController) GetTaskByID(c *gin.Context) {
 	taskID := getTaskIDParam(c)
 
 	task, err := tc.taskQueries.GetTaskById(taskID)
@@ -47,7 +47,7 @@ func (tc *tasksController) GetTaskByID(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, task)
 }
 
-func (tc *tasksController) CreateNewTask(c *gin.Context) {
+func (tc *TasksController) CreateNewTask(c *gin.Context) {
 	var taskDTO tasks_dtos.NewTaskDTO
 	if err := c.BindJSON(&taskDTO); err != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
@@ -66,7 +66,7 @@ func (tc *tasksController) CreateNewTask(c *gin.Context) {
 
 }
 
-func (tc *tasksController) UpdateTask(c *gin.Context) {
+func (tc *TasksController) UpdateTask(c *gin.Context) {
 	var updateTaskDTO tasks_dtos.PatchTaskDTO
 	taskID := getTaskIDParam(c)
 	if err := c.BindJSON(&updateTaskDTO); err != nil {
@@ -84,12 +84,12 @@ func (tc *tasksController) UpdateTask(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, nil)
 }
 
-func (tc *tasksController) GetSprintsWithTasksOfProject(c *gin.Context) {
+func (tc *TasksController) GetSprintsWithTasksOfProject(c *gin.Context) {
 	projectID := c.Param("projectID")
 
 	taskFilters := buildTasksFiltersFromRequest(c)
 
-	log.Printf(`[tasksController.GetSprintsWithTasksOfProject] projectID=%s`, projectID)
+	log.Printf(`[TasksController.GetSprintsWithTasksOfProject] projectID=%s`, projectID)
 
 	sprintListWithTasksDTO, err := tc.sprintService.GetSprintListWithTasks(projectID, taskFilters)
 
@@ -117,7 +117,7 @@ func buildTasksFiltersFromRequest(c *gin.Context) tasks_models.TaskFilters {
 
 }
 
-func (tc *tasksController) DeleteTask(c *gin.Context) {
+func (tc *TasksController) DeleteTask(c *gin.Context) {
 	taskID := getTaskIDParam(c)
 
 	res, err := tc.taskCommands.DeleteTask(taskID)
@@ -134,7 +134,7 @@ func (tc *tasksController) DeleteTask(c *gin.Context) {
 	c.IndentedJSON(http.StatusNoContent, nil)
 }
 
-func (tc *tasksController) MoveTask(c *gin.Context) {
+func (tc *TasksController) MoveTask(c *gin.Context) {
 	taskID := getTaskIDParam(c)
 
 	var MoveTaskDTO tasks_dtos.MoveTaskDTO

@@ -4,30 +4,30 @@ import (
 	"testing"
 )
 
-type TestOnlySprint struct {
+type _TestSprint struct {
 	Name    string
 	Backlog bool
 }
 
-func (s TestOnlySprint) IsBacklog() bool {
+func (s _TestSprint) IsBacklog() bool {
 	return s.Backlog
 }
 func TestMoveBacklogSprintAtTheEnd(t *testing.T) {
-	sprint1 := TestOnlySprint{
+	sprint1 := _TestSprint{
 		Name:    "Sprint 1",
 		Backlog: false,
 	}
 
-	backlog := TestOnlySprint{
+	backlog := _TestSprint{
 		Name:    "Backlog sprint",
 		Backlog: true,
 	}
-	sprint2 := TestOnlySprint{
+	sprint2 := _TestSprint{
 		Name:    "Sprint 2",
 		Backlog: false,
 	}
 
-	var sprints = []TestOnlySprint{sprint1, backlog, sprint2}
+	var sprints = []_TestSprint{sprint1, backlog, sprint2}
 
 	sortedSprint := moveBacklogSprintAtTheEnd(sprints)
 

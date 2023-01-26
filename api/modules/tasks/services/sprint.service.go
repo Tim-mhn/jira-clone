@@ -25,6 +25,10 @@ func NewSprintService(taskRepo *tasks_repositories.TaskQueriesRepository, sprint
 	}
 }
 
+func (service *SprintService) GetActiveSprintsOfProject(projectID string) ([]tasks_models.SprintInfo, error) {
+	return service.sprintRepo.GetActiveSprintsOfProject(projectID)
+}
+
 func (service *SprintService) GetSprintListWithTasks(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error) {
 	sprintList, err := service.sprintRepo.GetActiveSprintsOfProject(projectID)
 

@@ -7,15 +7,18 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
+	tasks_services "github.com/tim-mhn/figma-clone/modules/tasks/services"
 )
 
 type SprintsController struct {
 	sprintRepo *tasks_repositories.SprintRepository
+	service    *tasks_services.SprintService
 }
 
-func NewSprintsController(sprintRepo *tasks_repositories.SprintRepository) *SprintsController {
+func NewSprintsController(sprintRepo *tasks_repositories.SprintRepository, service *tasks_services.SprintService) *SprintsController {
 	return &SprintsController{
 		sprintRepo: sprintRepo,
+		service:    service,
 	}
 }
 
@@ -61,4 +64,18 @@ func (controller SprintsController) MarkSprintAsCompleted(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, nil)
+}
+
+func (controller SprintsController) GetActiveSprintsOfProject(c *gin.Context) {
+	projectID := project.GetProjectIDParam(c)
+
+	activeSprints, err := controller.service.GetActiveSprintsOfProject(projectID)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, activeSprints)
+
 }

@@ -7,17 +7,17 @@ import (
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
 )
 
-type taskStatusController struct {
+type TaskStatusController struct {
 	tsRepo *tasks_repositories.TaskStatusRepository
 }
 
-func NewTaskStatusController(tsRepo *tasks_repositories.TaskStatusRepository) *taskStatusController {
-	return &taskStatusController{
+func NewTaskStatusController(tsRepo *tasks_repositories.TaskStatusRepository) *TaskStatusController {
+	return &TaskStatusController{
 		tsRepo: tsRepo,
 	}
 }
 
-func (tsc *taskStatusController) GetTaskStatusList(c *gin.Context) {
+func (tsc *TaskStatusController) GetTaskStatusList(c *gin.Context) {
 
 	taskStatusList, err := tsc.tsRepo.GetAllStatus()
 
