@@ -62,15 +62,6 @@ func (tc *tasksController) CreateNewTask(c *gin.Context) {
 		return
 	}
 
-	// searchableTask := search.SearchableTask{
-	// 	Id:          *newTask.Id,
-	// 	Title:       *newTask.Title,
-	// 	Description: *newTask.Description,
-	// 	ProjectID:   projectID,
-	// }
-
-	// search.UploadTask(searchableTask)
-
 	c.IndentedJSON(http.StatusCreated, newTask.Id)
 
 }

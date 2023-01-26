@@ -9,4 +9,8 @@ type SprintWithTasks struct {
 	Sprint tasks_models.Sprint
 }
 
+func (sprintWithTasksDTO SprintWithTasks) IsBacklog() bool {
+	return sprintWithTasksDTO.Sprint.IsBacklog
+}
+
 type SprintListWithTasksDTO = []SprintWithTasks

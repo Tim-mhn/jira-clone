@@ -2,28 +2,32 @@ package tasks_services
 
 import (
 	"testing"
-
-	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 )
 
+type TestOnlySprint struct {
+	Name    string
+	Backlog bool
+}
+
+func (s TestOnlySprint) IsBacklog() bool {
+	return s.Backlog
+}
 func TestMoveBacklogSprintAtTheEnd(t *testing.T) {
-	sprint1 := tasks_models.SprintInfo{
-		Id:        "1",
-		Name:      "Sprint 1",
-		IsBacklog: false,
-	}
-	backlog := tasks_models.SprintInfo{
-		Id:        "backlog-id",
-		Name:      "Backlog",
-		IsBacklog: true,
-	}
-	sprint2 := tasks_models.SprintInfo{
-		Id:        "2",
-		Name:      "Sprint 2",
-		IsBacklog: false,
+	sprint1 := TestOnlySprint{
+		Name:    "Sprint 1",
+		Backlog: false,
 	}
 
-	var sprints = []tasks_models.SprintInfo{sprint1, backlog, sprint2}
+	backlog := TestOnlySprint{
+		Name:    "Backlog sprint",
+		Backlog: true,
+	}
+	sprint2 := TestOnlySprint{
+		Name:    "Sprint 2",
+		Backlog: false,
+	}
+
+	var sprints = []TestOnlySprint{sprint1, backlog, sprint2}
 
 	sortedSprint := moveBacklogSprintAtTheEnd(sprints)
 

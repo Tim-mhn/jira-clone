@@ -45,13 +45,14 @@ func getTaskInfoListFromSQLRows(rows *sql.Rows) ([]TaskInfo, error) {
 	for rows.Next() {
 
 		var task TaskInfo
-		var projectName string
-		var projectId string
-		err := rows.Scan(&task.Id, &task.Title, &task.Points, &task.Description, &task.Key, &projectName, &projectId)
+		var projectInfo ProjectInfo
+		err := rows.Scan(&task.Id, &task.Title, &task.Points, &task.Description, &task.Key, &projectInfo.Name, &projectInfo.Id)
 
 		if err != nil {
 			return []TaskInfo{}, err
 		}
+
+		task.Project = projectInfo
 		taskList = append(taskList, task)
 
 	}

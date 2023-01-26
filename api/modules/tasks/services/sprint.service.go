@@ -28,18 +28,16 @@ func NewSprintService(taskRepo *tasks_repositories.TaskQueriesRepository, sprint
 func (service *SprintService) GetSprintListWithTasks(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error) {
 	sprintList, err := service.sprintRepo.GetActiveSprintsOfProject(projectID)
 
-	sortedSprints := moveBacklogSprintAtTheEnd(sprintList)
-
 	if err != nil {
 		return tasks_dtos.SprintListWithTasksDTO{}, err
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(len(sortedSprints))
+	wg.Add(len(sprintList))
 
-	sprintWithTasksChan := make(chan tasks_dtos.SprintWithTasks, len(sortedSprints))
+	sprintWithTasksChan := make(chan tasks_dtos.SprintWithTasks, len(sprintList))
 
-	for _, sprint := range sortedSprints {
+	for _, sprint := range sprintList {
 
 		go func(sprint tasks_models.SprintInfo) {
 			sprintTasks, pointsBreakdown, _ := service.getSprintTasksAndPointsBreakdown(sprint.Id, taskFilters)
@@ -67,6 +65,8 @@ func (service *SprintService) GetSprintListWithTasks(projectID string, taskFilte
 	for sprintWithTasks := range sprintWithTasksChan {
 		sprintListWithTasks = append(sprintListWithTasks, sprintWithTasks)
 	}
+
+	sprintListWithTasks = moveBacklogSprintAtTheEnd(sprintListWithTasks)
 
 	return sprintListWithTasks, nil
 }
@@ -111,10 +111,14 @@ func (service SprintService) getSprintTasksAndPointsBreakdown(sprintID string, f
 	return sprintTasks, pointsBreakdown, nil
 }
 
-func moveBacklogSprintAtTheEnd(sprintList []tasks_models.SprintInfo) []tasks_models.SprintInfo {
-	backlogLastSortFunction := func(s1 tasks_models.SprintInfo, s2 tasks_models.SprintInfo) bool {
-		return s2.IsBacklog
+type HasBackLog interface {
+	IsBacklog() bool
+}
+
+func moveBacklogSprintAtTheEnd[T HasBackLog](sprints []T) []T {
+	moveBacklogAtTheEndFunc := func(sprint1 T, sprint2 T) bool {
+		return sprint2.IsBacklog()
 	}
 
-	return arrays.SortWithComparison(sprintList, backlogLastSortFunction)
+	return arrays.SortWithComparison(sprints, moveBacklogAtTheEndFunc)
 }
