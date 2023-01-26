@@ -35,7 +35,7 @@
       [tasks]="tasks"
       [project]="project"
       [members]="members$ | async"
-      [sprints]="sprintInfoList$ | async"
+      [sprints]="activeSprints$ | async"
       (taskClicked)="taskClicked.emit($event)"
     ></jira-task-list>
 

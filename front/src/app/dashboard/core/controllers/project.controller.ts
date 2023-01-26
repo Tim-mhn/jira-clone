@@ -1,15 +1,9 @@
-import { Injectable, Optional } from '@angular/core';
-import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import { forkJoin, map, Observable, switchMap, tap } from 'rxjs';
-import { DashboardCoreProvidersModule } from '../core-apis-providers.module';
-import { ProjectListAPI } from '../apis/project-list.api';
+import { Injectable } from '@angular/core';
+import { forkJoin, map, Observable } from 'rxjs';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { SingleProjectAPI } from '../apis/single-project.api';
 import { TaskStatusAPI } from '../apis/task-status.api';
-import { Project, ProjectInfo, ProjectInfoList } from '../models/project';
-import { ProjectCommandsAPI } from '../apis/project-commands.api';
-import { NewProjectDTO } from '../dtos';
-import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
-import { ProjectListService } from '../../features/project-list/state-services/project-list.service';
+import { Project } from '../models/project';
 
 @Injectable({
   providedIn: DashboardCoreProvidersModule,
@@ -17,12 +11,7 @@ import { ProjectListService } from '../../features/project-list/state-services/p
 export class ProjectController {
   constructor(
     private projectApi: SingleProjectAPI,
-    private taskStatusApi: TaskStatusAPI,
-    private requestStateController: RequestStateController,
-    private projectListAPI: ProjectListAPI,
-    private projectCommandsAPI: ProjectCommandsAPI,
-    private feedbackSnackbars: SnackbarFeedbackService,
-    @Optional() private projectListService: ProjectListService
+    private taskStatusApi: TaskStatusAPI
   ) {}
 
   getProject(projectId: string): Observable<Project> {
@@ -40,43 +29,6 @@ export class ProjectController {
         };
         return projectData;
       })
-    );
-  }
-
-  getUserProjectsAndUpdateList(
-    requestState?: RequestState
-  ): Observable<ProjectInfoList> {
-    return this.projectListAPI.getUserProjects().pipe(
-      tap((list) => this.projectListService.updateProjectList(list)),
-      this.requestStateController.handleRequest(requestState)
-    );
-  }
-
-  createProjectAndUpdateList(
-    newProject: NewProjectDTO,
-    requestState?: RequestState
-  ) {
-    return this.projectCommandsAPI.createProject(newProject).pipe(
-      switchMap(() => this.getUserProjectsAndUpdateList()),
-      this.feedbackSnackbars.showFeedbackSnackbars({
-        loadingMessage: 'Creating project ...',
-        successMessage: `${newProject.name} successfully created`,
-      }),
-      this.requestStateController.handleRequest(requestState)
-    );
-  }
-
-  deleteProjectAndUpdateList(
-    projectInfo: ProjectInfo,
-    requestState: RequestState
-  ) {
-    return this.projectCommandsAPI.deleteProject(projectInfo.Id).pipe(
-      this.feedbackSnackbars.showFeedbackSnackbars({
-        loadingMessage: 'Deleting project ...',
-        successMessage: `Project ${projectInfo.Name} successfully deleted`,
-      }),
-      switchMap(() => this.getUserProjectsAndUpdateList()),
-      this.requestStateController.handleRequest(requestState)
     );
   }
 }

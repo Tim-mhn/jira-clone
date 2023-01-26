@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, ReplaySubject } from 'rxjs';
+import { DashboardCoreProvidersModule } from '../../../core/core.providers.module';
 import { ProjectInfoList } from '../../../core/models';
-import { ProjectListProvidersModule } from '../project-list-providers.module';
 
 @Injectable({
-  providedIn: ProjectListProvidersModule,
+  providedIn: DashboardCoreProvidersModule,
 })
 export class ProjectListService {
   private _projectList$ = new ReplaySubject<ProjectInfoList>();

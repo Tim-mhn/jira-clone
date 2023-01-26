@@ -40,7 +40,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   project$ = this.currentProjectService.currentProject$.pipe(shareReplay());
   projectMembers$ = this.membersService.projectMembers$;
-  sprintInfoList$ = this.sprintsService.sprintInfoList$;
+  activeSprints$ = this.sprintsService.activeSprints$;
 
   ngOnInit(): void {
     // eslint-disable-next-line prefer-destructuring
@@ -64,7 +64,11 @@ export class BoardComponent implements OnInit, OnDestroy {
     combineLatest({ projectId: projectId$, filters: filters$ })
       .pipe(
         switchMap(({ projectId, filters }) =>
-          this.sprintsController.getSprintsTasksForProject(projectId, filters)
+          this.sprintsController.getSprintsTasksForProject(
+            projectId,
+            filters,
+            this.requestState
+          )
         ),
         takeUntil(this._subscriptionHandler.onDestroy$)
       )

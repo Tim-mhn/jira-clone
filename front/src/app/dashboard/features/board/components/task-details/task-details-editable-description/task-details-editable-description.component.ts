@@ -24,7 +24,7 @@ export class TaskDetailsEditableDescriptionComponent
   ngOnInit(): void {}
 
   ngOnChanges(ch: TypedChanges<TaskDetailsEditableDescriptionComponent>) {
-    if (ch.task) {
+    if (ch.task && this.task) {
       this.descriptionFc.setValue(this.task.Description);
     }
   }

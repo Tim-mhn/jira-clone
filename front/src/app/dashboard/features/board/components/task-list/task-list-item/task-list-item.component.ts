@@ -41,21 +41,14 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   editTitleModeActive = false;
   requestState = new RequestState();
 
-  ngOnInit(): void {
-    // console.count('TaskListItemComponent');
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(ch: TypedChanges<TaskListItemComponent>) {
-    console.count('changes');
-    if (ch.task) {
+    if (ch.task && this.task) {
       this.titleFc.setValue(this.task.Title, { emitEvent: false });
       this.pointsFc.setValue(this.task.Points, { emitEvent: false });
     }
   }
-
-  // ngDoCheck(): void {
-  //   console.count('do check');
-  // }
 
   updateTitle(event?: Event) {
     event.stopPropagation();

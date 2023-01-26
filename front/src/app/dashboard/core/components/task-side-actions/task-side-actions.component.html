@@ -1,7 +1,7 @@
 <button
-  tim-stroked-button
+  tim-simple-button
   iconBtn="dots"
-  size="2xs"
+  size="xs"
   color="neutral"
   timDropdownTrigger
   [timDropdownMenuTriggerFor]="sideActionsMenu"
@@ -9,6 +9,9 @@
 
 <tim-dropdown-menu #sideActionsMenu>
   <tim-dropdown-header>Move to</tim-dropdown-header>
+  <tim-dropdown-item *ngIf="(otherSprints$ | async)?.length == 0">
+    No other active sprint available
+  </tim-dropdown-item>
   <tim-dropdown-item
     *ngFor="let sprint of otherSprints$ | async"
     (click)="moveTaskToSprint(sprint.Id)"

@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { NewProjectDTO } from '../dtos';
 import { buildSingleProjectEndpoint, PROJECTS_API_ENDPOINT } from './endpoints';
 
 @Injectable({
-  providedIn: BoardContentProvidersModule,
+  providedIn: DashboardCoreProvidersModule,
 })
 export class ProjectCommandsAPI {
   constructor(private http: HttpClient) {}

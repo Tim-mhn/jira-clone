@@ -4,7 +4,7 @@ import { RequestState } from '@tim-mhn/common/http';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
 import { TimUIDialogRef } from '@tim-mhn/ng-ui/dialog';
 import { filter } from 'rxjs';
-import { ProjectController } from '../../../../../core/controllers/project.controller';
+import { ProjectListController } from '../../../controllers/project-list.controller';
 import { suggestProjectKeyFromName } from '../utils/suggest-project-key.util';
 
 @Component({
@@ -15,7 +15,7 @@ export class CreateProjectDialogComponent implements OnInit {
   constructor(
     private _dialogRef: TimUIDialogRef,
     private tfb: TypedFormBuilder,
-    private controller: ProjectController
+    private controller: ProjectListController
   ) {}
 
   ngOnInit(): void {

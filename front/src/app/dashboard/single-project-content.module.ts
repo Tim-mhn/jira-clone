@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SingleProjectPagesLayoutComponent } from './core/components/single-project-pages-layout/single-project-pages-layout.component';
 import { SingleProjectPagesLayoutModule } from './core/components/single-project-pages-layout/single-project-pages-layout.module';
-import { DashboardCoreProvidersModule } from './core/core-apis-providers.module';
 import { RouteProjectIdService } from './core/state-services/route-project-id.service';
 import { BoardContentProvidersModule } from './features/board/board-providers.module';
 
@@ -31,6 +30,13 @@ const routes: Routes = [
             (m) => m.BoardModule
           ),
       },
+      {
+        path: 'browse/:taskId',
+        loadChildren: () =>
+          import(
+            './features/task-details/pages/task-details-page/task-details-page.module'
+          ).then((m) => m.TaskDetailsPageModule),
+      },
     ],
   },
 ];
@@ -41,7 +47,6 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     BoardContentProvidersModule,
-    DashboardCoreProvidersModule,
     SingleProjectPagesLayoutModule,
   ],
   providers: [RouteProjectIdService],

@@ -1,35 +1,25 @@
 import { Injectable } from '@angular/core';
-import { map, Observable, ReplaySubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
+import { DashboardCoreProvidersModule } from '../../../core/core.providers.module';
 import { SprintInfo, SprintWithTasks } from '../../../core/models/sprint';
-import { getSprintsTaskDoesNotBelongTo } from '../../../core/utils/get-other-sprints.util';
-import { BoardContentProvidersModule } from '../board-providers.module';
 
 @Injectable({
-  providedIn: BoardContentProvidersModule,
+  providedIn: DashboardCoreProvidersModule,
 })
 export class CurrentSprintsService {
   constructor() {}
 
-  private _sprintList$ = new ReplaySubject<SprintWithTasks[]>();
-  public sprintList$ = this._sprintList$.asObservable();
+  private _tasksGroupedBySprints$ = new ReplaySubject<SprintWithTasks[]>();
+  public tasksGroupedBySprints$ = this._tasksGroupedBySprints$.asObservable();
 
-  public sprintInfoList$: Observable<SprintInfo[]> = this._sprintList$.pipe(
-    map((sprintWithTasks) =>
-      sprintWithTasks.map((sWithTasks) => sWithTasks.Sprint)
-    )
-  );
+  private _activeSprints$ = new ReplaySubject<SprintInfo[]>();
+  public activeSprints$ = this._activeSprints$.asObservable();
 
-  public getSprintsTaskDoesNotBelongTo$(
-    taskId: string
-  ): Observable<SprintInfo[]> {
-    return this._sprintList$.pipe(
-      map((sprintWithTasksList) =>
-        getSprintsTaskDoesNotBelongTo(taskId, sprintWithTasksList)
-      )
-    );
+  public updateSprintInfoList(sprints: SprintInfo[]) {
+    this._activeSprints$.next(sprints);
   }
 
   public updateSprintList(sprints: SprintWithTasks[]) {
-    this._sprintList$.next(sprints);
+    this._tasksGroupedBySprints$.next(sprints);
   }
 }

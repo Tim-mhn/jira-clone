@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { PROJECTS_API_ENDPOINT } from './endpoints';
 import { ProjectInfoList } from '../models/project';
-import { DashboardCoreProvidersModule } from '../core-apis-providers.module';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { ProjectMember } from '../models';
 import { objectHasOnlyNullOrEmptyStringValues } from '../../../shared/utils/object.util';
 

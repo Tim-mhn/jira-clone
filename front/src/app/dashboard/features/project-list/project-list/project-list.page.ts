@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { RequestState } from '@tim-mhn/common/http';
-import { ProjectController } from '../../../core/controllers/project.controller';
+import { ProjectListController } from '../controllers/project-list.controller';
 import { ProjectListService } from '../state-services/project-list.service';
 
 @Component({
   selector: 'jira-project-list',
   templateUrl: './project-list.page.html',
+  providers: [ProjectListController],
 })
 export class ProjectListComponent implements OnInit {
   constructor(
-    private controller: ProjectController,
+    private controller: ProjectListController,
     private projectListService: ProjectListService
   ) {}
 

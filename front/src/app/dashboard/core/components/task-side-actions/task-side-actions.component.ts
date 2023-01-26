@@ -1,16 +1,23 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { TypedChanges } from '@tim-mhn/common/extra-types';
 import { TimUIDropdownMenu } from '@tim-mhn/ng-ui/dropdown-menu';
-import { Observable } from 'rxjs';
-import { CurrentSprintsService } from '../../../features/board/state-services/current-sprints.service';
+import { ReplaySubject } from 'rxjs';
 import { DeleteTaskController } from '../../controllers/delete-task.controller';
 import { UpdateTaskController } from '../../controllers/update-task.controller';
 import { SprintInfo } from '../../models/sprint';
 import { Task } from '../../models/task';
+import { getSprintsTaskDoesNotBelongTo } from '../../utils/get-other-sprints.util';
 
 @Component({
   selector: 'jira-task-side-actions',
   templateUrl: './task-side-actions.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskSideActionsComponent implements OnInit {
   @Input() task: Task;
@@ -19,20 +26,18 @@ export class TaskSideActionsComponent implements OnInit {
   @ViewChild('sideActionsMenu') menu: TimUIDropdownMenu;
   constructor(
     private deleteTaskController: DeleteTaskController,
-    private updateTaskController: UpdateTaskController,
-    private sprintsService: CurrentSprintsService
+    private updateTaskController: UpdateTaskController
   ) {}
 
   ngOnInit(): void {}
 
-  ngOnChanges(changes: TypedChanges<TaskSideActionsComponent>) {
-    if (changes?.task)
-      this.otherSprints$ = this.sprintsService.getSprintsTaskDoesNotBelongTo$(
-        this.task.Id
-      );
+  ngOnChanges(_changes: TypedChanges<TaskSideActionsComponent>) {
+    if (!this.task) return;
+    const otherSprints = getSprintsTaskDoesNotBelongTo(this.task, this.sprints);
+    this.otherSprints$.next(otherSprints);
   }
 
-  otherSprints$: Observable<SprintInfo[]>;
+  public otherSprints$ = new ReplaySubject<SprintInfo[]>();
 
   deleteTask(e: Event) {
     e.stopPropagation();

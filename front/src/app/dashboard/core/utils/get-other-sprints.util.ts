@@ -1,18 +1,9 @@
-import { SprintInfo, SprintWithTasks } from '../models/sprint';
+import { Task } from '../models';
+import { SprintInfo } from '../models/sprint';
 
 export function getSprintsTaskDoesNotBelongTo(
-  taskId: string,
-  allSprints: SprintWithTasks[]
+  task: Task,
+  allActiveSprints: SprintInfo[]
 ): SprintInfo[] {
-  const taskSprint = allSprints.find(
-    (sprintWithTasks) => !!sprintWithTasks.Tasks.find((t) => t.Id === taskId)
-  );
-
-  const taskSprintId = taskSprint?.Sprint?.Id;
-
-  const otherSprints = allSprints
-    .filter((sprintWithTasks) => sprintWithTasks.Sprint.Id !== taskSprintId)
-    .map((s) => s.Sprint);
-
-  return otherSprints;
+  return allActiveSprints?.filter((sprint) => sprint.Id !== task?.SprintID);
 }

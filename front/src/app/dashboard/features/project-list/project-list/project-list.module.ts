@@ -4,7 +4,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { ProjectListComponent } from './project-list.page';
 import { ProjectListUiModule } from '../components/project-list-ui/project-list-ui.module';
 import { ProjectListAPI } from '../../../core/apis/project-list.api';
-import { DashboardCoreProvidersModule } from '../../../core/core-apis-providers.module';
 import { ProjectListProvidersModule } from '../project-list-providers.module';
 
 const routes: Routes = [
@@ -19,7 +18,6 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     ProjectListUiModule,
-    DashboardCoreProvidersModule,
     ProjectListProvidersModule,
   ],
   providers: [ProjectListAPI],

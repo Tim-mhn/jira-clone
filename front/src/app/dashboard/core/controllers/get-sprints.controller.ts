@@ -3,15 +3,16 @@ import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { map, Observable, tap } from 'rxjs';
 import { GetTasksAPI } from '../apis/get-tasks.api';
 import { TasksGroupedBySprintsDTO } from '../dtos';
-import { logMethod } from '../../../shared/utils/log-method.decorator';
 import { BoardFilters } from '../models/board-filters';
-import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
 import { CurrentProjectService } from '../state-services/current-project.service';
 import { CurrentSprintsService } from '../../features/board/state-services/current-sprints.service';
 import { TaskMapper } from '../mappers/task.mapper';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
+import { ProjectId } from '../models';
+import { SprintsAPI } from '../apis/sprints.api';
 
 @Injectable({
-  providedIn: BoardContentProvidersModule,
+  providedIn: DashboardCoreProvidersModule,
 })
 export class GetSprintsController {
   constructor(
@@ -19,7 +20,8 @@ export class GetSprintsController {
     private api: GetTasksAPI,
     private sprintsService: CurrentSprintsService,
     private currentProjectService: CurrentProjectService,
-    private mapper: TaskMapper
+    private mapper: TaskMapper,
+    private sprintsAPI: SprintsAPI
   ) {}
 
   getSprintsTasksForProject(
@@ -32,11 +34,20 @@ export class GetSprintsController {
       .pipe(this._mapDataAndUpdateSprintListState(requestState));
   }
 
-  @logMethod
   refreshSprintTasks() {
     return this.api
       .getTasksGroupedBySprints(this._currentProjectId)
       .pipe(this._mapDataAndUpdateSprintListState());
+  }
+
+  getActiveSprintsOfProjectAndUpdateState(
+    projectId: ProjectId,
+    requestState?: RequestState
+  ) {
+    return this.sprintsAPI.getActiveSprints(projectId).pipe(
+      tap((sprints) => this.sprintsService.updateSprintInfoList(sprints)),
+      this.requestStateController.handleRequest(requestState)
+    );
   }
 
   private _mapDataAndUpdateSprintListState(requestState?: RequestState) {

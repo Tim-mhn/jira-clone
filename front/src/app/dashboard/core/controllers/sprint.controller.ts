@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { switchMap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
-import { logMethod } from '../../../shared/utils/log-method.decorator';
 import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
 import { SprintsAPI } from '../apis/sprints.api';
 import { CurrentProjectService } from '../state-services/current-project.service';
@@ -20,7 +19,6 @@ export class SprintController {
     private sprintsController: GetSprintsController
   ) {}
 
-  @logMethod
   createSprint(sprintName: string, requestState?: RequestState) {
     const projectId = this._currentProjectId;
 

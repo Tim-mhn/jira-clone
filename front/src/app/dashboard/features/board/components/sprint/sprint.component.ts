@@ -48,7 +48,7 @@ export class SprintComponent implements OnInit, AfterViewInit {
   showList = false;
 
   members$ = this.membersService.projectMembers$;
-  sprintInfoList$ = this.sprintService.sprintInfoList$.pipe(shareReplay());
+  activeSprints$ = this.sprintService.activeSprints$.pipe(shareReplay());
 
   toggleList = () => (this.showList = !this.showList);
 }

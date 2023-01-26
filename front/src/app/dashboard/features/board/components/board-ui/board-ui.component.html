@@ -14,6 +14,7 @@
     }
   ]"
 >
+  loading ?? {{ loading }}
   <div class="text-3xl font-normal pb-2">Board</div>
 
   <div class="flex items-center justify-between mb-4">
@@ -48,6 +49,7 @@
         [project]="project"
         [members]="projectMembers"
         [sprints]="sprintInfoList"
+        [withCloseIcon]="true"
         (crossClicked)="resetTaskSelected()"
       >
       </jira-task-details>
@@ -57,6 +59,6 @@
 
 <ng-template #spinner>
   <div class="flex flex-grow justify-center items-center">
-    <tim-spinner></tim-spinner>
+    <tim-spinner size="md"></tim-spinner>
   </div>
 </ng-template>

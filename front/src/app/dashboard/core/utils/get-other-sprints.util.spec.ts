@@ -1,0 +1,53 @@
+import { importType } from '@angular/compiler/src/output/output_ast';
+import { Sprint, SprintInfo, Task } from '../models';
+import { getSprintsTaskDoesNotBelongTo } from './get-other-sprints.util';
+
+describe('getSprintsTaskDoesNotBelongTo', () => {
+  let sprints: SprintInfo[];
+  let sprint1: SprintInfo;
+  let sprint2: SprintInfo;
+  let sprint3: SprintInfo;
+  beforeEach(() => {
+    sprint1 = {
+      Id: '1',
+      IsBacklog: false,
+      Name: 'sprint1',
+    };
+    sprint2 = {
+      Id: '2',
+      IsBacklog: false,
+      Name: 'sprint2',
+    };
+    sprint3 = {
+      Id: '3',
+      IsBacklog: false,
+      Name: 'sprint3',
+    };
+    sprints = [sprint1, sprint2, sprint3];
+  });
+  it('should return every sprint except the one the task belongs to', () => {
+    const task: Task = new Task({
+      Assignee: null,
+      Description: '',
+      Id: 'task-id',
+      Key: '',
+      Points: 1,
+      SprintID: sprint2.Id,
+      Status: null,
+      Title: 'title',
+    });
+
+    const allSprintsExceptSprint2 = getSprintsTaskDoesNotBelongTo(
+      task,
+      sprints
+    );
+
+    expect(allSprintsExceptSprint2).toEqual([sprint1, sprint3]);
+  });
+
+  it('should return all sprints if task is null', () => {
+    const task = null as Task;
+
+    expect(getSprintsTaskDoesNotBelongTo(task, sprints)).toEqual(sprints);
+  });
+});

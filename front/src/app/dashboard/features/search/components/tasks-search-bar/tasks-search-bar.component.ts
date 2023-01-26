@@ -56,10 +56,4 @@ export class TasksSearchBarComponent implements OnInit {
     setTimeout(() => (this.hasFocus = hasFocus));
   }
   ngOnInit(): void {}
-
-  // @HostListener('document:click')
-  // @logMethod
-  // closeMenuOnClick() {
-  //   // this.dropdownMenu.close();
-  // }
 }

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PROJECTS_API_ENDPOINT } from './endpoints';
-import { DashboardCoreProvidersModule } from '../core-apis-providers.module';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { ProjectDTO } from '../dtos/project.dto';
 
 @Injectable({

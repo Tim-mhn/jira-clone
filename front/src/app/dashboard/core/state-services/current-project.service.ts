@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject, tap } from 'rxjs';
 import { Project } from '../models/project';
-import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
 
-@Injectable({
-  providedIn: BoardContentProvidersModule,
-})
+// todo: check why 2 instances are created with Task-Details page :(())
+@Injectable({ providedIn: DashboardCoreProvidersModule })
 export class CurrentProjectService {
-  constructor() {}
+  constructor() {
+    console.count('CurrentProjectService');
+  }
 
   private _currentProject$ = new ReplaySubject<Project>();
   readonly currentProject$ = this._currentProject$

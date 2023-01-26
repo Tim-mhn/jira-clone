@@ -1,8 +1,8 @@
 <jira-board-ui
   [project]="project$ | async"
   [projectMembers]="projectMembers$ | async"
-  [sprintInfoList]="sprintInfoList$ | async"
-  [sprintWithTasksList]="sprintsService.sprintList$ | async"
+  [sprintInfoList]="activeSprints$ | async"
+  [sprintWithTasksList]="sprintsService.tasksGroupedBySprints$ | async"
   [loading]="requestState?.isPending"
   (filtersChange)="onFiltersChange($event)"
 ></jira-board-ui>

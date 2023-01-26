@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { TimInputModule } from '@tim-mhn/ng-forms/input';
 import { TimUIDropdownMenuModule } from '@tim-mhn/ng-ui/dropdown-menu';
 import { TimUISpinnerModule } from '@tim-mhn/ng-ui/spinner';
@@ -16,6 +17,7 @@ import { SearchProvidersModule } from './search-providers.module';
     TimUIDropdownMenuModule,
     ReactiveFormsModule,
     TimUISpinnerModule,
+    RouterModule,
   ],
   declarations: [TasksSearchBarComponent, TasksSearchItemComponent],
   exports: [TasksSearchBarComponent],

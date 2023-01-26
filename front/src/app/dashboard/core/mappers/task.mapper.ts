@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Mapper } from '../../../shared/mappers';
-import { DashboardCoreProvidersModule } from '../core-apis-providers.module';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { TaskDTO } from '../dtos/task.dto';
 import { ITask, Task } from '../models';
 

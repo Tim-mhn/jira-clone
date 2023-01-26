@@ -1,16 +1,30 @@
 <div class="flex gap-2 text-gray-800 flex-grow w-full">
-  <ng-content></ng-content>
   <div class="flex flex-col gap-3 w-full relative">
-    <jira-task-editable-title [task]="task" [title]="task.Title">
-    </jira-task-editable-title>
+    <div class="flex flex-grow justify-between items-center">
+      <div
+        class="pt-2 cursor-pointer hover:underline decoration-gray-500 font-light text-gray-500 text-sm"
+        [routerLink]="taskPageRoute"
+      >
+        {{ task.Key }}
+      </div>
+      <div class="flex flex-grow justify-end items-center gap-2">
+        <jira-task-side-actions
+          [task]="task"
+          [sprints]="sprints"
+        ></jira-task-side-actions>
 
-    <button
-      tim-simple-button
-      iconBtn="cross"
-      class="absolute top-2 right-1"
-      color="neutral"
-      (click)="crossClicked.emit()"
-    ></button>
+        <button
+          *ngIf="withCloseIcon"
+          tim-simple-button
+          size="xs"
+          iconBtn="cross"
+          color="neutral"
+          (click)="crossClicked.emit()"
+        ></button>
+      </div>
+    </div>
+    <jira-task-editable-title [task]="task" [title]="task?.Title">
+    </jira-task-editable-title>
 
     <div class="flex flex-grow items-center gap-4">
       <jira-task-status-selector
@@ -25,15 +39,8 @@
 
       <jira-task-points-chip
         [task]="task"
-        [taskPoints]="task.Points"
+        [taskPoints]="task?.Points"
       ></jira-task-points-chip>
-
-      <div class="flex flex-grow justify-end">
-        <jira-task-side-actions
-          [task]="task"
-          [sprints]="sprints"
-        ></jira-task-side-actions>
-      </div>
     </div>
     <jira-task-details-editable-description
       [task]="task"

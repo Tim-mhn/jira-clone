@@ -7,6 +7,8 @@ import { TimUIButtonModule } from '@tim-mhn/ng-ui/button';
 import { TimHttpModule } from '@tim-mhn/common/http';
 import { TimEditableHeaderInputModule } from '@tim-mhn/ng-forms/editable-header-input';
 import { TimUISpinnerModule } from '@tim-mhn/ng-ui/spinner';
+import { RouterModule } from '@angular/router';
+import { TimUILinkModule } from '@tim-mhn/ng-ui/link';
 import { TaskDetailsComponent } from './task-details.component';
 import { TaskEditableTitleComponent } from './task-editable-title/task-editable-title.component';
 import { TaskDetailsEditableDescriptionComponent } from './task-details-editable-description/task-details-editable-description.component';
@@ -34,6 +36,8 @@ import { TaskSideActionsModule } from '../../../../core/components/task-side-act
     TimHttpModule,
     TaskPointsChipModule,
     TaskSideActionsModule,
+    RouterModule,
+    TimUILinkModule,
   ],
   exports: [TaskDetailsComponent],
 })

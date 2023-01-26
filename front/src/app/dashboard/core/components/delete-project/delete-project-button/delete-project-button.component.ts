@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { RequestState } from '@tim-mhn/common/http';
 import { TimUIDialogService } from '@tim-mhn/ng-ui/dialog';
-import { ProjectController } from '../../../controllers/project.controller';
+import { ProjectListController } from '../../../../features/project-list/controllers/project-list.controller';
 import { ProjectInfo } from '../../../models';
 import {
   DeleteProjectDialogComponent,
@@ -18,7 +18,7 @@ export class DeleteProjectButtonComponent implements OnInit {
 
   requestState = new RequestState();
   constructor(
-    private controller: ProjectController,
+    private controller: ProjectListController,
     private _dialogService: TimUIDialogService
   ) {}
 

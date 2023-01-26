@@ -1,0 +1,7 @@
+<jira-task-details
+  *ngIf="task$ |async"
+  [task]="task$ |async"
+  [members]="members$ | async"
+  [project]="project$ | async"
+  [sprints]="activeSprints$ |async"
+></jira-task-details>

@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs';
-import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
+import { map, Observable } from 'rxjs';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
+import { ProjectId, SprintInfo } from '../models';
 import { buildSingleSprintsEndpoint, buildSprintsEndpoint } from './endpoints';
 
 @Injectable({
-  providedIn: BoardContentProvidersModule,
+  providedIn: DashboardCoreProvidersModule,
 })
 export class SprintsAPI {
   constructor(private http: HttpClient) {}
@@ -34,5 +35,10 @@ export class SprintsAPI {
     })}/complete`;
 
     return this.http.post<void>(endpoint, null);
+  }
+
+  getActiveSprints(projectId: ProjectId): Observable<SprintInfo[]> {
+    const endpoint = buildSprintsEndpoint({ projectId });
+    return this.http.get<SprintInfo[]>(endpoint);
   }
 }

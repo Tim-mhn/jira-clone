@@ -9,6 +9,7 @@ export interface ITask {
   Points: number;
   Assignee: ProjectMember;
   Key: string;
+  SprintID: string;
 }
 
 export class Task implements ITask {
@@ -19,9 +20,11 @@ export class Task implements ITask {
   Points: number;
   Assignee: ProjectMember;
   Key: string;
+  SprintID: string;
 
   constructor(props: ITask) {
-    const { Assignee, Description, Title, Id, Points, Status, Key } = props;
+    const { Assignee, Description, Title, Id, Points, Status, Key, SprintID } =
+      props;
     this.Id = Id;
     this.Assignee = Assignee;
     this.Description = Description;
@@ -29,6 +32,7 @@ export class Task implements ITask {
     this.Points = Points;
     this.Status = Status;
     this.Key = Key;
+    this.SprintID = SprintID;
   }
 
   public updateStatus(newStatus: TaskStatus) {

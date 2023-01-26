@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import { map } from 'rxjs';
 import { SearchProvidersModule } from '../search-providers.module';
 import { SearchTasksAPI } from '../apis/search-tasks.api';
 import { SearchText } from '../models/search-text';
@@ -18,14 +17,6 @@ export class SearchTasksController {
     return this.api
       .searchTasksByContent(searchText)
 
-      .pipe(
-        map((tasks) =>
-          tasks?.map((t) => ({
-            ...t,
-            Project: { Name: 'Web platform', Id: '' },
-          }))
-        ),
-        this.requestStateController.handleRequest(requestState)
-      );
+      .pipe(this.requestStateController.handleRequest(requestState));
   }
 }

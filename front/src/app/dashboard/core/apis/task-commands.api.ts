@@ -3,13 +3,13 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { buildSingleTaskEndpoint, buildTaskEndpoint } from './endpoints';
 import { removeUndefinedValues } from '../../../shared/utils/object.util';
-import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
 import { handleNullAssigneeId, PatchTaskDTO } from '../dtos';
 import { DeleteTaskDTO } from '../dtos/delete-task.dto';
 import { NewTaskDTO } from '../dtos/new-task.dto';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
 
 @Injectable({
-  providedIn: BoardContentProvidersModule,
+  providedIn: DashboardCoreProvidersModule,
 })
 export class TaskCommandsAPI {
   constructor(private http: HttpClient) {}
