@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import { switchMap } from 'rxjs';
+import { EMPTY, Observable, switchMap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
-import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
+import { GetTasksOfBoardController } from '../../features/board/controllers/get-board-tasks.controller';
 import { TaskCommandsAPI } from '../apis/task-commands.api';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { CurrentProjectService } from '../state-services/current-project.service';
-import { GetSprintsController } from './get-sprints.controller';
 
 @Injectable({
-  providedIn: BoardContentProvidersModule,
+  providedIn: DashboardCoreProvidersModule,
 })
 export class DeleteTaskController {
   constructor(
@@ -16,7 +16,7 @@ export class DeleteTaskController {
     private api: TaskCommandsAPI,
     private currentProjectService: CurrentProjectService,
     private snackbarFeedback: SnackbarFeedbackService,
-    private sprintsController: GetSprintsController
+    @Optional() private tasksOfBoardController: GetTasksOfBoardController
   ) {}
 
   deleteTask(taskId: string, requestState?: RequestState) {
@@ -30,8 +30,17 @@ export class DeleteTaskController {
         loadingMessage: 'Deleting task ...',
         successMessage: 'Task successfully deleted',
       }),
-      switchMap(() => this.sprintsController.refreshSprintTasks())
+      this._refreshTaskListIfInBoardPage()
     );
+  }
+
+  private _refreshTaskListIfInBoardPage<T>() {
+    return (source: Observable<T>) =>
+      source.pipe(
+        switchMap(
+          () => this.tasksOfBoardController?.refreshSprintsTasks() || EMPTY
+        )
+      );
   }
   private get _currentProjectId() {
     return this.currentProjectService.currentProject.Id;

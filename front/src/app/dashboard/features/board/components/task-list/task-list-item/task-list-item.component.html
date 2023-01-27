@@ -7,11 +7,11 @@
 
   <jira-task-points-chip
     [task]="task"
-    [taskPoints]="task.Points"
+    [taskPoints]="task?.Points"
   ></jira-task-points-chip>
   <jira-task-status-selector
     [task]="task"
-    [allStatus]="project.AllTaskStatus"
+    [allStatus]="project?.AllTaskStatus"
   ></jira-task-status-selector>
 
   <jira-task-assignee-selector

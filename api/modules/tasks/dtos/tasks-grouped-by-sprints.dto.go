@@ -5,7 +5,7 @@ import (
 )
 
 type SprintWithTasks struct {
-	Tasks  []tasks_models.Task
+	Tasks  []tasks_models.TaskWithSprint
 	Sprint tasks_models.Sprint
 }
 

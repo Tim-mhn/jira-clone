@@ -5,5 +5,5 @@ export function getSprintsTaskDoesNotBelongTo(
   task: Task,
   allActiveSprints: SprintInfo[]
 ): SprintInfo[] {
-  return allActiveSprints?.filter((sprint) => sprint.Id !== task?.SprintID);
+  return allActiveSprints?.filter((sprint) => sprint.Id !== task?.Sprint.Id);
 }

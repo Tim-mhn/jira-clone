@@ -7,7 +7,7 @@ import { Task } from '../../../models/task';
   selector: 'jira-task-assignee-selector',
   templateUrl: './task-assignee-selector.component.html',
   host: {
-    class: 'w-fit h-fit',
+    class: 'w-fit h-fit h-5.5',
   },
 })
 export class TaskAssigneeSelectorComponent implements OnInit {

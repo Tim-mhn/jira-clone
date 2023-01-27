@@ -8,17 +8,19 @@ import {
   shareReplay,
 } from 'rxjs';
 import { ProjectMembersAPI } from '../../../core/apis/project-members.api';
-import { BoardContentProvidersModule } from '../board-providers.module';
 import { CurrentProjectService } from '../../../core/state-services/current-project.service';
+import { DashboardSingletonsProvidersModule } from '../../../dashboard-singletons.providers.module';
 
 @Injectable({
-  providedIn: BoardContentProvidersModule,
+  providedIn: DashboardSingletonsProvidersModule,
 })
 export class ProjectMembersService {
   constructor(
     private projectService: CurrentProjectService,
     private api: ProjectMembersAPI
-  ) {}
+  ) {
+    console.count('ProjectMembersService');
+  }
 
   public projectMembers$ = this.projectService.currentProject$.pipe(
     catchError((err) => {

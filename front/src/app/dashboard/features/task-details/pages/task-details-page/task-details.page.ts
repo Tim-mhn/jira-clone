@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RequestState } from '@tim-mhn/common/http';
-import { filter, map, shareReplay, switchMap, tap } from 'rxjs';
+import { filter, map, shareReplay, switchMap } from 'rxjs';
 import { GetTaskController } from '../../../../core/controllers/get-task.controller';
 import { CurrentProjectService } from '../../../../core/state-services/current-project.service';
 import { CurrentSprintsService } from '../../../board/state-services/current-sprints.service';
@@ -36,7 +36,6 @@ export class TaskDetailsPage implements OnInit {
         if (!hasTaskId) console.error('no taskId in route param');
         return hasTaskId;
       }),
-      tap(console.log),
       switchMap((taskId) => this.controller.getTask(taskId, this.requestState)),
       shareReplay()
     );

@@ -1,5 +1,3 @@
-import { Tasks } from './task';
-
 export type SprintPointsBreakdown = {
   New: number;
   InProgress: number;
@@ -16,8 +14,3 @@ export type Sprint = SprintInfo & {
 };
 
 export type Sprints = Sprint[];
-
-export type SprintWithTasks = {
-  Sprint: Sprint;
-  Tasks: Tasks;
-};

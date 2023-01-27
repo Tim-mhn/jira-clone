@@ -7,6 +7,7 @@ import { DashboardLayoutComponent } from './core/components/dashboard-layout/das
 import { DashboardLayoutModule } from './core/components/dashboard-layout/dashboard-layout.module';
 import { LoggedInUserService } from './core/state-services/logged-in-user.service';
 import { DashboardCoreProvidersModule } from './core/core.providers.module';
+import { DashboardSingletonsProvidersModule } from './dashboard-singletons.providers.module';
 
 const routes: Routes = [
   {
@@ -28,6 +29,7 @@ const routes: Routes = [
     MatFormFieldModule,
     DashboardLayoutModule,
     DashboardCoreProvidersModule,
+    DashboardSingletonsProvidersModule,
   ],
   providers: [LoggedInUserService],
 })

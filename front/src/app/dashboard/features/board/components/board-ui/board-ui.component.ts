@@ -10,7 +10,7 @@ import {
 import { BoardFilters } from '../../../../core/models/board-filters';
 import { Project } from '../../../../core/models/project';
 import { ProjectMembers } from '../../../../core/models/project-member';
-import { SprintInfo, SprintWithTasks } from '../../../../core/models/sprint';
+import { SprintInfo, SprintWithTasks } from '../../../../core/models';
 import { Task } from '../../../../core/models/task';
 
 @Component({

@@ -1,0 +1,12 @@
+<jira-sprint-tag
+  timDropdownTrigger
+  [timDropdownMenuTriggerFor]="sprintsMenu"
+  [sprint]="task?.Sprint"
+></jira-sprint-tag>
+<tim-dropdown-menu #sprintsMenu>
+  <jira-move-tasks-to-sprint-menu-items
+    [task]="task"
+    [activeSprints]="activeSprints"
+    (taskMoved)="updateUI()"
+  ></jira-move-tasks-to-sprint-menu-items>
+</tim-dropdown-menu>

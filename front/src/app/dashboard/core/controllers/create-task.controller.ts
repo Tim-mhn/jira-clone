@@ -1,23 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { switchMap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
+import { GetTasksOfBoardController } from '../../features/board/controllers/get-board-tasks.controller';
 import { TaskCommandsAPI } from '../apis/task-commands.api';
 import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { NewTaskDTO } from '../dtos/new-task.dto';
 import { CurrentProjectService } from '../state-services/current-project.service';
-import { GetSprintsController } from './get-sprints.controller';
 
-@Injectable({
-  providedIn: DashboardCoreProvidersModule,
-})
+@Injectable({ providedIn: DashboardCoreProvidersModule })
 export class CreateTaskController {
   constructor(
     private requestStateController: RequestStateController,
     private currentProjectService: CurrentProjectService,
     private snackbarFeedback: SnackbarFeedbackService,
     private api: TaskCommandsAPI,
-    private sprintsController: GetSprintsController
+    @Optional() private tasksBoardController: GetTasksOfBoardController
   ) {}
 
   createTask(
@@ -34,7 +32,7 @@ export class CreateTaskController {
         loadingMessage: 'Creating task ...',
         successMessage: 'Task created',
       }),
-      switchMap(() => this.sprintsController.refreshSprintTasks())
+      switchMap(() => this.tasksBoardController?.refreshSprintsTasks())
     );
   }
 

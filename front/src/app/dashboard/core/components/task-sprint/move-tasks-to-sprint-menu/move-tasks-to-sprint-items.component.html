@@ -1,0 +1,9 @@
+<tim-dropdown-header>Move to</tim-dropdown-header>
+<tim-dropdown-item *ngIf="otherSprints?.length == 0">
+  No other active sprint available
+</tim-dropdown-item>
+<tim-dropdown-item
+  *ngFor="let sprint of otherSprints"
+  (click)="moveTaskToSprint(sprint)"
+  >{{ sprint.Name }}</tim-dropdown-item
+>

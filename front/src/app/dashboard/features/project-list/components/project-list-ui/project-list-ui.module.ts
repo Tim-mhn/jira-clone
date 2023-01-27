@@ -5,7 +5,6 @@ import { TimUISpinnerModule } from '@tim-mhn/ng-ui/spinner';
 import { TimUIAlertModule } from '@tim-mhn/ng-ui/alert';
 import { ProjectListUiComponent } from './project-list-ui.component';
 import { CreateProjectModule } from '../create-project/create-project.module';
-import { BoardContentProvidersModule } from '../../../board/board-providers.module';
 import { MemberComponentsModule } from '../../../../../shared/components/member/member-components.module';
 import { DeleteProjectModule } from '../../../../core/components/delete-project/delete-project.module';
 
@@ -17,7 +16,6 @@ import { DeleteProjectModule } from '../../../../core/components/delete-project/
     TimUISpinnerModule,
     TimUIAlertModule,
     CreateProjectModule,
-    BoardContentProvidersModule,
     MemberComponentsModule,
     DeleteProjectModule,
   ],

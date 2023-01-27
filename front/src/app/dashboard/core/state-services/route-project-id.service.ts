@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
+import { DashboardSingletonsProvidersModule } from '../../dashboard-singletons.providers.module';
 
-@Injectable()
+@Injectable({
+  providedIn: DashboardSingletonsProvidersModule,
+})
 export class RouteProjectIdService {
   constructor() {}
 

@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
-import { DashboardCoreProvidersModule } from '../../../core/core.providers.module';
-import { SprintInfo, SprintWithTasks } from '../../../core/models/sprint';
+import { SprintInfo, SprintWithTasks } from '../../../core/models';
+import { DashboardSingletonsProvidersModule } from '../../../dashboard-singletons.providers.module';
 
 @Injectable({
-  providedIn: DashboardCoreProvidersModule,
+  providedIn: DashboardSingletonsProvidersModule,
 })
 export class CurrentSprintsService {
-  constructor() {}
+  constructor() {
+    console.count('CurrentSprintsService');
+  }
 
   private _tasksGroupedBySprints$ = new ReplaySubject<SprintWithTasks[]>();
   public tasksGroupedBySprints$ = this._tasksGroupedBySprints$.asObservable();

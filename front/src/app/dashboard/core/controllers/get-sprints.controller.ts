@@ -3,7 +3,6 @@ import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { map, Observable, tap } from 'rxjs';
 import { GetTasksAPI } from '../apis/get-tasks.api';
 import { TasksGroupedBySprintsDTO } from '../dtos';
-import { BoardFilters } from '../models/board-filters';
 import { CurrentProjectService } from '../state-services/current-project.service';
 import { CurrentSprintsService } from '../../features/board/state-services/current-sprints.service';
 import { TaskMapper } from '../mappers/task.mapper';
@@ -24,21 +23,21 @@ export class GetSprintsController {
     private sprintsAPI: SprintsAPI
   ) {}
 
-  getSprintsTasksForProject(
-    projectId: string,
-    filters: BoardFilters,
-    requestState?: RequestState
-  ): Observable<void> {
-    return this.api
-      .getTasksGroupedBySprints(projectId, filters)
-      .pipe(this._mapDataAndUpdateSprintListState(requestState));
-  }
+  // getSprintsTasksForProject(
+  //   projectId: string,
+  //   filters: BoardFilters,
+  //   requestState?: RequestState
+  // ): Observable<void> {
+  //   return this.api
+  //     .getTasksGroupedBySprints(projectId, filters)
+  //     .pipe(this._mapDataAndUpdateSprintListState(requestState));
+  // }
 
-  refreshSprintTasks() {
-    return this.api
-      .getTasksGroupedBySprints(this._currentProjectId)
-      .pipe(this._mapDataAndUpdateSprintListState());
-  }
+  // refreshSprintsTasks() {
+  //   return this.api
+  //     .getTasksGroupedBySprints(this._currentProjectId)
+  //     .pipe(this._mapDataAndUpdateSprintListState());
+  // }
 
   getActiveSprintsOfProjectAndUpdateState(
     projectId: ProjectId,

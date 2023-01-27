@@ -1,5 +1,4 @@
-import { importType } from '@angular/compiler/src/output/output_ast';
-import { Sprint, SprintInfo, Task } from '../models';
+import { SprintInfo, Task } from '../models';
 import { getSprintsTaskDoesNotBelongTo } from './get-other-sprints.util';
 
 describe('getSprintsTaskDoesNotBelongTo', () => {
@@ -26,13 +25,16 @@ describe('getSprintsTaskDoesNotBelongTo', () => {
     sprints = [sprint1, sprint2, sprint3];
   });
   it('should return every sprint except the one the task belongs to', () => {
+    const sprintInfo = {
+      ...sprint2,
+    };
     const task: Task = new Task({
       Assignee: null,
       Description: '',
       Id: 'task-id',
       Key: '',
       Points: 1,
-      SprintID: sprint2.Id,
+      Sprint: sprintInfo,
       Status: null,
       Title: 'title',
     });

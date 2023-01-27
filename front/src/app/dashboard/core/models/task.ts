@@ -1,4 +1,5 @@
 import { ProjectMember } from './project-member';
+import { SprintInfo } from './sprint';
 import { TaskStatus } from './task-status';
 
 export interface ITask {
@@ -9,7 +10,7 @@ export interface ITask {
   Points: number;
   Assignee: ProjectMember;
   Key: string;
-  SprintID: string;
+  Sprint: SprintInfo;
 }
 
 export class Task implements ITask {
@@ -20,10 +21,10 @@ export class Task implements ITask {
   Points: number;
   Assignee: ProjectMember;
   Key: string;
-  SprintID: string;
+  Sprint: SprintInfo;
 
   constructor(props: ITask) {
-    const { Assignee, Description, Title, Id, Points, Status, Key, SprintID } =
+    const { Assignee, Description, Title, Id, Points, Status, Key, Sprint } =
       props;
     this.Id = Id;
     this.Assignee = Assignee;
@@ -32,7 +33,7 @@ export class Task implements ITask {
     this.Points = Points;
     this.Status = Status;
     this.Key = Key;
-    this.SprintID = SprintID;
+    this.Sprint = Sprint;
   }
 
   public updateStatus(newStatus: TaskStatus) {
@@ -53,6 +54,10 @@ export class Task implements ITask {
 
   public updatePoints(newPoints: number) {
     this.Points = newPoints;
+  }
+
+  public moveTaskToSprint(sprint: SprintInfo) {
+    this.Sprint = sprint;
   }
 }
 

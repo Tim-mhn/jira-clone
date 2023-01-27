@@ -44,6 +44,10 @@ func (tc *TasksController) GetTaskByID(c *gin.Context) {
 		buildAndReturnAPIError(c, err)
 		return
 	}
+
+	// SprintInfo := tasks_models.SprintInfo{}
+
+	// taskWithSprint.Id
 	c.IndentedJSON(http.StatusOK, task)
 }
 

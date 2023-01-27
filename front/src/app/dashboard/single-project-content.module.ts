@@ -3,8 +3,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { SingleProjectPagesLayoutComponent } from './core/components/single-project-pages-layout/single-project-pages-layout.component';
 import { SingleProjectPagesLayoutModule } from './core/components/single-project-pages-layout/single-project-pages-layout.module';
-import { RouteProjectIdService } from './core/state-services/route-project-id.service';
-import { BoardContentProvidersModule } from './features/board/board-providers.module';
 
 const routes: Routes = [
   {
@@ -46,9 +44,7 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    BoardContentProvidersModule,
     SingleProjectPagesLayoutModule,
   ],
-  providers: [RouteProjectIdService],
 })
 export class SingleProjectContentModule {}

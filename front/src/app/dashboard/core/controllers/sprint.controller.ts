@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { switchMap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
-import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
+import { BoardProvidersModule } from '../../features/board/board-providers.module';
+import { GetTasksOfBoardController } from '../../features/board/controllers/get-board-tasks.controller';
 import { SprintsAPI } from '../apis/sprints.api';
 import { CurrentProjectService } from '../state-services/current-project.service';
-import { GetSprintsController } from './get-sprints.controller';
 
 @Injectable({
-  providedIn: BoardContentProvidersModule,
+  providedIn: BoardProvidersModule,
 })
 export class SprintController {
   constructor(
@@ -16,7 +16,7 @@ export class SprintController {
     private currentProjectService: CurrentProjectService,
     private snackbarFeedback: SnackbarFeedbackService,
     private api: SprintsAPI,
-    private sprintsController: GetSprintsController
+    private tasksOfBoardController: GetTasksOfBoardController
   ) {}
 
   createSprint(sprintName: string, requestState?: RequestState) {
@@ -27,7 +27,7 @@ export class SprintController {
         loadingMessage: 'Creating sprint ...',
         successMessage: 'Sprint successfully created',
       }),
-      switchMap(() => this.sprintsController.refreshSprintTasks()),
+      switchMap(() => this.tasksOfBoardController?.refreshSprintsTasks()),
       this.requestStateController.handleRequest(requestState)
     );
   }
@@ -40,7 +40,7 @@ export class SprintController {
         loadingMessage: 'Deleting sprint ...',
         successMessage: 'Sprint successfully deleted',
       }),
-      switchMap(() => this.sprintsController.refreshSprintTasks()),
+      switchMap(() => this.tasksOfBoardController?.refreshSprintsTasks()),
       this.requestStateController.handleRequest(requestState)
     );
   }
@@ -55,7 +55,7 @@ export class SprintController {
         },
         { showLoadingMessage: false }
       ),
-      switchMap(() => this.sprintsController.refreshSprintTasks()),
+      switchMap(() => this.tasksOfBoardController?.refreshSprintsTasks()),
       this.requestStateController.handleRequest(requestState)
     );
   }

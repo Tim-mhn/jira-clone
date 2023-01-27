@@ -75,10 +75,10 @@ func (service *SprintService) GetSprintListWithTasks(projectID string, taskFilte
 	return sprintListWithTasks, nil
 }
 
-func (service SprintService) getSprintTasksAndPointsBreakdown(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.Task, tasks_models.SprintPointsBreakdown, error) {
+func (service SprintService) getSprintTasksAndPointsBreakdown(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.TaskWithSprint, tasks_models.SprintPointsBreakdown, error) {
 
 	var syncGroup sync.WaitGroup
-	tasksChan := make(chan []tasks_models.Task)
+	tasksChan := make(chan []tasks_models.TaskWithSprint)
 	pointsChan := make(chan tasks_models.SprintPointsBreakdown)
 
 	var err error

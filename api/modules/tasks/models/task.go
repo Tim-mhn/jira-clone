@@ -5,8 +5,13 @@ import (
 )
 
 type Task struct {
-	Points                                int
-	Assignee                              auth.User
-	Id, Title, Description, Key, SprintID *string
-	Status                                TaskStatus
+	Points                      int
+	Assignee                    auth.User
+	Id, Title, Description, Key *string
+	Status                      TaskStatus
+}
+
+type TaskWithSprint struct {
+	Task
+	Sprint SprintInfo
 }

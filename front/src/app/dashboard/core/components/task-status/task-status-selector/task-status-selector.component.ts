@@ -29,12 +29,10 @@ export class TaskStatusSelectorComponent implements OnInit {
       .updateTaskStatus(task.Id, newStatus)
       .pipe(
         finalize(() => {
-          console.log('detect changes');
           this.cdr.detectChanges();
         })
       )
       .subscribe(() => {
-        console.log('sub');
         task.updateStatus(newStatus);
       });
   }

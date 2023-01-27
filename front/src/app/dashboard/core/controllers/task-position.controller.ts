@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
 import { TaskPositionAPI } from '../apis/task-position.api';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { MoveTaskPositionDTO } from '../dtos/move-task.dto';
 import { CurrentProjectService } from '../state-services/current-project.service';
 
 @Injectable({
-  providedIn: BoardContentProvidersModule,
+  providedIn: DashboardCoreProvidersModule,
 })
 export class TaskPositionController {
   constructor(

@@ -12,11 +12,12 @@ import {
 import { SubscriptionHandler } from '../../../../../shared/services/subscription-handler.service';
 import { GetSprintsController } from '../../../../core/controllers/get-sprints.controller';
 import { BoardFilters } from '../../../../core/models/board-filters';
-import { SprintWithTasks } from '../../../../core/models/sprint';
+import { SprintWithTasks } from '../../../../core/models';
 import { RouteProjectIdService } from '../../../../core/state-services/route-project-id.service';
 import { CurrentProjectService } from '../../../../core/state-services/current-project.service';
 import { CurrentSprintsService } from '../../state-services/current-sprints.service';
 import { ProjectMembersService } from '../../state-services/project-members.service';
+import { GetTasksOfBoardController } from '../../controllers/get-board-tasks.controller';
 
 @Component({
   selector: 'app-board',
@@ -29,7 +30,8 @@ export class BoardComponent implements OnInit, OnDestroy {
     public sprintsService: CurrentSprintsService,
     private sprintsController: GetSprintsController,
     private membersService: ProjectMembersService,
-    private routeProjectIdService: RouteProjectIdService
+    private routeProjectIdService: RouteProjectIdService,
+    private boardTasksController: GetTasksOfBoardController
   ) {}
 
   private _subscriptionHandler = new SubscriptionHandler();
@@ -64,7 +66,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     combineLatest({ projectId: projectId$, filters: filters$ })
       .pipe(
         switchMap(({ projectId, filters }) =>
-          this.sprintsController.getSprintsTasksForProject(
+          this.boardTasksController.getSprintsTasksForProject(
             projectId,
             filters,
             this.requestState

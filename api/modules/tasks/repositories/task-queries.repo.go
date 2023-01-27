@@ -30,7 +30,7 @@ func addContextToError(contextErrorMessage string, sourceError error) error {
 	return fmt.Errorf(`%s Details: %s `, contextErrorMessage, sourceError.Error())
 }
 
-func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.Task, error) {
+func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.TaskWithSprint, error) {
 
 	start := time.Now()
 	fmt.Print(filters)
@@ -52,7 +52,7 @@ func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters ta
 
 	defer rows.Close()
 
-	tasks := []tasks_models.Task{}
+	tasks := []tasks_models.TaskWithSprint{}
 
 	for rows.Next() {
 
@@ -73,55 +73,58 @@ func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters ta
 	return tasks, nil
 }
 
-func getTaskDataFromRow(rows *sql.Rows) (tasks_models.Task, error) {
-	var task tasks_models.Task
+func getTaskDataFromRow(rows *sql.Rows) (tasks_models.TaskWithSprint, error) {
+	var task tasks_models.TaskWithSprint
+	var taskSprint tasks_models.SprintInfo
 	var assignee auth.User
 	var assigneeIdBytes []byte // handle potential null values
 
 	err := rows.Scan(
 		&task.Id, &task.Title, &task.Points, &task.Description,
 		&task.Status.Id, &task.Status.Label, &task.Status.Color,
-		&assigneeIdBytes, &assignee.Name, &assignee.Email, &task.Key, &task.SprintID)
+		&assigneeIdBytes, &assignee.Name, &assignee.Email, &task.Key,
+		&taskSprint.Name, &taskSprint.Id, &taskSprint.IsBacklog)
 
 	if err != nil {
-		return tasks_models.Task{}, err
+		return tasks_models.TaskWithSprint{}, err
 	}
 
 	task.Assignee = assignee
 	assigneeIdString := string(assigneeIdBytes)
 	task.Assignee = auth.BuildUserWithIcon(assigneeIdString, task.Assignee.Name, task.Assignee.Email)
+	task.Sprint = taskSprint
 
 	return task, nil
 
 }
 
-func (taskRepo *TaskQueriesRepository) GetTaskById(taskID string) (tasks_models.Task, tasks_errors.TaskError) {
+func (taskRepo *TaskQueriesRepository) GetTaskById(taskID string) (tasks_models.TaskWithSprint, tasks_errors.TaskError) {
 	singleTaskQueryBuilder := singleTaskByIdQueryBuilder(taskID)
 
 	rows, err := singleTaskQueryBuilder.RunWith(taskRepo.conn).Query()
 
 	if err != nil {
-		return tasks_models.Task{}, tasks_errors.BuildTaskError(tasks_errors.OtherTaskError, err)
+		return tasks_models.TaskWithSprint{}, tasks_errors.BuildTaskError(tasks_errors.OtherTaskError, err)
 	}
 
 	defer rows.Close()
 
 	if !rows.Next() {
-		return tasks_models.Task{}, tasks_errors.BuildTaskError(tasks_errors.TaskNotFound, err)
+		return tasks_models.TaskWithSprint{}, tasks_errors.BuildTaskError(tasks_errors.TaskNotFound, err)
 	}
 
 	task, err := getTaskDataFromRow(rows)
 
 	if err != nil {
-		return tasks_models.Task{}, tasks_errors.BuildTaskError(tasks_errors.OtherTaskError, err)
+		return tasks_models.TaskWithSprint{}, tasks_errors.BuildTaskError(tasks_errors.OtherTaskError, err)
 	}
 
 	return task, tasks_errors.NoTaskError()
 
 }
 
-func errorWithEmptyTaskList(err error) ([]tasks_models.Task, error) {
-	return []tasks_models.Task{}, err
+func errorWithEmptyTaskList(err error) ([]tasks_models.TaskWithSprint, error) {
+	return []tasks_models.TaskWithSprint{}, err
 }
 
 func tasksBaseQueryBuilder() sq.SelectBuilder {
@@ -139,7 +142,9 @@ func tasksBaseQueryBuilder() sq.SelectBuilder {
 		`COALESCE("user".name, '') as user_name`,
 		`COALESCE("user".email, '') as user_email`,
 		"CONCAT(project.key, '-', task.number) as task_key",
-		"sprint.id as sprint_id").
+		"sprint.name as sprint_name",
+		"sprint.id as sprint_id",
+		"sprint.is_backlog as sprint_backlog").
 		From("task").
 		LeftJoin(`"user" ON assignee_id="user".id`).
 		LeftJoin("task_status ON task_status.id=task.status").

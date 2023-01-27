@@ -4,6 +4,7 @@ import { TimUIButtonModule } from '@tim-mhn/ng-ui/button';
 import { TimUIDropdownMenuModule } from '@tim-mhn/ng-ui/dropdown-menu';
 import { TimUIDividerModule } from '@tim-mhn/ng-ui/divider';
 import { TaskSideActionsComponent } from './task-side-actions.component';
+import { TaskSprintModule } from '../task-sprint/task-sprint.module';
 
 @NgModule({
   declarations: [TaskSideActionsComponent],
@@ -12,6 +13,7 @@ import { TaskSideActionsComponent } from './task-side-actions.component';
     TimUIButtonModule,
     TimUIDropdownMenuModule,
     TimUIDividerModule,
+    TaskSprintModule,
   ],
   exports: [TaskSideActionsComponent],
 })

@@ -1,24 +1,23 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import { switchMap } from 'rxjs';
+import { EMPTY, Observable, switchMap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
-import { BoardContentProvidersModule } from '../../features/board/board-providers.module';
+import { GetTasksOfBoardController } from '../../features/board/controllers/get-board-tasks.controller';
 import { TaskCommandsAPI } from '../apis/task-commands.api';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { PatchTaskDTO } from '../dtos';
+import { SprintInfo, Task } from '../models';
 import { TaskStatus } from '../models/task-status';
 import { CurrentProjectService } from '../state-services/current-project.service';
-import { GetSprintsController } from './get-sprints.controller';
 
-@Injectable({
-  providedIn: BoardContentProvidersModule,
-})
+@Injectable({ providedIn: DashboardCoreProvidersModule })
 export class UpdateTaskController {
   constructor(
     private requestStateController: RequestStateController,
     private api: TaskCommandsAPI,
     private currentProjectService: CurrentProjectService,
     private snackbarFeedback: SnackbarFeedbackService,
-    private sprintsController: GetSprintsController
+    @Optional() private tasksOfBoardController: GetTasksOfBoardController
   ) {}
 
   updateTask(
@@ -45,10 +44,12 @@ export class UpdateTaskController {
       projectId: this._currentProjectId,
     };
 
-    return this.api.updateTask(dto).pipe(
-      this.snackbarFeedback.showFeedbackSnackbars(),
-      switchMap(() => this.sprintsController.refreshSprintTasks())
-    );
+    return this.api
+      .updateTask(dto)
+      .pipe(
+        this.snackbarFeedback.showFeedbackSnackbars(),
+        this._refreshTaskListIfInBoardPage()
+      );
   }
 
   updateTaskStatus(taskId: string, newStatus: TaskStatus) {
@@ -58,26 +59,41 @@ export class UpdateTaskController {
       projectId: this._currentProjectId,
     };
 
-    return this.api.updateTask(dto).pipe(
-      this.snackbarFeedback.showFeedbackSnackbars(),
-      switchMap(() => this.sprintsController.refreshSprintTasks())
-    );
+    return this.api
+      .updateTask(dto)
+      .pipe(
+        this.snackbarFeedback.showFeedbackSnackbars(),
+        this._refreshTaskListIfInBoardPage()
+      );
   }
 
   moveTaskToSprint(
-    dto: Pick<PatchTaskDTO, 'taskId' | 'sprintId'>,
+    taskAndSprint: { task: Task; sprint: SprintInfo },
     requestState?: RequestState
   ) {
+    const { task, sprint } = taskAndSprint;
     const dtoWithProjectId: PatchTaskDTO = {
-      ...dto,
+      taskId: task.Id,
+      sprintId: sprint.Id,
       projectId: this._currentProjectId,
     };
 
     return this.api.updateTask(dtoWithProjectId).pipe(
       this.requestStateController.handleRequest(requestState),
-      this.snackbarFeedback.showFeedbackSnackbars(),
-      switchMap(() => this.sprintsController.refreshSprintTasks())
+      this.snackbarFeedback.showFeedbackSnackbars({
+        successMessage: `Task successfully moved to ${sprint.Name}`,
+      }),
+      this._refreshTaskListIfInBoardPage()
     );
+  }
+
+  private _refreshTaskListIfInBoardPage<T>() {
+    return (source: Observable<T>) =>
+      source.pipe(
+        switchMap(
+          () => this.tasksOfBoardController?.refreshSprintsTasks() || EMPTY
+        )
+      );
   }
 
   private get _currentProjectId() {
