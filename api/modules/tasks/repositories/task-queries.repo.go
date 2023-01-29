@@ -83,6 +83,7 @@ func getTaskDataFromRow(rows *sql.Rows) (tasks_models.TaskWithSprint, error) {
 		&task.Id, &task.Title, &task.Points, &task.Description,
 		&task.Status.Id, &task.Status.Label, &task.Status.Color,
 		&assigneeIdBytes, &assignee.Name, &assignee.Email, &task.Key,
+		&task.Type.Id, &task.Type.Label, &task.Type.Color, &task.Type.Icon,
 		&taskSprint.Name, &taskSprint.Id, &taskSprint.IsBacklog)
 
 	if err != nil {
@@ -142,6 +143,10 @@ func tasksBaseQueryBuilder() sq.SelectBuilder {
 		`COALESCE("user".name, '') as user_name`,
 		`COALESCE("user".email, '') as user_email`,
 		"CONCAT(project.key, '-', task.number) as task_key",
+		"task_type.id as task_type_id",
+		"task_type.label as task_type_label",
+		"task_type.color as task_type_color",
+		"task_type.icon as task_type_icon",
 		"sprint.name as sprint_name",
 		"sprint.id as sprint_id",
 		"sprint.is_backlog as sprint_backlog").
@@ -149,7 +154,8 @@ func tasksBaseQueryBuilder() sq.SelectBuilder {
 		LeftJoin(`"user" ON assignee_id="user".id`).
 		LeftJoin("task_status ON task_status.id=task.status").
 		LeftJoin("sprint ON sprint.id=task.sprint_id").
-		LeftJoin("project ON sprint.project_id=project.id")
+		LeftJoin("project ON sprint.project_id=project.id").
+		LeftJoin("task_type ON task.task_type=task_type.id")
 
 	return selectBuilder
 }

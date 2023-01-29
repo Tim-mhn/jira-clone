@@ -126,6 +126,7 @@ func (taskRepo *TaskCommandsRepository) UpdateTask(taskID string, patchDTO tasks
 		"Title":       "title",
 		"Points":      "points",
 		"SprintId":    "sprint_id",
+		"Type":        "task_type",
 	}
 
 	updateQuery := shared.BuildSQLUpdateQuery(patchDTO, ApiToDBFields, shared.SQLCondition{
