@@ -14,6 +14,7 @@ import { TaskStatusComponentsModule } from '../../../../core/components/task-sta
 import { TaskAssigneeModule } from '../../../../core/components/task-assignee/task-assignee.module';
 import { TaskPointsChipModule } from '../../../../core/components/task-points-chip/task-points-chip.module';
 import { TaskSideActionsModule } from '../../../../core/components/task-side-actions/task-side-actions.module';
+import { TaskTypeModule } from '../../../../core/components/task-type/task-type.module';
 
 @NgModule({
   declarations: [TaskListComponent, TaskListItemComponent],
@@ -31,6 +32,7 @@ import { TaskSideActionsModule } from '../../../../core/components/task-side-act
     TaskPointsChipModule,
     TaskSideActionsModule,
     DragDropModule,
+    TaskTypeModule,
   ],
   exports: [TaskListComponent],
 })

@@ -1,6 +1,11 @@
 <div class="flex gap-2 text-gray-800 flex-grow w-full">
   <div class="flex flex-col gap-3 w-full relative">
     <div class="flex flex-grow justify-between items-center gap-2">
+      <jira-task-type-selector
+        [task]="task"
+        [allTypes]="project?.TaskTypes"
+      ></jira-task-type-selector>
+
       <div
         class="cursor-pointer hover:underline decoration-gray-500 font-light text-gray-500 text-sm"
         [routerLink]="taskPageRoute"

@@ -1,4 +1,6 @@
 import { NgModule } from '@angular/core';
 
-@NgModule({})
+@NgModule({
+  providers: [],
+})
 export class SharedProvidersModule {}

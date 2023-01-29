@@ -5,4 +5,5 @@ export type NewTaskDTO = {
   assigneeId?: string;
   description?: string;
   sprintId: string;
+  type?: number;
 };

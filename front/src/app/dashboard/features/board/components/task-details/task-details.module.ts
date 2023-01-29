@@ -17,6 +17,7 @@ import { TaskAssigneeModule } from '../../../../core/components/task-assignee/ta
 import { TaskPointsChipModule } from '../../../../core/components/task-points-chip/task-points-chip.module';
 import { TaskSideActionsModule } from '../../../../core/components/task-side-actions/task-side-actions.module';
 import { TaskSprintModule } from '../../../../core/components/task-sprint/task-sprint.module';
+import { TaskTypeModule } from '../../../../core/components/task-type/task-type.module';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { TaskSprintModule } from '../../../../core/components/task-sprint/task-s
     RouterModule,
     TimUILinkModule,
     TaskSprintModule,
+    TaskTypeModule,
   ],
   exports: [TaskDetailsComponent],
 })

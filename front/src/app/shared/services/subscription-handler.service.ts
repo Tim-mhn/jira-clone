@@ -3,6 +3,10 @@ import { Subject } from 'rxjs';
 export class SubscriptionHandler {
   constructor() {}
 
+  public static New() {
+    return new SubscriptionHandler();
+  }
+
   private _onDestroy$ = new Subject<void>();
   public onDestroy$ = this._onDestroy$.asObservable();
 

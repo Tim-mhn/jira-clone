@@ -1,12 +1,12 @@
 import { Injectable, Optional } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import { EMPTY, Observable, switchMap } from 'rxjs';
+import { Observable, of, switchMap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
 import { GetTasksOfBoardController } from '../../features/board/controllers/get-board-tasks.controller';
 import { TaskCommandsAPI } from '../apis/task-commands.api';
 import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { PatchTaskDTO } from '../dtos';
-import { SprintInfo, Task } from '../models';
+import { SprintInfo, Task, TaskType } from '../models';
 import { TaskStatus } from '../models/task-status';
 import { CurrentProjectService } from '../state-services/current-project.service';
 
@@ -67,6 +67,18 @@ export class UpdateTaskController {
       );
   }
 
+  updateTaskType(task: Task, newType: TaskType) {
+    const dto: PatchTaskDTO = {
+      taskId: task.Id,
+      type: newType?.Id,
+      projectId: this._currentProjectId,
+    };
+
+    return this.api
+      .updateTask(dto)
+      .pipe(this.snackbarFeedback.showFeedbackSnackbars());
+  }
+
   moveTaskToSprint(
     taskAndSprint: { task: Task; sprint: SprintInfo },
     requestState?: RequestState
@@ -91,7 +103,7 @@ export class UpdateTaskController {
     return (source: Observable<T>) =>
       source.pipe(
         switchMap(
-          () => this.tasksOfBoardController?.refreshSprintsTasks() || EMPTY
+          () => this.tasksOfBoardController?.refreshSprintsTasks() || of(null)
         )
       );
   }

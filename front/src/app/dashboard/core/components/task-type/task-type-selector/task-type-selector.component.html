@@ -1,0 +1,24 @@
+<jira-task-type-tag
+  [taskType]="task?.Type"
+  timDropdownTrigger
+  [timDropdownMenuTriggerFor]="taskTypesMenu"
+  [timTooltipOrigin]="taskTypeTooltip"
+  [tooltipPosition]="TASK_TYPE_TOOLTIP_POSITION"
+></jira-task-type-tag>
+
+<tim-dropdown-menu #taskTypesMenu>
+  <tim-dropdown-header>Change Task Type</tim-dropdown-header>
+  <tim-dropdown-item
+    *ngFor="let type of allTypes"
+    (click)="updateTaskType(type)"
+  >
+    <div class="flex gap-2 items-center">
+      <jira-task-type-tag [taskType]="type"></jira-task-type-tag>
+      {{ type.Label }}
+    </div>
+  </tim-dropdown-item>
+</tim-dropdown-menu>
+
+<tim-tooltip #taskTypeTooltip>
+  <div>{{ task?.Type?.Label }}</div>
+</tim-tooltip>

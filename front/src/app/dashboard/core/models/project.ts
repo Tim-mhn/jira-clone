@@ -1,5 +1,6 @@
 import { ProjectMember } from './project-member';
 import { TaskStatus } from './task-status';
+import { TaskType } from './task-type';
 
 export type ProjectId = string;
 
@@ -16,6 +17,6 @@ export type ProjectInfo = ProjectIdName & {
 export type ProjectInfoList = ProjectInfo[];
 
 export type Project = ProjectInfo & {
-  Members: ProjectMember[];
   AllTaskStatus: TaskStatus[];
+  TaskTypes: TaskType[];
 };
