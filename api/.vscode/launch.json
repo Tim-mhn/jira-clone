@@ -12,11 +12,12 @@
       "program": "main.go"
     },
     {
-      "name": "Launch mailing",
-      "type": "node",
+      "name": "Run unit tests",
+      "type": "go",
       "request": "launch",
-      "mode": "debug",
-      "program": "mailing/index.js"
+      "mode": "test",
+      "program": "${workspaceFolder}/${relativeFileDirname}",
+      "showLog": true
     }
   ]
 }

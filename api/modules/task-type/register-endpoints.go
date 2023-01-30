@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterTaskTypesEndpoints(singleProjectRoutes *gin.RouterGroup, conn *sql.DB) {
+func RegisterEndpoints(singleProjectRoutes *gin.RouterGroup, conn *sql.DB) {
 
 	repo := NewTaskTypeRepository(conn)
 	controller := NewTaskTypeController(repo)

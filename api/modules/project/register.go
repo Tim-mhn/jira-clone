@@ -8,9 +8,11 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
 )
 
+type ProjectsRoutes = *gin.RouterGroup
+type SingleProjectRoutes = *gin.RouterGroup
 type ProjectRouterGroups struct {
-	ProjectsRoutes      *gin.RouterGroup
-	SingleProjectRoutes *gin.RouterGroup
+	ProjectsRoutes      ProjectsRoutes
+	SingleProjectRoutes SingleProjectRoutes
 }
 
 func GetProjectRouterGroups(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
@@ -29,7 +31,7 @@ func GetProjectRouterGroups(router *gin.Engine, conn *sql.DB) ProjectRouterGroup
 		SingleProjectRoutes: singleProjectRoutes,
 	}
 }
-func RegisterProjectsEndpoints(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
+func RegisterEndpoints(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
 	userRepo := auth.NewUserRepository(conn)
 	projectQueries := NewProjectQueriesRepository(conn)
 	projectRepo := NewProjectCommandsRepository(userRepo, conn)

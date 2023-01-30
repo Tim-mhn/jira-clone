@@ -12,7 +12,9 @@ import (
 	tasks_services "github.com/tim-mhn/figma-clone/modules/tasks/services"
 )
 
-func RegisterTasksEndpoints(singleProjectRoutes *gin.RouterGroup, conn *sql.DB) {
+type SingleTaskRoutes = *gin.RouterGroup
+
+func RegisterEndpoints(singleProjectRoutes project.SingleProjectRoutes, conn *sql.DB) SingleTaskRoutes {
 
 	tasksController, taskStatusController, sprintsController := buildControllers(conn)
 	taskStatusRoutes := singleProjectRoutes.Group("/task-status")
@@ -32,6 +34,8 @@ func RegisterTasksEndpoints(singleProjectRoutes *gin.RouterGroup, conn *sql.DB) 
 	singleTaskRoutes.PATCH("", tasksController.UpdateTask)
 	singleTaskRoutes.DELETE("", tasksController.DeleteTask)
 	singleTaskRoutes.PATCH("/move", tasksController.MoveTask)
+
+	return singleTaskRoutes
 
 }
 

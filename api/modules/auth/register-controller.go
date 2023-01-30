@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterAuthEndpoints(router *gin.Engine, conn *sql.DB) {
+func RegisterEndpoints(router *gin.Engine, conn *sql.DB) {
 	userRepo := NewUserRepository(conn)
 	uc := NewUserController(userRepo)
 

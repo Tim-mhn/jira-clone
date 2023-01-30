@@ -36,7 +36,7 @@ func NewTasksController(um *auth.UserRepository, projectQueries *project.Project
 }
 
 func (tc *TasksController) GetTaskByID(c *gin.Context) {
-	taskID := getTaskIDParam(c)
+	taskID := GetTaskIDParam(c)
 
 	task, err := tc.taskQueries.GetTaskById(taskID)
 
@@ -72,7 +72,7 @@ func (tc *TasksController) CreateNewTask(c *gin.Context) {
 
 func (tc *TasksController) UpdateTask(c *gin.Context) {
 	var updateTaskDTO tasks_dtos.PatchTaskDTO
-	taskID := getTaskIDParam(c)
+	taskID := GetTaskIDParam(c)
 	if err := c.BindJSON(&updateTaskDTO); err != nil {
 		c.IndentedJSON(http.StatusUnprocessableEntity, err.Error())
 		return
@@ -122,7 +122,7 @@ func buildTasksFiltersFromRequest(c *gin.Context) tasks_models.TaskFilters {
 }
 
 func (tc *TasksController) DeleteTask(c *gin.Context) {
-	taskID := getTaskIDParam(c)
+	taskID := GetTaskIDParam(c)
 
 	res, err := tc.taskCommands.DeleteTask(taskID)
 
@@ -139,7 +139,7 @@ func (tc *TasksController) DeleteTask(c *gin.Context) {
 }
 
 func (tc *TasksController) MoveTask(c *gin.Context) {
-	taskID := getTaskIDParam(c)
+	taskID := GetTaskIDParam(c)
 
 	var MoveTaskDTO tasks_dtos.MoveTaskDTO
 	if err := c.BindJSON(&MoveTaskDTO); err != nil {

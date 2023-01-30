@@ -7,7 +7,7 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/project"
 )
 
-func RegisterInvitationsEndpoints(conn *sql.DB, projectRouterGroups project.ProjectRouterGroups) {
+func RegisterEndpoints(conn *sql.DB, projectRouterGroups project.ProjectRouterGroups) {
 	controller := buildInvitationsController(conn)
 
 	projectRouterGroups.ProjectsRoutes.POST("/members/invite/accept", controller.AcceptInvitation)

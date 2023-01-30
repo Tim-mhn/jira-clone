@@ -1,7 +1,10 @@
 package arrays
 
 import (
+	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMapArray(t *testing.T) {
@@ -11,10 +14,8 @@ func TestMapArray(t *testing.T) {
 		return i * 2
 	})
 
-	testPassed := doubles[0] == 4 && doubles[1] == 6 && doubles[2] == 10
+	assert.Equal(t, doubles[0], 4, fmt.Sprintf(`%d should be equal to 4`, doubles[0]))
+	assert.Equal(t, doubles[1], 6, fmt.Sprintf(`%d should be equal to 6`, doubles[1]))
+	assert.Equal(t, doubles[2], 10, fmt.Sprintf(`%d should be equal to 10`, doubles[2]))
 
-	if !testPassed {
-		t.Logf(`error. Expected [4, 6, 10]. Got %d`, doubles)
-		t.Fail()
-	}
 }
