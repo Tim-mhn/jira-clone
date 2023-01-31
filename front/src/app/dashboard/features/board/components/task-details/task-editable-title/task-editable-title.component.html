@@ -5,7 +5,10 @@
   ></tim-editable-header-input>
 
   <div class="flex pt-2">
-    <tim-spinner size="sm" *ngIf="requestState.isPending"></tim-spinner>
+    <tim-spinner
+      size="sm"
+      *ngIf="requestState.isPending$ | async"
+    ></tim-spinner>
 
     <img
       *ngIf="requestState.isSuccess || requestState.isError"

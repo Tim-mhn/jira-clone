@@ -1,0 +1,20 @@
+<div class="flex items-start gap-2 text-gray-800">
+  <jira-member-icon
+    [member]="comment?.Author"
+    [showTooltip]="true"
+  ></jira-member-icon>
+
+  <div class="flex flex-col">
+    <div class="flex items-center gap-3">
+      <div class="text-md text-gray-600 font-medium">
+        {{ comment?.Author?.Name }}
+      </div>
+
+      <div class="text-xs text-gray-600 font-light">
+        {{ comment?.CreatedOn | date }}
+      </div>
+    </div>
+
+    <div class="text-sm">{{ comment?.Text }}</div>
+  </div>
+</div>

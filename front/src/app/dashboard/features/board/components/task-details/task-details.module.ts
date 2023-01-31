@@ -18,6 +18,7 @@ import { TaskPointsChipModule } from '../../../../core/components/task-points-ch
 import { TaskSideActionsModule } from '../../../../core/components/task-side-actions/task-side-actions.module';
 import { TaskSprintModule } from '../../../../core/components/task-sprint/task-sprint.module';
 import { TaskTypeModule } from '../../../../core/components/task-type/task-type.module';
+import { TaskCommentsModule } from '../../../comments/module';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { TaskTypeModule } from '../../../../core/components/task-type/task-type.
     TimUILinkModule,
     TaskSprintModule,
     TaskTypeModule,
+    TaskCommentsModule,
   ],
   exports: [TaskDetailsComponent],
 })
