@@ -7,6 +7,7 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	tasks_controllers "github.com/tim-mhn/figma-clone/modules/tasks/controllers"
 	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
+	http_utils "github.com/tim-mhn/figma-clone/utils/http"
 )
 
 type TaskCommentsController struct {
@@ -25,10 +26,8 @@ func (controller TaskCommentsController) postComment(c *gin.Context) {
 	currentUser := controller.getCurrentUser(c)
 	var createCommentDTO CreateCommentDTO
 	if err := c.ShouldBindJSON(&createCommentDTO); err != nil {
-		domainError := buildCommentsError(OtherCommentError, err)
-		apiResponse := shared_errors.BuildAPIErrorFromDomainError(domainError)
-		c.IndentedJSON(http.StatusBadRequest, apiResponse)
-		c.Abort()
+		domainError := buildCommentsError(InvalidPayload, err)
+		buildAndReturnAPIErrorResponse(c, domainError)
 		return
 	}
 
@@ -41,10 +40,7 @@ func (controller TaskCommentsController) postComment(c *gin.Context) {
 	err := controller.repo.createComment(createCommentInput)
 
 	if err.HasError {
-		code := getHttpStatusCode(err)
-		apiResponse := shared_errors.BuildAPIErrorFromDomainError(err)
-		c.IndentedJSON(code, apiResponse)
-		c.Abort()
+		buildAndReturnAPIErrorResponse(c, err)
 		return
 	}
 
@@ -53,12 +49,27 @@ func (controller TaskCommentsController) postComment(c *gin.Context) {
 }
 
 func (controller TaskCommentsController) getTaskComments(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, nil)
+	taskID := c.Param("taskID")
+
+	comments, err := controller.repo.getTaskComments(taskID)
+
+	if err.HasError {
+		buildAndReturnAPIErrorResponse(c, err)
+		return
+	}
+	c.IndentedJSON(http.StatusOK, comments)
 }
 
 var (
 	getUserFromRequestContext = auth.GetUserFromRequestContext
 )
+
+func buildAndReturnAPIErrorResponse(c *gin.Context, err CommentsError) {
+	code := getHttpStatusCode(err)
+	apiResponse := shared_errors.BuildAPIErrorFromDomainError(err)
+	http_utils.ReturnJsonAndAbort(c, code, apiResponse)
+
+}
 
 func (controller TaskCommentsController) getCurrentUser(c *gin.Context) auth.User {
 	currentUser, _ := getUserFromRequestContext(c)
@@ -68,6 +79,8 @@ func (controller TaskCommentsController) getCurrentUser(c *gin.Context) auth.Use
 func getHttpStatusCode(err CommentsError) int {
 	switch err.Code {
 	case TaskNotFound:
+		return http.StatusBadRequest
+	case InvalidPayload:
 		return http.StatusBadRequest
 	}
 

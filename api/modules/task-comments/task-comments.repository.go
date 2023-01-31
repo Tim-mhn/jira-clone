@@ -3,6 +3,7 @@ package task_comments
 import (
 	"database/sql"
 
+	"github.com/Masterminds/squirrel"
 	"github.com/lib/pq"
 	"github.com/tim-mhn/figma-clone/database"
 	"github.com/tim-mhn/figma-clone/modules/auth"
@@ -51,7 +52,7 @@ func (repo sqlTaskCommentsRepository) getTaskComments(taskID string) (TaskCommen
 }
 
 func buildCommentsFromRows(rows *sql.Rows) (TaskComments, error) {
-	var comments TaskComments
+	comments := []TaskComment{}
 
 	for rows.Next() {
 		var comment TaskComment
@@ -78,7 +79,7 @@ var (
 func runInsertCommentSQLQuery(createComment CreateCommentInput, conn *sql.DB) error {
 	builder := database.GetPsqlQueryBuilder().
 		Insert("task_comment").
-		Columns("task_id", "text", "created_on", "author_id").
+		Columns("task_id", "text", "author_id").
 		Values(createComment.TaskID, createComment.Text, createComment.AuthorID)
 
 	_, err := builder.RunWith(conn).Exec()
@@ -87,8 +88,13 @@ func runInsertCommentSQLQuery(createComment CreateCommentInput, conn *sql.DB) er
 
 func runGetCommentsSQLQuery(taskId string, conn *sql.DB) (*sql.Rows, error) {
 	builder := database.GetPsqlQueryBuilder().
-		Select("task_comment").
-		Columns("id", "text", "created_on", "author_id")
+		Select("task_comment.id as comment_id", "text", "created_on", "author_id", `"user".name`, `"user".email`).
+		From("task_comment").
+		LeftJoin(`"user" ON author_id="user".id`).
+		Where(squirrel.Eq{
+			"task_id": taskId,
+		}).
+		OrderBy("created_on DESC")
 
 	return builder.RunWith(conn).Query()
 }

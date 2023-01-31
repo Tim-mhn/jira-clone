@@ -99,7 +99,7 @@ func TestGetComments(t *testing.T) {
 
 	testsData := []getCommentsTestData{
 		{
-			name: "should return NO COMMENTS ERROR if query doesn't return any error",
+			name: "should return NO COMMENTS ERROR and correct list of TaskComment if query doesn't return any error",
 			queryResponse: getCommentsQueryResponse{
 				err:      nil,
 				comments: []TaskComment{comment1, comment2},
@@ -120,6 +120,17 @@ func TestGetComments(t *testing.T) {
 				comments: TaskComments{},
 			},
 		},
+		{
+			name: "should return empty array of TaskComment if query returns empty rows",
+			queryResponse: getCommentsQueryResponse{
+				err:      nil,
+				comments: []TaskComment{},
+			},
+			expected: getCommentsQueryExpected{
+				err:      NO_COMMENTS_ERROR(),
+				comments: []TaskComment{},
+			},
+		},
 	}
 
 	for _, testData := range testsData {
@@ -135,27 +146,19 @@ func TestGetComments(t *testing.T) {
 
 			hasError := testData.queryResponse.err != nil
 			if hasError {
-				mock.ExpectQuery("SELECT task_comment").WillReturnError(testData.queryResponse.err)
+				mock.ExpectQuery("SELECT").WillReturnError(testData.queryResponse.err)
 
 			} else {
 				rows := buildMockRowsFromTestData(testData.queryResponse.comments)
-				mock.ExpectQuery("SELECT task_comment").WillReturnRows(rows)
+				mock.ExpectQuery("SELECT").WillReturnRows(rows)
 			}
 
 			comments, err := repo.getTaskComments("ceacaec")
 
 			expectedResults := testData.expected
 
-			assert.EqualValues(t, err, expectedResults.err)
-
-			// if !hasError {
-
-			// assert.EqualValues(t, comment1.Id, comments[0].Id)
-			// assert.EqualValues(t, comment2.Id, comments[1].Id)
-
-			assert.EqualValues(t, testData.expected.comments, comments)
-
-			// }
+			assert.EqualValues(t, err, expectedResults.err, testData.name)
+			assert.EqualValues(t, testData.expected.comments, comments, testData.name)
 
 		})
 	}

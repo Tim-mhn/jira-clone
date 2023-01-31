@@ -1,7 +1,6 @@
 package task_comments
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,19 +13,24 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
+	http_utils "github.com/tim-mhn/figma-clone/utils/http"
 )
 
 type mockCommentsRepository struct {
 	mock.Mock
 }
 
-func (mockRepo mockCommentsRepository) createComment(createComment CreateCommentInput) CommentsError {
+/**
+** MAKE SURE TO HAVE A POINTER RECEIVING THE METHOD, otherwise Called() / AssertCalled works unexpectedly
+ */
+func (mockRepo *mockCommentsRepository) createComment(createComment CreateCommentInput) CommentsError {
 	args := mockRepo.Called()
 	return args.Get(0).(CommentsError)
 }
 
-func (mockRepo mockCommentsRepository) getTaskComments(taskID string) (TaskComments, CommentsError) {
-	return TaskComments{}, NO_COMMENTS_ERROR()
+func (mockRepo *mockCommentsRepository) getTaskComments(taskID string) (TaskComments, CommentsError) {
+	args := mockRepo.Called(taskID)
+	return args.Get(0).(TaskComments), args.Get(1).(CommentsError)
 }
 
 func TestPostCommentHttpCodes(t *testing.T) {
@@ -77,9 +81,9 @@ func TestPostCommentHttpCodes(t *testing.T) {
 			mockRepo := new(mockCommentsRepository)
 			router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
 
-			mockRepo.Mock.On("createComment").Return(testData["repoResponse"])
+			mockRepo.On("createComment").Return(testData["repoResponse"])
 
-			req := buildRequest(testData["requestBody"].(map[string]interface{}))
+			req := buildPostCommentRequest(testData["requestBody"].(map[string]interface{}))
 			router.ServeHTTP(responseRecorder, req)
 
 			code := responseRecorder.Result().StatusCode
@@ -103,7 +107,7 @@ func TestPostCommentHttpCodes(t *testing.T) {
 
 		mockRepo.Mock.On("createComment").Return(buildCommentsError(TaskNotFound, fmt.Errorf("task not found")))
 
-		request := buildRequest(INVALID_REQUEST_BODY())
+		request := buildPostCommentRequest(INVALID_REQUEST_BODY())
 
 		router.ServeHTTP(responseRecorder, request)
 
@@ -124,7 +128,7 @@ func TestPostCommentHttpCodes(t *testing.T) {
 
 		mockRepo.Mock.On("createComment").Return(buildCommentsError(TaskNotFound, fmt.Errorf("task not found")))
 
-		request := buildRequest(VALID_REQUEST_BODY())
+		request := buildPostCommentRequest(VALID_REQUEST_BODY())
 
 		router.ServeHTTP(responseRecorder, request)
 
@@ -141,6 +145,63 @@ func TestPostCommentHttpCodes(t *testing.T) {
 
 }
 
+func TestGetTaskComments(t *testing.T) {
+
+	t.Run("should call TaskCommentsRepository with route's taskID ", func(t *testing.T) {
+		mockRepo := new(mockCommentsRepository)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+
+		taskID := "some-random-id"
+		request := buildGetCommentsRequest(taskID)
+
+		mockRepo.On("getTaskComments", taskID).Return(nil)
+		router.ServeHTTP(responseRecorder, request)
+
+		mockRepo.AssertCalled(t, "getTaskComments", taskID)
+
+	})
+
+	t.Run("should return 404 NOT FOUND if taskID is empty string ", func(t *testing.T) {
+		mockRepo := new(mockCommentsRepository)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+
+		taskID := ""
+		request := buildGetCommentsRequest(taskID)
+
+		mockRepo.On("getTaskComments", taskID).Return(nil)
+		router.ServeHTTP(responseRecorder, request)
+
+		expectedCode := http.StatusNotFound
+
+		assert.EqualValues(t, expectedCode, responseRecorder.Result().StatusCode, "should return BadRequest if taskID is empty string")
+
+	})
+
+	t.Run("should return BAD REQUEST if repo returns TaskNotFound ", func(t *testing.T) {
+		mockRepo := new(mockCommentsRepository)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+
+		taskID := "task-id-does-not-exist"
+		request := buildGetCommentsRequest(taskID)
+
+		mockRepo.On("getTaskComments", taskID).Return([]TaskComment{}, TASK_NOT_FOUND_ERROR(nil))
+		router.ServeHTTP(responseRecorder, request)
+
+		expectedCode := http.StatusBadRequest
+
+		assert.EqualValues(t, expectedCode, responseRecorder.Result().StatusCode, "should return BadRequest if taskID doesn't exist")
+
+	})
+}
+
+func buildPostCommentRequest(body map[string]interface{}) *http.Request {
+	return http_utils.BuildRequest("POST", "/comments", body)
+}
+
+func buildGetCommentsRequest(taskID string) *http.Request {
+	return http_utils.BuildRequest("GET", fmt.Sprintf("/%s/comments", taskID), nil)
+}
+
 func VALID_REQUEST_BODY() map[string]interface{} {
 	return map[string]interface{}{"text": "my test"}
 }
@@ -148,6 +209,10 @@ func VALID_REQUEST_BODY() map[string]interface{} {
 func INVALID_REQUEST_BODY() map[string]interface{} {
 	return map[string]interface{}{"wrong-property": "my test"}
 
+}
+
+func TASK_NOT_FOUND_ERROR(source error) CommentsError {
+	return buildCommentsError(TaskNotFound, source)
 }
 func typeOfResponseIsAPIResponse(responseBody map[string]interface{}) (string, error) {
 	apiResponse := shared_errors.BuildAPIErrorFromDomainError(buildCommentsError(TaskNotFound, nil))
@@ -166,7 +231,7 @@ func typeOfResponseIsAPIResponse(responseBody map[string]interface{}) (string, e
 	return "", nil
 }
 
-func setupRouterAndReturnRecorder(mockRepo TaskCommentsRepository) (*gin.Engine, *httptest.ResponseRecorder) {
+func setupRouterAndReturnRecorder(mockRepo *mockCommentsRepository) (*gin.Engine, *httptest.ResponseRecorder) {
 	responseRecorder := httptest.NewRecorder()
 
 	router := gin.Default()
@@ -174,16 +239,9 @@ func setupRouterAndReturnRecorder(mockRepo TaskCommentsRepository) (*gin.Engine,
 		repo: mockRepo,
 	}
 	router.POST("/comments", controller.postComment)
+	router.GET("/:taskID/comments", controller.getTaskComments)
 
 	return router, responseRecorder
-}
-
-func buildRequest(body map[string]interface{}) *http.Request {
-	m, b := body, new(bytes.Buffer)
-	json.NewEncoder(b).Encode(m)
-	req, _ := http.NewRequest("POST", "/comments", b)
-
-	return req
 }
 
 func getResponseBody(responseRecorder httptest.ResponseRecorder) interface{} {

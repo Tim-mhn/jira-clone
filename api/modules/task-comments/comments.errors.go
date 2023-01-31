@@ -8,6 +8,7 @@ const (
 	TaskNotFound = iota
 	AuthorNotFound
 	OtherCommentError
+	InvalidPayload
 )
 
 type CommentsError = shared_errors.DomainError[CommentsErrorCode]
@@ -20,6 +21,9 @@ func (err CommentsErrorCode) String() string {
 
 	case AuthorNotFound:
 		return "AuthorNotFound"
+
+	case InvalidPayload:
+		return "InvalidPayload"
 	case OtherCommentError:
 
 	}
@@ -35,6 +39,9 @@ func (err CommentsErrorCode) UserFriendlyString() string {
 
 	case AuthorNotFound:
 		return "Author not found"
+
+	case InvalidPayload:
+		return "Invalid payload"
 
 	case OtherCommentError:
 	}
