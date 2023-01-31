@@ -6,6 +6,7 @@ type CommentsErrorCode int
 
 const (
 	TaskNotFound = iota
+	AuthorNotFound
 	OtherCommentError
 )
 
@@ -16,6 +17,9 @@ func (err CommentsErrorCode) String() string {
 
 	case TaskNotFound:
 		return "TaskNotFound"
+
+	case AuthorNotFound:
+		return "AuthorNotFound"
 	case OtherCommentError:
 
 	}
@@ -28,6 +32,10 @@ func (err CommentsErrorCode) UserFriendlyString() string {
 
 	case TaskNotFound:
 		return "Task not found"
+
+	case AuthorNotFound:
+		return "Author not found"
+
 	case OtherCommentError:
 	}
 
