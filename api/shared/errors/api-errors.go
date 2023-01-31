@@ -3,6 +3,7 @@ package shared_errors
 type APIErrorResponse struct {
 	Key     string
 	Message string
+	Details string
 }
 
 func UNPROCESSABLE_ENTITY_API_ERROR_RESPONSE() APIErrorResponse {
@@ -18,5 +19,6 @@ func BuildAPIErrorFromDomainError[T DomainErrorCode](domainErrorResponse DomainE
 	return APIErrorResponse{
 		Key:     errorKey,
 		Message: errorMessage,
+		Details: domainErrorResponse.Error(),
 	}
 }

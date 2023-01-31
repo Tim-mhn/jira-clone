@@ -18,6 +18,14 @@ type DomainError[T DomainErrorCode] struct {
 	HasError bool
 }
 
+func (err DomainError[T]) Error() string {
+	if err.Source == nil {
+		return err.Code.String()
+	}
+
+	return err.Source.Error()
+}
+
 type ErrorBuilder struct {
 	context string
 }

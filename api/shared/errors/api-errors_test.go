@@ -1,6 +1,11 @@
 package shared_errors
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 type testDomainErrorCode int
 
@@ -53,4 +58,22 @@ func TestBuildAPIErrorFromDomainError(t *testing.T) {
 				expectedMessage, errorMessage)
 		}
 	})
+
+	t.Run("should correctly build APIError's Details", func(t *testing.T) {
+
+		sourceError := fmt.Errorf("could not open file. invalid path")
+		domainError := testDomainError{
+			Source: sourceError,
+			Code:   ERROR_1,
+		}
+		apiError := BuildAPIErrorFromDomainError(domainError)
+
+		expectedErrorDetails := sourceError.Error()
+
+		apiErrorDetails := apiError.Details
+
+		assert.Equal(t, expectedErrorDetails, apiErrorDetails)
+
+	})
+
 }
