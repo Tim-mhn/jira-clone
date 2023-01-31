@@ -25,6 +25,10 @@ func (mockRepo mockCommentsRepository) createComment(createComment CreateComment
 	return args.Get(0).(CommentsError)
 }
 
+func (mockRepo mockCommentsRepository) getTaskComments(taskID string) (TaskComments, CommentsError) {
+	return TaskComments{}, NO_COMMENTS_ERROR()
+}
+
 func TestPostCommentHttpCodes(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)

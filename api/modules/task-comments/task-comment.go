@@ -12,4 +12,4 @@ type TaskComment struct {
 	CreatedOn time.Time
 }
 
-type TaskComments []TaskComment
+type TaskComments = []TaskComment

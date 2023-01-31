@@ -52,6 +52,10 @@ func (controller TaskCommentsController) postComment(c *gin.Context) {
 
 }
 
+func (controller TaskCommentsController) getTaskComments(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, nil)
+}
+
 var (
 	getUserFromRequestContext = auth.GetUserFromRequestContext
 )

@@ -14,4 +14,5 @@ func RegisterEndpoints(singleTaskRoutes tasks.SingleTaskRoutes, conn *sql.DB) {
 	commentsRoutes := singleTaskRoutes.Group("/comments")
 
 	commentsRoutes.POST("", controller.postComment)
+	commentsRoutes.GET("", controller.getTaskComments)
 }

@@ -5,10 +5,12 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/tim-mhn/figma-clone/database"
+	"github.com/tim-mhn/figma-clone/modules/auth"
 )
 
 type TaskCommentsRepository interface {
 	createComment(createComment CreateCommentInput) CommentsError
+	getTaskComments(taskID string) (TaskComments, CommentsError)
 }
 
 type sqlTaskCommentsRepository struct {
@@ -23,7 +25,7 @@ func newSQLTaskCommentsRepository(conn *sql.DB) TaskCommentsRepository {
 
 func (repo sqlTaskCommentsRepository) createComment(createComment CreateCommentInput) CommentsError {
 
-	err := runQueryFn(createComment, repo.conn)
+	err := runInsertCommentQueryFn(createComment, repo.conn)
 
 	if err != nil {
 		return buildCommentsErrorFromDbError(err)
@@ -32,18 +34,63 @@ func (repo sqlTaskCommentsRepository) createComment(createComment CreateCommentI
 	return NO_COMMENTS_ERROR()
 }
 
+func (repo sqlTaskCommentsRepository) getTaskComments(taskID string) (TaskComments, CommentsError) {
+	rows, err := runGetCommentsSQLQueryFn(taskID, repo.conn)
+
+	if err != nil {
+		commentsError := buildCommentsErrorFromDbError(err)
+		return TaskComments{}, commentsError
+	}
+
+	comments, dbError := buildCommentsFromRows(rows)
+
+	if dbError != nil {
+		return comments, buildCommentsError(OtherCommentError, dbError)
+	}
+	return comments, NO_COMMENTS_ERROR()
+}
+
+func buildCommentsFromRows(rows *sql.Rows) (TaskComments, error) {
+	var comments TaskComments
+
+	for rows.Next() {
+		var comment TaskComment
+		var tmpAuthor auth.User
+		err := rows.Scan(&comment.Id, &comment.Text, &comment.CreatedOn,
+			&tmpAuthor.Id, &tmpAuthor.Name, &tmpAuthor.Email)
+
+		comment.Author = auth.BuildUserWithIcon(tmpAuthor.Id, tmpAuthor.Name, tmpAuthor.Email)
+
+		if err != nil {
+			return []TaskComment{}, err
+		}
+		comments = append(comments, comment)
+	}
+
+	return comments, nil
+}
+
 var (
-	runQueryFn = runDBQuery
+	runInsertCommentQueryFn  = runInsertCommentSQLQuery
+	runGetCommentsSQLQueryFn = runGetCommentsSQLQuery
 )
 
-func runDBQuery(createComment CreateCommentInput, conn *sql.DB) error {
+func runInsertCommentSQLQuery(createComment CreateCommentInput, conn *sql.DB) error {
 	builder := database.GetPsqlQueryBuilder().
 		Insert("task_comment").
-		Columns("task_id", "text", "author_id").
+		Columns("task_id", "text", "created_on", "author_id").
 		Values(createComment.TaskID, createComment.Text, createComment.AuthorID)
 
 	_, err := builder.RunWith(conn).Exec()
 	return err
+}
+
+func runGetCommentsSQLQuery(taskId string, conn *sql.DB) (*sql.Rows, error) {
+	builder := database.GetPsqlQueryBuilder().
+		Select("task_comment").
+		Columns("id", "text", "created_on", "author_id")
+
+	return builder.RunWith(conn).Query()
 }
 
 func buildCommentsErrorFromDbError(err error) CommentsError {
