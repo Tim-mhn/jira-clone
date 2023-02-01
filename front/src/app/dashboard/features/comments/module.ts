@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TimTextEditorModule } from '@tim-mhn/ng-forms/text-editor';
 import { TypedFormsModule } from '@tim-mhn/common/typed-forms';
 import { TimUIButtonModule } from '@tim-mhn/ng-ui/button';
+import { TimUILinkModule } from '@tim-mhn/ng-ui/link';
 import { MemberComponentsModule } from '../../../shared/components/member/member-components.module';
 import { SingleCommentUiComponent } from './components/single-comment-ui/single-comment-ui.component';
 import { CommentListUiComponent } from './components/comment-list-ui/comment-list-ui.component';
@@ -28,6 +29,7 @@ import { TaskCommentsComponent } from './components/task-comments/task-comments.
     TimTextEditorModule,
     TypedFormsModule,
     TimUIButtonModule,
+    TimUILinkModule,
   ],
 
   exports: [CommentListComponent, TaskCommentsComponent],

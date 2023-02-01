@@ -2,8 +2,9 @@ package task_comments
 
 import (
 	"database/sql"
+	"fmt"
 
-	"github.com/Masterminds/squirrel"
+	sq "github.com/Masterminds/squirrel"
 	"github.com/lib/pq"
 	"github.com/tim-mhn/figma-clone/database"
 	"github.com/tim-mhn/figma-clone/modules/auth"
@@ -12,6 +13,7 @@ import (
 type TaskCommentsRepository interface {
 	createComment(createComment CreateCommentInput) CommentsError
 	getTaskComments(taskID string) (TaskComments, CommentsError)
+	deleteComment(commentID string) CommentsError
 }
 
 type sqlTaskCommentsRepository struct {
@@ -30,6 +32,23 @@ func (repo sqlTaskCommentsRepository) createComment(createComment CreateCommentI
 
 	if err != nil {
 		return buildCommentsErrorFromDbError(err)
+	}
+
+	return NO_COMMENTS_ERROR()
+}
+
+func (repo sqlTaskCommentsRepository) deleteComment(commentID string) CommentsError {
+
+	psql := database.GetPsqlQueryBuilder()
+	query := psql.Update("task_comment").Set("deleted", true).Where(sq.Eq{"id": commentID})
+
+	res, err := query.RunWith(repo.conn).Exec()
+
+	if err != nil {
+		return buildCommentsError(OtherCommentError, err)
+	}
+	if rowsAffected, _ := res.RowsAffected(); rowsAffected == 0 {
+		return buildCommentsError(CommentNotFound, fmt.Errorf("no rows were affected in deleteComment DB query"))
 	}
 
 	return NO_COMMENTS_ERROR()
@@ -91,9 +110,16 @@ func runGetCommentsSQLQuery(taskId string, conn *sql.DB) (*sql.Rows, error) {
 		Select("task_comment.id as comment_id", "text", "created_on", "author_id", `"user".name`, `"user".email`).
 		From("task_comment").
 		LeftJoin(`"user" ON author_id="user".id`).
-		Where(squirrel.Eq{
-			"task_id": taskId,
-		}).
+		Where(
+			sq.And{
+				sq.Eq{
+					"task_id": taskId,
+				},
+				sq.Eq{
+					"deleted": false,
+				},
+			},
+		).
 		OrderBy("created_on DESC")
 
 	return builder.RunWith(conn).Query()

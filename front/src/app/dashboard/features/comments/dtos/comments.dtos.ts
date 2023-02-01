@@ -9,6 +9,9 @@ export type PostCommentDTO = {
 
 export type GetCommentsDTO = ProjectTaskIds;
 
+export type DeleteCommentDTO = ProjectTaskIds & {
+  commentId: string;
+};
 export type CommentDTO = {
   Id: string;
   Text: string;

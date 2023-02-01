@@ -5,6 +5,7 @@ export type TaskComment = {
   Author: ProjectMember;
   Text: string;
   CreatedOn: Date;
+  TaskId: string;
 };
 
 export type TaskComments = TaskComment[];

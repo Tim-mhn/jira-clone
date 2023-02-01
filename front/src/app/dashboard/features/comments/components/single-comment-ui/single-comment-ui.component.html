@@ -16,5 +16,11 @@
     </div>
 
     <div class="text-sm" [innerHTML]="comment?.Text"></div>
+
+    <div>
+      <tim-link (click)="deleteComment()" color="neutral" size="xs"
+        >Delete</tim-link
+      >
+    </div>
   </div>
 </div>

@@ -5,6 +5,7 @@ import { ProjectTaskIds } from '../../../core/dtos';
 import { TaskCommentsProvidersModule } from '../comments-providers.module';
 import {
   CommentListDTO,
+  DeleteCommentDTO,
   GetCommentsDTO,
   PostCommentDTO,
 } from '../dtos/comments.dtos';
@@ -17,17 +18,22 @@ export class CommentsAPI {
 
   public postComment(dto: PostCommentDTO) {
     const { text, projectId, taskId } = dto;
-    const endpoint = this._buildTaskComments({ projectId, taskId });
+    const endpoint = this._buildCommentsEndpoint({ projectId, taskId });
     const body = { text };
     return this.http.post<void>(endpoint, body);
   }
 
   public getComments(dto: GetCommentsDTO) {
-    const endpoint = this._buildTaskComments(dto);
+    const endpoint = this._buildCommentsEndpoint(dto);
     return this.http.get<CommentListDTO>(endpoint);
   }
 
-  private _buildTaskComments(ids: ProjectTaskIds) {
+  private _buildCommentsEndpoint(ids: ProjectTaskIds) {
     return `${buildSingleTaskEndpoint(ids)}/comments`;
+  }
+
+  public deleteComment(dto: DeleteCommentDTO) {
+    const endpoint = `${this._buildCommentsEndpoint(dto)}/${dto.commentId}`;
+    return this.http.delete<void>(endpoint);
   }
 }

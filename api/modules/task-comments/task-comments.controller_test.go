@@ -33,6 +33,10 @@ func (mockRepo *mockCommentsRepository) getTaskComments(taskID string) (TaskComm
 	return args.Get(0).(TaskComments), args.Get(1).(CommentsError)
 }
 
+func (mockRepo *mockCommentsRepository) deleteComment(commentID string) CommentsError {
+	return NO_COMMENTS_ERROR()
+}
+
 func TestPostCommentHttpCodes(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)

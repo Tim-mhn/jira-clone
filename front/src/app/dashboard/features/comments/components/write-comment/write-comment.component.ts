@@ -46,11 +46,10 @@ export class WriteCommentComponent implements OnInit {
     this.ignoreEvent(e);
     const newComment = { taskId: this.taskId, text: this.commentFc.value };
     this.controller
-      .postComment(newComment, this.requestState)
+      .postCommentAndRefreshList(newComment, this.requestState)
       .pipe(finalize(() => this.cdr.detectChanges()))
       .subscribe(() => {
         this.commentFc.reset();
-        this.refreshCommentsService.refreshComments();
         this.hideTextEditor();
       });
   }

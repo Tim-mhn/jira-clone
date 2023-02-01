@@ -4,6 +4,7 @@ import {
   OnInit,
   ChangeDetectionStrategy,
 } from '@angular/core';
+import { CommentsController } from '../../controllers/comments.controller';
 import { TaskComment } from '../../models/comment';
 
 @Component({
@@ -13,7 +14,11 @@ import { TaskComment } from '../../models/comment';
 })
 export class SingleCommentUiComponent implements OnInit {
   @Input() comment: TaskComment;
-  constructor() {}
+  constructor(private controller: CommentsController) {}
 
   ngOnInit(): void {}
+
+  deleteComment() {
+    this.controller.deleteCommentAndRefreshList(this.comment).subscribe();
+  }
 }

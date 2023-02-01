@@ -178,3 +178,24 @@ func buildMockRowsFromTestData(comments TaskComments) *sqlmock.Rows {
 
 	return rows
 }
+
+func TestDeleteComment(t *testing.T) {
+
+	t.Run("should return an error if no rows have been affected", func(t *testing.T) {
+		db, mock, _ := sqlmock.New()
+		repo := newSQLTaskCommentsRepository(db)
+
+		commentID := "some-id"
+
+		var randomLastInsertID int64 = 12345
+		var noRowsAffected int64 = 0
+		mockResult := sqlmock.NewResult(randomLastInsertID, noRowsAffected)
+		mock.ExpectExec("^UPDATE .+").WillReturnResult(mockResult)
+
+		err := repo.deleteComment(commentID)
+
+		assert.NotNil(t, err, "repo should return an error if no rows have been affected")
+
+	})
+
+}

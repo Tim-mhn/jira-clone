@@ -49,7 +49,7 @@ func (controller TaskCommentsController) postComment(c *gin.Context) {
 }
 
 func (controller TaskCommentsController) getTaskComments(c *gin.Context) {
-	taskID := c.Param("taskID")
+	taskID := tasks_controllers.GetTaskIDParam(c)
 
 	comments, err := controller.repo.getTaskComments(taskID)
 
@@ -58,6 +58,19 @@ func (controller TaskCommentsController) getTaskComments(c *gin.Context) {
 		return
 	}
 	c.IndentedJSON(http.StatusOK, comments)
+}
+
+func (controller TaskCommentsController) deleteComment(c *gin.Context) {
+	commentID := c.Param("commentID")
+
+	err := controller.repo.deleteComment(commentID)
+
+	if err.HasError {
+		buildAndReturnAPIErrorResponse(c, err)
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, nil)
 }
 
 var (
@@ -81,6 +94,9 @@ func getHttpStatusCode(err CommentsError) int {
 	case TaskNotFound:
 		return http.StatusBadRequest
 	case InvalidPayload:
+		return http.StatusBadRequest
+
+	case CommentNotFound:
 		return http.StatusBadRequest
 	}
 
