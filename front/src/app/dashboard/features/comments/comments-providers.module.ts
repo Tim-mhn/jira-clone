@@ -1,4 +1,6 @@
 import { NgModule } from '@angular/core';
 
-@NgModule({})
+@NgModule({
+  declarations: [],
+})
 export class TaskCommentsProvidersModule {}

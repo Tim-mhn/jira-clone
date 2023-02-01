@@ -1,0 +1,53 @@
+<div class="flex flex-grow items-start gap-2">
+  <jira-member-icon
+    class="mt-1"
+    [member]="currentUser"
+    size="md"
+  ></jira-member-icon>
+
+  <ng-container *ngTemplateOutlet="commentEditor"></ng-container>
+  <ng-container *ngIf="!showTextEditor">
+    <ng-container *ngTemplateOutlet="placeholder"></ng-container
+  ></ng-container>
+</div>
+
+<ng-template #commentEditor>
+  <div
+    class="flex flex-grow flex-col gap-2"
+    [ngClass]="showTextEditor ? '' : 'hidden'"
+  >
+    <tim-text-editor
+      [formControl]="commentFc"
+      (click)="ignoreEvent($event)"
+    ></tim-text-editor>
+
+    <div class="flex flex-grow gap-2">
+      <button
+        tim-flat-button
+        size="xs"
+        color="primary"
+        (click)="saveComment($event)"
+        [loading]="requestState?.isPending"
+      >
+        Save
+      </button>
+      <button
+        tim-simple-button
+        size="xs"
+        color="neutral"
+        (click)="hideTextEditor()"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #placeholder>
+  <div
+    (click)="showFocusTextEditor($event)"
+    class="border border-gray-300 hover:border-gray-400 py-2 rounded-sm text-gray-500 text-sm px-4 flex flex-grow"
+  >
+    Add a comment...
+  </div>
+</ng-template>

@@ -18,6 +18,8 @@ export class CommentListComponent implements OnInit {
 
     this.taskId$.next(taskId);
   }
+
+  // todo: show skeleton while task comments are loading
   constructor(private controller: CommentsController) {}
 
   taskId$ = new ReplaySubject<string>();
