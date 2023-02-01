@@ -7,6 +7,6 @@ author_id varchar NOT NULL,
 task_id varchar NOT NULL,
 PRIMARY key (id),
 CONSTRAINT comment_author_fk FOREIGN key (author_id) REFERENCES "user"(id),
-CONSTRAINT comment_task_fk FOREIGN key (task_id) REFERENCES task(id)
+CONSTRAINT comment_task_fk FOREIGN key (task_id) REFERENCES task(id) (id) ON DELETE CASCADE;
 
 )

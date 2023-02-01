@@ -4,6 +4,7 @@ import {
   OnInit,
   ChangeDetectionStrategy,
 } from '@angular/core';
+import { interval } from 'rxjs';
 import { CommentsController } from '../../controllers/comments.controller';
 import { TaskComment } from '../../models/comment';
 
@@ -17,6 +18,8 @@ export class SingleCommentUiComponent implements OnInit {
   constructor(private controller: CommentsController) {}
 
   ngOnInit(): void {}
+
+  recomputeTimeAgoLabel$ = interval(2000);
 
   deleteComment() {
     this.controller.deleteCommentAndRefreshList(this.comment).subscribe();

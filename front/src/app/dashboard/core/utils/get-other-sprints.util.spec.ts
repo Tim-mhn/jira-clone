@@ -37,6 +37,12 @@ describe('getSprintsTaskDoesNotBelongTo', () => {
       Sprint: sprintInfo,
       Status: null,
       Title: 'title',
+      Type: {
+        Color: 'primary',
+        Icon: 'check',
+        Label: 'Story',
+        Id: 1,
+      },
     });
 
     const allSprintsExceptSprint2 = getSprintsTaskDoesNotBelongTo(

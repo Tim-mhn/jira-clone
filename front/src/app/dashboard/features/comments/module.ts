@@ -12,6 +12,7 @@ import { CommentListComponent } from './components/comment-list/comment-list.com
 import { TaskCommentsProvidersModule } from './comments-providers.module';
 import { WriteCommentComponent } from './components/write-comment/write-comment.component';
 import { TaskCommentsComponent } from './components/task-comments/task-comments.component';
+import { SharedPipesModule } from '../../../shared/pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { TaskCommentsComponent } from './components/task-comments/task-comments.
     TypedFormsModule,
     TimUIButtonModule,
     TimUILinkModule,
+    SharedPipesModule,
   ],
 
   exports: [CommentListComponent, TaskCommentsComponent],

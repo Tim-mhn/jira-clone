@@ -3,6 +3,7 @@ package tasks_services
 import (
 	"log"
 	"sync"
+	"time"
 
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
@@ -117,11 +118,23 @@ func (service SprintService) getSprintTasksAndPointsBreakdown(sprintID string, f
 
 type HasBackLog interface {
 	IsBacklog() bool
+	CreatedOn() time.Time
 }
 
 func moveBacklogSprintAtTheEnd[T HasBackLog](sprints []T) []T {
+
+	// sprint2 will be after sprint1 is output is true
 	moveBacklogAtTheEndFunc := func(sprint1 T, sprint2 T) bool {
+
+		neitherIsBacklog := !sprint1.IsBacklog() && !sprint2.IsBacklog()
+
+		if neitherIsBacklog {
+			sprint2CreatedBeforeSprint1 := sprint2.CreatedOn().Before(sprint1.CreatedOn())
+			return sprint2CreatedBeforeSprint1
+		}
+
 		return sprint2.IsBacklog()
+
 	}
 
 	return arrays.SortWithComparison(sprints, moveBacklogAtTheEndFunc)

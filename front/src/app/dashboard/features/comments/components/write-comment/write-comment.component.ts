@@ -14,7 +14,6 @@ import { TimTextEditorComponent } from '@tim-mhn/ng-forms/text-editor';
 import { finalize } from 'rxjs';
 import { ProjectMember } from '../../../../core/models';
 import { CommentsController } from '../../controllers/comments.controller';
-import { RefreshTaskCommentsService } from '../../services/refresh-comments.service';
 
 @Component({
   selector: 'jira-write-comment',
@@ -28,8 +27,7 @@ export class WriteCommentComponent implements OnInit {
   constructor(
     private tfb: TypedFormBuilder,
     private controller: CommentsController,
-    private cdr: ChangeDetectorRef,
-    private refreshCommentsService: RefreshTaskCommentsService
+    private cdr: ChangeDetectorRef
   ) {}
 
   @ViewChild(TimTextEditorComponent) textEditor: TimTextEditorComponent;

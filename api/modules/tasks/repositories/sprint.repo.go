@@ -21,7 +21,7 @@ func NewSprintRepository(conn *sql.DB) *SprintRepository {
 }
 
 func (sprintRepo SprintRepository) GetActiveSprintsOfProject(projectID string) ([]tasks_models.SprintInfo, error) {
-	query := fmt.Sprintf(`SELECT id, name, is_backlog from sprint WHERE sprint.project_id='%s' AND sprint.deleted=false AND sprint.completed=false`, projectID)
+	query := fmt.Sprintf(`SELECT id, name, is_backlog, created_on from sprint WHERE sprint.project_id='%s' AND sprint.deleted=false AND sprint.completed=false`, projectID)
 	rows, err := sprintRepo.conn.Query(query)
 
 	if err != nil {
@@ -34,7 +34,7 @@ func (sprintRepo SprintRepository) GetActiveSprintsOfProject(projectID string) (
 	for rows.Next() {
 		var sprint tasks_models.SprintInfo
 
-		err := rows.Scan(&sprint.Id, &sprint.Name, &sprint.IsBacklog)
+		err := rows.Scan(&sprint.Id, &sprint.Name, &sprint.IsBacklog, &sprint.CreationTime)
 
 		if err != nil {
 			return []tasks_models.SprintInfo{}, err

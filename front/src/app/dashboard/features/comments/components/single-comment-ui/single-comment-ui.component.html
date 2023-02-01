@@ -11,7 +11,9 @@
       </div>
 
       <div class="text-xs text-gray-600 font-light">
-        {{ comment?.CreatedOn | date }}
+        {{
+          comment?.CreatedOn | timeAgoLabel : (recomputeTimeAgoLabel$ | async)
+        }}
       </div>
     </div>
 
