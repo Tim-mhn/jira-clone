@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-continue */
 const TIME_PERIODS = [
   'year',
   'month',
@@ -9,7 +11,7 @@ const TIME_PERIODS = [
 
 type TimePeriod = typeof TIME_PERIODS[number];
 
-const timePeriodToFn: {
+const getTimePeriodFunctions: {
   [period in TimePeriod]: (d: Date) => number;
 } = {
   second: (d: Date) => d.getSeconds(),
@@ -21,20 +23,22 @@ const timePeriodToFn: {
 };
 
 export function timeAgoLabel(time: Date, _currentTime = new Date(Date.now())) {
-  // eslint-disable-next-line no-restricted-syntax
-  for (const period of TIME_PERIODS) {
-    const getValueOfPeriodFn = timePeriodToFn[period];
-    const periodDifference =
-      getValueOfPeriodFn(_currentTime) - getValueOfPeriodFn(time);
+  const unequalTimePeriod = getUnequalTimePeriod(time, _currentTime);
 
-    const timePeriodsAreDifferent = periodDifference !== 0;
-    if (timePeriodsAreDifferent) {
-      const periodLabel = pluralize(periodDifference, period);
-      return `${periodDifference} ${periodLabel} ago`;
-    }
-  }
+  const getTimePeriod = getTimePeriodFunctions[unequalTimePeriod];
 
-  return '';
+  const periodDifference = getTimePeriod(_currentTime) - getTimePeriod(time);
+
+  const periodLabel = pluralize(periodDifference, unequalTimePeriod);
+  return `${periodDifference} ${periodLabel} ago`;
+}
+
+function getUnequalTimePeriod(time1: Date, time2: Date) {
+  return TIME_PERIODS.find((period) => {
+    const getTimePeriod = getTimePeriodFunctions[period];
+    const periodDifference = getTimePeriod(time2) - getTimePeriod(time1);
+    return periodDifference !== 0;
+  });
 }
 
 function pluralize(count: number, word: string) {
