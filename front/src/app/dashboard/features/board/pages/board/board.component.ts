@@ -1,16 +1,7 @@
 import { Component, OnDestroy, OnInit, TrackByFunction } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import {
-  combineLatest,
-  Observable,
-  shareReplay,
-  startWith,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { Observable, shareReplay, Subject, switchMap } from 'rxjs';
 import { SubscriptionHandler } from '../../../../../shared/services/subscription-handler.service';
-import { GetSprintsController } from '../../../../core/controllers/get-sprints.controller';
 import { BoardFilters } from '../../../../core/models/board-filters';
 import { SprintWithTasks } from '../../../../core/models';
 import { RouteProjectIdService } from '../../../../core/state-services/route-project-id.service';
@@ -28,7 +19,6 @@ export class BoardComponent implements OnInit, OnDestroy {
   constructor(
     private currentProjectService: CurrentProjectService,
     public sprintsService: CurrentSprintsService,
-    private sprintsController: GetSprintsController,
     private membersService: ProjectMembersService,
     private routeProjectIdService: RouteProjectIdService,
     private boardTasksController: GetTasksOfBoardController
@@ -47,8 +37,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // eslint-disable-next-line prefer-destructuring
     const projectId$ = this.routeProjectIdService.projectId$;
-
-    this._getSprintsOnRouteOrFiltersChange(projectId$);
+    this._getSprintsWithAllTestsOnProjectChange(projectId$);
+    this._filterSprintsOnFiltersChange();
   }
 
   trackBySprintId: TrackByFunction<SprintWithTasks> = (
@@ -60,19 +50,27 @@ export class BoardComponent implements OnInit, OnDestroy {
     this._filtersChange.next(newFilters);
   }
 
-  private _getSprintsOnRouteOrFiltersChange(projectId$: Observable<string>) {
-    const filters$ = this._filtersChange.pipe(startWith(null));
-
-    combineLatest({ projectId: projectId$, filters: filters$ })
+  private _getSprintsWithAllTestsOnProjectChange(
+    projectId$: Observable<string>
+  ) {
+    projectId$
       .pipe(
-        switchMap(({ projectId, filters }) =>
+        switchMap((projectId) =>
           this.boardTasksController.getSprintsTasksForProject(
             projectId,
-            filters,
             this.requestState
           )
-        ),
-        takeUntil(this._subscriptionHandler.onDestroy$)
+        )
+      )
+      .subscribe();
+  }
+
+  private _filterSprintsOnFiltersChange() {
+    this._filtersChange
+      .pipe(
+        switchMap((filters) =>
+          this.boardTasksController.filterSprintTasksAndUpdateState(filters)
+        )
       )
       .subscribe();
   }

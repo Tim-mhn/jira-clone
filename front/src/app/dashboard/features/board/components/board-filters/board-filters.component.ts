@@ -8,7 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
-import { finalize, takeUntil } from 'rxjs';
+import { debounceTime, finalize, takeUntil } from 'rxjs';
 import { objectValues } from '@tim-mhn/common/objects';
 import {
   BoardFilters,
@@ -58,8 +58,12 @@ export class BoardFiltersComponent implements OnInit {
   }
 
   private _emitFiltersFormChange() {
+    const DEBOUNCE_TO_IMPROVE_RENDERING_PERFORMANCE = 200;
     this.filtersForm.valueChanges
-      .pipe(takeUntil(this._subHandler.onDestroy$))
+      .pipe(
+        debounceTime(DEBOUNCE_TO_IMPROVE_RENDERING_PERFORMANCE),
+        takeUntil(this._subHandler.onDestroy$)
+      )
       .subscribe((filters) => this.filtersChange.emit(filters));
   }
 

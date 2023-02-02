@@ -5,9 +5,10 @@ import { BoardProvidersModule } from '../board-providers.module';
 import { GetTasksAPI } from '../../../core/apis/get-tasks.api';
 import { TasksGroupedBySprintsDTO } from '../../../core/dtos';
 import { TaskMapper } from '../../../core/mappers/task.mapper';
-import { BoardFilters } from '../../../core/models';
 import { CurrentProjectService } from '../../../core/state-services/current-project.service';
 import { CurrentSprintsService } from '../state-services/current-sprints.service';
+import { BoardFilters } from '../../../core/models';
+import { filterTasks } from '../../../core/utils/filter-tasks.util';
 
 @Injectable({
   providedIn: BoardProvidersModule,
@@ -23,12 +24,28 @@ export class GetTasksOfBoardController {
 
   getSprintsTasksForProject(
     projectId: string,
-    filters: BoardFilters,
     requestState?: RequestState
   ): Observable<void> {
     return this.api
-      .getTasksGroupedBySprints(projectId, filters)
+      .getTasksGroupedBySprints(projectId)
       .pipe(this._mapDataAndUpdateSprintListState(requestState));
+  }
+
+  filterSprintTasksAndUpdateState(filters: BoardFilters) {
+    return this.sprintsService.tasksGroupedBySprints$.pipe(
+      map((sprintWithTasksList) =>
+        sprintWithTasksList.map(({ Sprint, Tasks }) => {
+          const filteredTasks = filterTasks(Tasks, filters);
+          return {
+            Sprint,
+            Tasks: filteredTasks,
+          };
+        })
+      ),
+      tap((sprintsWithFilteredTasks) =>
+        this.sprintsService.updateSprintList(sprintsWithFilteredTasks)
+      )
+    );
   }
 
   refreshSprintsTasks() {
