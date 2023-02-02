@@ -12,6 +12,10 @@ import (
 	"github.com/tim-mhn/figma-clone/utils/arrays"
 )
 
+type ISprintService interface {
+	GetSprintListWithTasks(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error)
+}
+
 type SprintService struct {
 	taskRepo         *tasks_repositories.TaskQueriesRepository
 	sprintRepo       *tasks_repositories.SprintRepository

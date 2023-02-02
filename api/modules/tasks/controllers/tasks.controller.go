@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/modules/auth"
@@ -20,7 +19,7 @@ import (
 type TasksController struct {
 	taskQueries      *tasks_repositories.TaskQueriesRepository
 	taskCommands     *tasks_repositories.TaskCommandsRepository
-	sprintService    *tasks_services.SprintService
+	sprintService    tasks_services.ISprintService
 	taskPositionRepo *tasks_repositories.TaskPositionRepository
 }
 
@@ -108,15 +107,15 @@ func (tc *TasksController) GetSprintsWithTasksOfProject(c *gin.Context) {
 func buildTasksFiltersFromRequest(c *gin.Context) tasks_models.TaskFilters {
 	assigneeIdList := c.QueryArray("assigneeId[]")
 	statusStringList := c.QueryArray("status[]")
+	typesStringList := c.QueryArray("type[]")
 
-	statusListInts := arrays.MapArray(statusStringList, func(status string) int {
-		statusInt, _ := strconv.Atoi(status)
-		return statusInt
-	})
+	statusListInts := arrays.MapStringsToInts(statusStringList)
+	typesListInts := arrays.MapStringsToInts(typesStringList)
 
 	return tasks_models.TaskFilters{
 		AssigneeIds:  assigneeIdList,
 		TaskStatuses: statusListInts,
+		TaskTypes:    typesListInts,
 	}
 
 }

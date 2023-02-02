@@ -19,3 +19,12 @@ func TestMapArray(t *testing.T) {
 	assert.Equal(t, doubles[2], 10, fmt.Sprintf(`%d should be equal to 10`, doubles[2]))
 
 }
+
+func TestMapStringsToInts(t *testing.T) {
+	var strings = []string{"3", "5", "1"}
+
+	var ints = MapStringsToInts(strings)
+
+	var expectedArray = []int{3, 5, 1}
+	assert.EqualValues(t, expectedArray, ints)
+}

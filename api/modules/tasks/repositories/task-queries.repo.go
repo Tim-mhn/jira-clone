@@ -177,6 +177,12 @@ func tasksOfSprintsQueryBuilder(sprintID string, filters tasks_models.TaskFilter
 		})
 	}
 
+	if len(filters.TaskTypes) > 0 {
+		selectBuilder = selectBuilder.Where(sq.Eq{
+			"task_type": filters.TaskTypes,
+		})
+	}
+
 	selectBuilder = selectBuilder.OrderBy("task_position.position ASC")
 
 	return selectBuilder

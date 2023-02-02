@@ -1,5 +1,7 @@
 package arrays
 
+import "strconv"
+
 func MapArray[T any, K any](data []T, f func(T) K) []K {
 
 	mapped := make([]K, len(data))
@@ -9,4 +11,11 @@ func MapArray[T any, K any](data []T, f func(T) K) []K {
 	}
 
 	return mapped
+}
+
+func MapStringsToInts(data []string) []int {
+	return MapArray(data, func(stringifiedNumber string) int {
+		number, _ := strconv.Atoi(stringifiedNumber)
+		return number
+	})
 }
