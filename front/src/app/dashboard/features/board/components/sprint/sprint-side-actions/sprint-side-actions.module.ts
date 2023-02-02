@@ -4,6 +4,7 @@ import { TimUIButtonModule } from '@tim-mhn/ng-ui/button';
 import { TimUIDropdownMenuModule } from '@tim-mhn/ng-ui/dropdown-menu';
 import { SprintSideActionsComponent } from './sprint-side-actions.component';
 import { DeleteSprintModule } from '../../../../../core/components/delete-sprint/delete-sprint.module';
+import { EditSprintModule } from '../edit-sprint/edit-sprint.module';
 
 @NgModule({
   declarations: [SprintSideActionsComponent],
@@ -12,6 +13,7 @@ import { DeleteSprintModule } from '../../../../../core/components/delete-sprint
     DeleteSprintModule,
     TimUIButtonModule,
     TimUIDropdownMenuModule,
+    EditSprintModule,
   ],
   exports: [SprintSideActionsComponent],
 })

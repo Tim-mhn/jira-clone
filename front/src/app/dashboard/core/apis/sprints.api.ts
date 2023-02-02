@@ -41,4 +41,17 @@ export class SprintsAPI {
     const endpoint = buildSprintsEndpoint({ projectId });
     return this.http.get<SprintInfo[]>(endpoint);
   }
+
+  updateSprintName(
+    ids: { projectId: string; sprintId: string },
+    newName: string
+  ) {
+    const { projectId, sprintId } = ids;
+    const endpoint = buildSingleSprintsEndpoint({
+      projectId,
+      sprintId,
+    });
+
+    return this.http.patch<void>(endpoint, { name: newName });
+  }
 }

@@ -23,7 +23,7 @@ type TasksController struct {
 	taskPositionRepo *tasks_repositories.TaskPositionRepository
 }
 
-func NewTasksController(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, sprintRepo *tasks_repositories.SprintRepository, taskRepo *tasks_repositories.TaskQueriesRepository, conn *sql.DB) *TasksController {
+func NewTasksController(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, sprintRepo tasks_repositories.SprintRepository, taskRepo *tasks_repositories.TaskQueriesRepository, conn *sql.DB) *TasksController {
 	sprintPointsRepo := tasks_repositories.NewSprintPointsRepository(conn)
 
 	return &TasksController{

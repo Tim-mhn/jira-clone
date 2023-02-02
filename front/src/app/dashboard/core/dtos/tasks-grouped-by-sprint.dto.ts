@@ -1,9 +1,9 @@
-import { Sprint } from '../models/sprint';
+import { SprintProps } from '../models/sprint';
 import { TaskDTO } from './task.dto';
 
 export type TasksGroupedBySprintsItemDTO = {
   Tasks: TaskDTO[];
-  Sprint: Sprint;
+  Sprint: SprintProps;
 };
 
 export type TasksGroupedBySprintsDTO = TasksGroupedBySprintsItemDTO[];

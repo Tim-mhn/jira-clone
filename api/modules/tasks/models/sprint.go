@@ -2,9 +2,11 @@ package tasks_models
 
 import "time"
 
+type SprintID = string
+type SprintName = string
 type SprintInfo struct {
-	Id           string
-	Name         string
+	Id           SprintID
+	Name         SprintName
 	IsBacklog    bool
 	CreationTime time.Time
 }

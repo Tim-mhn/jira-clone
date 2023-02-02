@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import { switchMap } from 'rxjs';
+import { switchMap, tap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
 import { BoardProvidersModule } from '../../features/board/board-providers.module';
 import { GetTasksOfBoardController } from '../../features/board/controllers/get-board-tasks.controller';
 import { SprintsAPI } from '../apis/sprints.api';
+import { Sprint } from '../models';
 import { CurrentProjectService } from '../state-services/current-project.service';
 
 @Injectable({
@@ -60,6 +61,21 @@ export class SprintController {
     );
   }
 
+  updateSprintAndUpdateState(
+    sprint: Sprint,
+    newName: string,
+    requestState?: RequestState
+  ) {
+    const projectId = this._currentProjectId;
+
+    return this.api
+      .updateSprintName({ projectId, sprintId: sprint.Id }, newName)
+      .pipe(
+        this.requestStateController.handleRequest(requestState),
+        this.snackbarFeedback.showFeedbackSnackbars(),
+        tap(() => sprint.updateName(newName))
+      );
+  }
   private get _currentProjectId() {
     return this.currentProjectService.currentProject.Id;
   }

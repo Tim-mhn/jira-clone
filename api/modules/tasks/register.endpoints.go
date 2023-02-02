@@ -27,6 +27,7 @@ func RegisterEndpoints(singleProjectRoutes project.SingleProjectRoutes, conn *sq
 	singleProjectRoutes.GET("/sprints", sprintsController.GetActiveSprintsOfProject)
 	singleProjectRoutes.POST("/sprints", sprintsController.CreateSprint)
 	singleProjectRoutes.DELETE("/sprints/:sprintID", sprintsController.DeleteSprint)
+	singleProjectRoutes.PATCH("/sprints/:sprintID", sprintsController.UpdateSprint)
 	singleProjectRoutes.POST("/sprints/:sprintID/complete", sprintsController.MarkSprintAsCompleted)
 
 	singleTaskRoutes := tasksRoutes.Group(fmt.Sprintf(`/:%s`, tasks_controllers.TASK_ID_ROUTE_PARAM))
@@ -52,7 +53,7 @@ func buildControllers(conn *sql.DB) (*tasks_controllers.TasksController, *tasks_
 	// todo: build endpoint to get list of /active-sprints of project
 	tasksController := tasks_controllers.NewTasksController(userRepo, projectQueriesRepo, sprintRepo, taskQueriesRepo, conn)
 	taskStatusController := tasks_controllers.NewTaskStatusController(taskStatusRepo)
-	sprintsController := tasks_controllers.NewSprintsController(sprintRepo, sprintService)
+	sprintsController := tasks_controllers.NewSprintsController(sprintRepo, *sprintService)
 
 	return tasksController, taskStatusController, sprintsController
 

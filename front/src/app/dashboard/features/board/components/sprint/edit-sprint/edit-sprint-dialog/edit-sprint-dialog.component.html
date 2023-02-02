@@ -1,0 +1,26 @@
+<jira-dialog-container>
+  <div class="text-gray-800 text-xl pb-2">Edit sprint: {{ sprint?.Name }}</div>
+
+  <tim-input-field name="Name">
+    <tim-input-label>Sprint name</tim-input-label>
+    <tim-input [flexWidth]="true" [formControl]="sprintNameControl"></tim-input>
+  </tim-input-field>
+
+  <div class="flex flex-grow justify-end gap-2">
+    <button tim-simple-button color="neutral" size="xs" timCloseDialogButton>
+      Cancel
+    </button>
+    <button
+      tim-flat-button
+      color="primary"
+      size="xs"
+      [loading]="requestState?.isPending"
+      [disabled]="
+        sprintNameControl.value == sprint.Name || sprintNameControl.invalid
+      "
+      (click)="updateSprintName()"
+    >
+      Update
+    </button>
+  </div>
+</jira-dialog-container>

@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -31,10 +32,13 @@ export class SprintComponent implements OnInit, AfterViewInit {
 
   constructor(
     private membersService: ProjectMembersService,
-    private sprintService: CurrentSprintsService
+    private sprintService: CurrentSprintsService,
+    private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.sprint.update$.subscribe(() => this.cdr.detectChanges());
+  }
 
   ngAfterViewInit() {
     this.delayRenderingOfTaskList();

@@ -4,7 +4,7 @@ import {
   Input,
   OnInit,
 } from '@angular/core';
-import { SprintInfo } from '../../../../../core/models/sprint';
+import { Sprint } from '../../../../../core/models';
 
 @Component({
   selector: 'jira-sprint-side-actions',
@@ -12,7 +12,7 @@ import { SprintInfo } from '../../../../../core/models/sprint';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SprintSideActionsComponent implements OnInit {
-  @Input() sprint: SprintInfo;
+  @Input() sprint: Sprint;
   constructor() {}
 
   ngOnInit(): void {}

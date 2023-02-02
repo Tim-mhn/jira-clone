@@ -7,7 +7,7 @@ import { TasksGroupedBySprintsDTO } from '../../../core/dtos';
 import { TaskMapper } from '../../../core/mappers/task.mapper';
 import { CurrentProjectService } from '../../../core/state-services/current-project.service';
 import { CurrentSprintsService } from '../state-services/current-sprints.service';
-import { BoardFilters } from '../../../core/models';
+import { BoardFilters, Sprint } from '../../../core/models';
 import { filterTasks } from '../../../core/utils/filter-tasks.util';
 
 @Injectable({
@@ -34,10 +34,10 @@ export class GetTasksOfBoardController {
   filterSprintTasksAndUpdateState(filters: BoardFilters) {
     return this.sprintsService.tasksGroupedBySprints$.pipe(
       map((sprintWithTasksList) =>
-        sprintWithTasksList.map(({ Sprint, Tasks }) => {
+        sprintWithTasksList.map(({ Sprint: sprint, Tasks }) => {
           const filteredTasks = filterTasks(Tasks, filters);
           return {
-            Sprint,
+            Sprint: sprint,
             Tasks: filteredTasks,
           };
         })
@@ -59,8 +59,8 @@ export class GetTasksOfBoardController {
       source.pipe(
         map((tasksGroupedBySprint) => {
           const sprintsTasks = tasksGroupedBySprint?.map(
-            ({ Sprint, Tasks }) => ({
-              Sprint,
+            ({ Sprint: sprintProps, Tasks }) => ({
+              Sprint: new Sprint(sprintProps),
               Tasks: this.mapper.mapTaskList(Tasks),
             })
           );

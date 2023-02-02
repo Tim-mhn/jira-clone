@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
+	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 	http_utils "github.com/tim-mhn/figma-clone/utils/http"
 )
@@ -32,6 +33,10 @@ func (mockService *MockSprintService) GetSprintListWithTasks(
 	}
 
 	return args.Get(0).(tasks_dtos.SprintListWithTasksDTO), err
+}
+
+func (mockService *MockSprintService) UpdateSprintName(sprintID string, sprintName string) tasks_errors.SprintError {
+	return tasks_errors.NoSprintError()
 }
 
 var (

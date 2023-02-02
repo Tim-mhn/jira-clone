@@ -6,6 +6,7 @@ import (
 	"time"
 
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
+	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
 
@@ -14,15 +15,16 @@ import (
 
 type ISprintService interface {
 	GetSprintListWithTasks(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error)
+	UpdateSprintName(sprintID string, newName string) tasks_errors.SprintError
 }
 
 type SprintService struct {
 	taskRepo         *tasks_repositories.TaskQueriesRepository
-	sprintRepo       *tasks_repositories.SprintRepository
+	sprintRepo       tasks_repositories.SprintRepository
 	sprintPointsRepo *tasks_repositories.SprintPointsRepository
 }
 
-func NewSprintService(taskRepo *tasks_repositories.TaskQueriesRepository, sprintRepo *tasks_repositories.SprintRepository, sprintPointsRepo *tasks_repositories.SprintPointsRepository) *SprintService {
+func NewSprintService(taskRepo *tasks_repositories.TaskQueriesRepository, sprintRepo tasks_repositories.SprintRepository, sprintPointsRepo *tasks_repositories.SprintPointsRepository) *SprintService {
 	return &SprintService{
 		taskRepo:         taskRepo,
 		sprintRepo:       sprintRepo,
@@ -123,6 +125,14 @@ func (service SprintService) getSprintTasksAndPointsBreakdown(sprintID string, f
 type HasBackLog interface {
 	IsBacklog() bool
 	CreatedOn() time.Time
+}
+
+func (service SprintService) UpdateSprintName(sprintID string, newName string) tasks_errors.SprintError {
+	sprintInfo, _ := service.sprintRepo.GetSprintInfo(sprintID)
+	if sprintInfo.IsBacklog {
+		return tasks_errors.BuildSprintError(tasks_errors.UnauthorizedToChangeBacklogSprint, nil)
+	}
+	return service.sprintRepo.UpdateSprint(sprintID, newName)
 }
 
 func moveBacklogSprintAtTheEnd[T HasBackLog](sprints []T) []T {
