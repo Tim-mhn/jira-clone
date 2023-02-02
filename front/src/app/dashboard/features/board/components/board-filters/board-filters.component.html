@@ -22,13 +22,28 @@
     class="w-40 border rounded-lg border-gray-200"
     [defaultWidth]="false"
     [showErrorMessage]="false"
-    placeholder="Task status"
+    placeholder="Status"
     [sameWidthAsTrigger]="true"
     variant="simple"
     [multiple]="true"
   >
     <tim-option *ngFor="let status of statusList" [value]="status.Id"
       >{{ status.Label }}
+    </tim-option>
+  </tim-select>
+
+  <tim-select
+    formControlName="type"
+    class="w-40 border rounded-lg border-gray-200"
+    [defaultWidth]="false"
+    [showErrorMessage]="false"
+    placeholder="Type"
+    [sameWidthAsTrigger]="true"
+    variant="simple"
+    [multiple]="true"
+  >
+    <tim-option *ngFor="let type of typeList" [value]="type.Id"
+      >{{ type.Label }}
     </tim-option>
   </tim-select>
 

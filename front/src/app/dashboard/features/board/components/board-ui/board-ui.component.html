@@ -20,6 +20,7 @@
     <jira-board-filters
       [members]="projectMembers"
       [statusList]="project?.AllTaskStatus"
+      [typeList]="project?.TaskTypes"
       (filtersChange)="filtersChange.emit($event)"
     ></jira-board-filters>
 

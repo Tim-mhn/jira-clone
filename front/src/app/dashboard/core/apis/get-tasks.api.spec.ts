@@ -11,7 +11,7 @@ describe('GetTasksAPI', () => {
       expect(buildQueryParams({})).toEqual({});
     });
 
-    it('should return only return "assigneeId[]" key if there are no status', () => {
+    it('should return only return "assigneeId[]" key if there are no status / no type', () => {
       const filters: BoardFilters = {
         assigneeId: ['assignee-1'],
       };
@@ -22,7 +22,7 @@ describe('GetTasksAPI', () => {
       expect(Object.keys(queryParams).length).toEqual(1);
     });
 
-    it('should return only return "status[]" key if there are no assigneeId', () => {
+    it('should return only return "status[]" key if there are no assigneeId / no type', () => {
       const filters: BoardFilters = {
         status: [1, 3],
       };
@@ -43,6 +43,19 @@ describe('GetTasksAPI', () => {
 
       expect(queryParams['assigneeId[]']).toEqual(filters.assigneeId);
       expect(Object.keys(queryParams).length).toEqual(1);
+    });
+
+    it('should return type[] if there is at least 1 element', () => {
+      const filters: BoardFilters = {
+        assigneeId: ['assignee-1'],
+        status: [],
+        type: [2, 3],
+      };
+
+      const queryParams = buildQueryParams(filters);
+
+      const expectedTaskTypeQueryParams = [2, 3];
+      expect(queryParams['type[]']).toEqual(expectedTaskTypeQueryParams);
     });
   });
 });

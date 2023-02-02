@@ -14,6 +14,7 @@ import {
   BoardFilters,
   ProjectMembers,
   TaskStatus,
+  TaskType,
 } from '../../../../core/models';
 import { SubscriptionHandler } from '../../../../../shared/services/subscription-handler.service';
 
@@ -25,6 +26,7 @@ import { SubscriptionHandler } from '../../../../../shared/services/subscription
 export class BoardFiltersComponent implements OnInit {
   @Input() members: ProjectMembers = [];
   @Input() statusList: TaskStatus[];
+  @Input() typeList: TaskType[];
 
   @Output() filtersChange = new EventEmitter<BoardFilters>();
 
@@ -35,6 +37,7 @@ export class BoardFiltersComponent implements OnInit {
   filtersForm = this.tfb.group<BoardFilters>({
     assigneeId: this.tfb.control<string[]>([]),
     status: this.tfb.control<number[]>([]),
+    type: this.tfb.control<number[]>([]),
   });
 
   showResetFiltersButton = false;
@@ -49,6 +52,7 @@ export class BoardFiltersComponent implements OnInit {
     const initialBoardFilters: BoardFilters = {
       assigneeId: [],
       status: [],
+      type: [],
     };
     this.filtersForm.reset(initialBoardFilters);
   }
