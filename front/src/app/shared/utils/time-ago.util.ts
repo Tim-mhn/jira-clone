@@ -23,6 +23,8 @@ const getTimePeriodFunctions: {
 };
 
 export function timeAgoLabel(time: Date, _currentTime = new Date(Date.now())) {
+  if (lessThan1SecondOfDifference(time, _currentTime)) return 'Just now';
+
   const unequalTimePeriod = getUnequalTimePeriod(time, _currentTime);
 
   const getTimePeriod = getTimePeriodFunctions[unequalTimePeriod];
@@ -31,6 +33,11 @@ export function timeAgoLabel(time: Date, _currentTime = new Date(Date.now())) {
 
   const periodLabel = pluralize(periodDifference, unequalTimePeriod);
   return `${periodDifference} ${periodLabel} ago`;
+}
+
+function lessThan1SecondOfDifference(date1: Date, date2: Date) {
+  const ONE_SECOND_IN_MS = 1000;
+  return Math.abs(date1.getTime() - date2.getTime()) < ONE_SECOND_IN_MS;
 }
 
 function getUnequalTimePeriod(time1: Date, time2: Date) {

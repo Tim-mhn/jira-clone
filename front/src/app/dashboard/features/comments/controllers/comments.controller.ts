@@ -1,9 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  MockAPI,
-  RequestState,
-  RequestStateController,
-} from '@tim-mhn/common/http';
+import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { map, Observable, tap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../../shared/services/snackbar-feedback.service';
 import { CurrentProjectService } from '../../../core/state-services/current-project.service';
@@ -13,8 +9,9 @@ import {
   CommentDTO,
   DeleteCommentDTO,
   PostCommentDTO,
+  UpdateCommentDTO,
 } from '../dtos/comments.dtos';
-import { TaskComment, TaskComments } from '../models';
+import { TaskComment, TaskComments, UpdateComment } from '../models';
 import { RefreshTaskCommentsService } from '../services/refresh-comments.service';
 
 @Injectable({
@@ -25,7 +22,6 @@ export class CommentsController {
     private api: CommentsAPI,
     private requestStateController: RequestStateController,
     private projectService: CurrentProjectService,
-    private mockAPI: MockAPI,
     private snackbarFeedback: SnackbarFeedbackService,
     private refreshCommentsService: RefreshTaskCommentsService
   ) {}
@@ -73,6 +69,19 @@ export class CommentsController {
       this.requestStateController.handleRequest(requestState),
       tap(() => this.refreshCommentsService.refreshComments())
     );
+  }
+
+  updateComment(updateComment: UpdateComment, requestState?: RequestState) {
+    const dto: UpdateCommentDTO = {
+      commentId: updateComment.Comment.Id,
+      projectId: this._getCurrentProjectId(),
+      taskId: updateComment.Comment.TaskId,
+      text: updateComment.NewText,
+    };
+
+    return this.api
+      .updateComment(dto)
+      .pipe(this.requestStateController.handleRequest(requestState));
   }
 
   private _getCurrentProjectId() {

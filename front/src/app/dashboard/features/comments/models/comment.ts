@@ -9,3 +9,8 @@ export type TaskComment = {
 };
 
 export type TaskComments = TaskComment[];
+
+export type UpdateComment = {
+  Comment: TaskComment;
+  NewText: string;
+};

@@ -2,18 +2,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  HostListener,
   Input,
   OnInit,
-  ViewChild,
 } from '@angular/core';
-import { Validators } from '@angular/forms';
-import { RequestState } from '@tim-mhn/common/http';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
-import { TimTextEditorComponent } from '@tim-mhn/ng-forms/text-editor';
-import { finalize } from 'rxjs';
+import { finalize, tap } from 'rxjs';
 import { ProjectMember } from '../../../../core/models';
 import { CommentsController } from '../../controllers/comments.controller';
+import { PostCommentFn } from '../comment-editor/comment-editor.component';
 
 @Component({
   selector: 'jira-write-comment',
@@ -22,7 +18,9 @@ import { CommentsController } from '../../controllers/comments.controller';
 })
 export class WriteCommentComponent implements OnInit {
   @Input() currentUser: ProjectMember;
-  @Input() taskId: string;
+  @Input() set taskId(taskId: string) {
+    this.createCommentFn = this._buildCreateCommentFn(taskId);
+  }
 
   constructor(
     private tfb: TypedFormBuilder,
@@ -30,37 +28,25 @@ export class WriteCommentComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  @ViewChild(TimTextEditorComponent) textEditor: TimTextEditorComponent;
-
-  commentFc = this.tfb.control('', Validators.minLength(1));
-
   showTextEditor = false;
 
-  requestState = new RequestState();
+  createCommentFn: PostCommentFn;
+
+  private _buildCreateCommentFn(taskId: string) {
+    return (text: string) => {
+      const newComment = { taskId, text };
+      return this.controller.postCommentAndRefreshList(newComment).pipe(
+        tap(() => this.hideTextEditor()),
+        finalize(() => this.cdr.detectChanges())
+      );
+    };
+  }
 
   ngOnInit(): void {}
 
-  saveComment(e: Event) {
-    this.ignoreEvent(e);
-    const newComment = { taskId: this.taskId, text: this.commentFc.value };
-    this.controller
-      .postCommentAndRefreshList(newComment, this.requestState)
-      .pipe(finalize(() => this.cdr.detectChanges()))
-      .subscribe(() => {
-        this.commentFc.reset();
-        this.hideTextEditor();
-      });
-  }
-
-  showFocusTextEditor(e: Event) {
+  showEditor(e: Event) {
     this.ignoreEvent(e);
     this.showTextEditor = true;
-    this.textEditor.focus();
-  }
-
-  @HostListener('document:click')
-  hideTextEditorOnOtherClicks() {
-    this.hideTextEditor();
   }
 
   ignoreEvent(e: Event) {

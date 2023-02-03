@@ -1,7 +1,9 @@
 package task_comments
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/modules/auth"
@@ -71,6 +73,37 @@ func (controller TaskCommentsController) deleteComment(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, nil)
+}
+
+func (controller TaskCommentsController) updateComment(c *gin.Context) {
+	commentID := c.Param("commentID")
+
+	if len(commentID) == 0 || strings.TrimSpace(commentID) == "" {
+		domainError := buildCommentsError(InvalidPayload, fmt.Errorf("commentID should not be empty in endpoint"))
+		buildAndReturnAPIErrorResponse(c, domainError)
+		return
+	}
+
+	var dto EditCommentDTO
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		domainError := buildCommentsError(InvalidPayload, err)
+		buildAndReturnAPIErrorResponse(c, domainError)
+		return
+	}
+
+	editComment := EditCommentInput{
+		Text:      dto.Text,
+		CommentID: commentID,
+	}
+	err := controller.repo.editCommentText(editComment)
+
+	if err.HasError {
+		buildAndReturnAPIErrorResponse(c, err)
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, nil)
+
 }
 
 var (

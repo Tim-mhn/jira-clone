@@ -8,6 +8,7 @@ import {
   DeleteCommentDTO,
   GetCommentsDTO,
   PostCommentDTO,
+  UpdateCommentDTO,
 } from '../dtos/comments.dtos';
 
 @Injectable({
@@ -33,7 +34,22 @@ export class CommentsAPI {
   }
 
   public deleteComment(dto: DeleteCommentDTO) {
-    const endpoint = `${this._buildCommentsEndpoint(dto)}/${dto.commentId}`;
+    const endpoint = this._buildSingleCommentEndpoint(dto);
     return this.http.delete<void>(endpoint);
+  }
+
+  public updateComment(dto: UpdateCommentDTO) {
+    const endpoint = this._buildSingleCommentEndpoint(dto);
+    const body = {
+      text: dto.text,
+    };
+
+    return this.http.patch<void>(endpoint, body);
+  }
+
+  private _buildSingleCommentEndpoint(
+    ids: ProjectTaskIds & { commentId: string }
+  ) {
+    return `${buildSingleTaskEndpoint(ids)}/comments/${ids.commentId}`;
   }
 }

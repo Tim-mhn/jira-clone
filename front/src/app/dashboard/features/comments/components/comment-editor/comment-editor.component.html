@@ -1,0 +1,21 @@
+<div class="flex flex-grow flex-col gap-2" [ngClass]="show ? '' : 'hidden'">
+  <tim-text-editor
+    [formControl]="commentFc"
+    (click)="ignoreEvent($event)"
+  ></tim-text-editor>
+
+  <div class="flex flex-grow gap-2">
+    <button
+      tim-flat-button
+      size="xs"
+      color="primary"
+      [loading]="requestState?.isPending"
+      (click)="saveComment($event)"
+    >
+      Save
+    </button>
+    <button tim-simple-button size="xs" color="neutral" (click)="cancel()">
+      Cancel
+    </button>
+  </div>
+</div>

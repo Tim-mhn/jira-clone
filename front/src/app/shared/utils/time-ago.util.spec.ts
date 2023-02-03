@@ -1,3 +1,4 @@
+import { CDK_DESCRIBEDBY_HOST_ATTRIBUTE } from '@angular/cdk/a11y';
 import { IQAirDate } from '@tim-mhn/common/date';
 import { timeAgoLabel } from './time-ago.util';
 
@@ -92,5 +93,24 @@ describe('timeAgoLabel', () => {
     const timeAgoString = timeAgoLabel(time, currentTime);
 
     expect(timeAgoString).toEqual('3 years ago');
+  });
+
+  describe('Just now', () => {
+    it('should return "just now" if dates are equal', () => {
+      const time = new Date();
+
+      const timeAgoString = timeAgoLabel(time, time);
+
+      expect(timeAgoString.toLowerCase()).toEqual('just now');
+    });
+
+    it('should return "just now" if dates have less than 1 second of difference', () => {
+      const time = new Date(2022, 1, 1, 10, 20, 5, 200);
+      const nowIs100MSAfterTime = new Date(2022, 1, 1, 10, 20, 5, 300);
+
+      const timeAgoString = timeAgoLabel(time, nowIs100MSAfterTime);
+
+      expect(timeAgoString.toLowerCase()).toEqual('just now');
+    });
   });
 });

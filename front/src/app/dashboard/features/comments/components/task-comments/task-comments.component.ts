@@ -1,10 +1,12 @@
 import { Component, Input } from '@angular/core';
+import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import {
   combineLatest,
   ReplaySubject,
   shareReplay,
   startWith,
   switchMap,
+  tap,
 } from 'rxjs';
 import { LoggedInUserService } from '../../../../core/state-services/logged-in-user.service';
 import { CommentsController } from '../../controllers/comments.controller';
@@ -24,7 +26,8 @@ export class TaskCommentsComponent {
   constructor(
     private controller: CommentsController,
     private loggedInUserService: LoggedInUserService,
-    private refreshCommentsService: RefreshTaskCommentsService
+    private refreshCommentsService: RefreshTaskCommentsService,
+    private requestStateController: RequestStateController
   ) {}
 
   currentUser$ = this.loggedInUserService.user$;
@@ -32,12 +35,19 @@ export class TaskCommentsComponent {
   refreshComments$ = this.refreshCommentsService.refreshComments$.pipe(
     startWith(null)
   );
+
+  requestState = new RequestState();
   taskId$ = new ReplaySubject<string>();
   taskComments$ = combineLatest({
     refresh: this.refreshComments$,
     taskId: this.taskId$,
   }).pipe(
-    switchMap(({ taskId }) => this.controller.getComments(taskId)),
+    tap(() => this.requestState.toPending()),
+    switchMap(({ taskId }) =>
+      this.controller
+        .getComments(taskId, this.requestState)
+        .pipe(this.requestStateController.handleRequest(this.requestState))
+    ),
     shareReplay()
   );
 }

@@ -37,6 +37,10 @@ func (mockRepo *mockCommentsRepository) deleteComment(commentID string) Comments
 	return NO_COMMENTS_ERROR()
 }
 
+func (mockRepo *mockCommentsRepository) editCommentText(editComment EditCommentInput) CommentsError {
+	return NO_COMMENTS_ERROR()
+}
+
 func TestPostCommentHttpCodes(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
@@ -46,7 +50,7 @@ func TestPostCommentHttpCodes(t *testing.T) {
 			"name":               "Should return 200 if the repo returns no error",
 			"repoResponse":       NO_COMMENTS_ERROR(),
 			"expectedStatusCode": http.StatusOK,
-			"requestBody":        VALID_REQUEST_BODY(),
+			"requestBody":        VALID_POST_EDIT_COMMENT_BODY(),
 			"checkResponseBody":  true,
 			"expectedResponse":   nil,
 		},
@@ -54,7 +58,7 @@ func TestPostCommentHttpCodes(t *testing.T) {
 			"name":               "should return BAD REQUEST if the repo returns a TaskNotFound error",
 			"repoResponse":       buildCommentsError(TaskNotFound, fmt.Errorf("task not found")),
 			"expectedStatusCode": http.StatusBadRequest,
-			"requestBody":        VALID_REQUEST_BODY(),
+			"requestBody":        VALID_POST_EDIT_COMMENT_BODY(),
 			"checkResponseBody":  false,
 		},
 		{
@@ -62,13 +66,13 @@ func TestPostCommentHttpCodes(t *testing.T) {
 			"repoResponse":       buildCommentsError(OtherCommentError, fmt.Errorf("some internal error")),
 			"expectedStatusCode": http.StatusInternalServerError,
 			"checkResponseBody":  false,
-			"requestBody":        VALID_REQUEST_BODY(),
+			"requestBody":        VALID_POST_EDIT_COMMENT_BODY(),
 		},
 		{
 			"name":               "should return BAD REQUEST error if the requestBody doesn't have text",
 			"repoResponse":       NO_COMMENTS_ERROR(),
 			"expectedStatusCode": http.StatusBadRequest,
-			"requestBody":        INVALID_REQUEST_BODY(),
+			"requestBody":        INVALID_POST_EDIT_COMMENT_BODY(),
 			"checkResponseBody":  false,
 		},
 	}
@@ -111,7 +115,7 @@ func TestPostCommentHttpCodes(t *testing.T) {
 
 		mockRepo.Mock.On("createComment").Return(buildCommentsError(TaskNotFound, fmt.Errorf("task not found")))
 
-		request := buildPostCommentRequest(INVALID_REQUEST_BODY())
+		request := buildPostCommentRequest(INVALID_POST_EDIT_COMMENT_BODY())
 
 		router.ServeHTTP(responseRecorder, request)
 
@@ -132,7 +136,7 @@ func TestPostCommentHttpCodes(t *testing.T) {
 
 		mockRepo.Mock.On("createComment").Return(buildCommentsError(TaskNotFound, fmt.Errorf("task not found")))
 
-		request := buildPostCommentRequest(VALID_REQUEST_BODY())
+		request := buildPostCommentRequest(VALID_POST_EDIT_COMMENT_BODY())
 
 		router.ServeHTTP(responseRecorder, request)
 
@@ -198,6 +202,41 @@ func TestGetTaskComments(t *testing.T) {
 	})
 }
 
+func TestControllerEditComment(t *testing.T) {
+
+	gin.SetMode(gin.TestMode)
+
+	t.Run("should return an InvalidPayloadError if commentID is empty string in endpoint", func(t *testing.T) {
+		mockRepo := new(mockCommentsRepository)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+
+		request := http_utils.BuildRequest("PATCH", "/comments/ ", VALID_POST_EDIT_COMMENT_BODY())
+
+		router.ServeHTTP(responseRecorder, request)
+
+		responseBody := getResponseBody(*responseRecorder)
+		commentErrorResponseBody := responseBody.(map[string]interface{})
+
+		invalidPayloadErr := buildCommentsError(InvalidPayload, nil)
+		assert.EqualValues(t, invalidPayloadErr.Error(), commentErrorResponseBody["Key"])
+	})
+
+	t.Run("should return an InvalidPayloadError if text is an empty string in body", func(t *testing.T) {
+		mockRepo := new(mockCommentsRepository)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+
+		request := http_utils.BuildRequest("PATCH", "/comments/ ", map[string]interface{}{"text": ""})
+
+		router.ServeHTTP(responseRecorder, request)
+
+		responseBody := getResponseBody(*responseRecorder)
+		commentErrorResponseBody := responseBody.(map[string]interface{})
+
+		invalidPayloadErr := buildCommentsError(InvalidPayload, nil)
+		assert.EqualValues(t, invalidPayloadErr.Error(), commentErrorResponseBody["Key"])
+	})
+}
+
 func buildPostCommentRequest(body map[string]interface{}) *http.Request {
 	return http_utils.BuildRequest("POST", "/comments", body)
 }
@@ -206,11 +245,11 @@ func buildGetCommentsRequest(taskID string) *http.Request {
 	return http_utils.BuildRequest("GET", fmt.Sprintf("/%s/comments", taskID), nil)
 }
 
-func VALID_REQUEST_BODY() map[string]interface{} {
+func VALID_POST_EDIT_COMMENT_BODY() map[string]interface{} {
 	return map[string]interface{}{"text": "my test"}
 }
 
-func INVALID_REQUEST_BODY() map[string]interface{} {
+func INVALID_POST_EDIT_COMMENT_BODY() map[string]interface{} {
 	return map[string]interface{}{"wrong-property": "my test"}
 
 }
@@ -244,6 +283,7 @@ func setupRouterAndReturnRecorder(mockRepo *mockCommentsRepository) (*gin.Engine
 	}
 	router.POST("/comments", controller.postComment)
 	router.GET("/:taskID/comments", controller.getTaskComments)
+	router.PATCH("/comments/:commentID", controller.updateComment)
 
 	return router, responseRecorder
 }

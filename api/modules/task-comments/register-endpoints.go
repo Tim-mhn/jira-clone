@@ -15,6 +15,8 @@ func RegisterEndpoints(singleTaskRoutes tasks.SingleTaskRoutes, conn *sql.DB) {
 
 	commentsRoutes.POST("", controller.postComment)
 	commentsRoutes.GET("", controller.getTaskComments)
-	commentsRoutes.DELETE("/:commentID", controller.deleteComment)
+	singleCommentRoutes := commentsRoutes.Group("/:commentID")
+	singleCommentRoutes.PATCH("", controller.updateComment)
+	singleCommentRoutes.DELETE("", controller.deleteComment)
 
 }

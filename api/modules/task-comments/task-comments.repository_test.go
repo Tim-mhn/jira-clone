@@ -199,3 +199,23 @@ func TestDeleteComment(t *testing.T) {
 	})
 
 }
+
+func TestEditComment(t *testing.T) {
+	t.Run("it should return a CommentNotFound error if no rows have been affected", func(t *testing.T) {
+		db, mock, _ := sqlmock.New()
+		repo := newSQLTaskCommentsRepository(db)
+
+		commentID := "some-id"
+		var randomLastInsertID int64 = 12345
+		var noRowsAffected int64 = 0
+		mockResult := sqlmock.NewResult(randomLastInsertID, noRowsAffected)
+		mock.ExpectExec("^UPDATE .+").WillReturnResult(mockResult)
+
+		err := repo.editCommentText(EditCommentInput{
+			Text:      "new text",
+			CommentID: commentID,
+		})
+
+		assert.EqualValues(t, CommentNotFound, err.Code, "should return CommentNotFound err if no rows have been edited")
+	})
+}

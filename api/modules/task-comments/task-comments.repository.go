@@ -14,6 +14,7 @@ type TaskCommentsRepository interface {
 	createComment(createComment CreateCommentInput) CommentsError
 	getTaskComments(taskID string) (TaskComments, CommentsError)
 	deleteComment(commentID string) CommentsError
+	editCommentText(editComment EditCommentInput) CommentsError
 }
 
 type sqlTaskCommentsRepository struct {
@@ -68,6 +69,23 @@ func (repo sqlTaskCommentsRepository) getTaskComments(taskID string) (TaskCommen
 		return comments, buildCommentsError(OtherCommentError, dbError)
 	}
 	return comments, NO_COMMENTS_ERROR()
+}
+
+func (repo sqlTaskCommentsRepository) editCommentText(editComment EditCommentInput) CommentsError {
+
+	psql := database.GetPsqlQueryBuilder()
+	query := psql.Update("task_comment").Set("text", editComment.Text).Where(sq.Eq{"id": editComment.CommentID})
+
+	res, err := query.RunWith(repo.conn).Exec()
+
+	if err != nil {
+		return buildCommentsError(OtherCommentError, err)
+	}
+	if rowsAffected, _ := res.RowsAffected(); rowsAffected == 0 {
+		return buildCommentsError(CommentNotFound, fmt.Errorf("no rows were affected in editComment DB query"))
+	}
+
+	return NO_COMMENTS_ERROR()
 }
 
 func buildCommentsFromRows(rows *sql.Rows) (TaskComments, error) {
