@@ -1,6 +1,7 @@
 // eslint-disable-next-line max-classes-per-file
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -14,8 +15,9 @@ import { Validators } from '@angular/forms';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
 import { TimTextEditorComponent } from '@tim-mhn/ng-forms/text-editor';
-import { Observable } from 'rxjs';
+import { finalize, Observable } from 'rxjs';
 import { randomString } from '@tim-mhn/common/strings';
+import { Key } from '@tim-mhn/common/keyboard';
 
 export type PostCommentFn<T = any> = (newText: string) => Observable<T>;
 @Component({
@@ -47,10 +49,14 @@ export class CommentEditorComponent<T = any> implements OnInit {
   constructor(
     private tfb: TypedFormBuilder,
     private requestStateController: RequestStateController,
-    private el: ElementRef<HTMLElement>
+    private el: ElementRef<HTMLElement>,
+    private cdr: ChangeDetectorRef
   ) {}
 
-  commentFc = this.tfb.control('', Validators.minLength(1));
+  commentFc = this.tfb.control('', [
+    Validators.required,
+    Validators.minLength(1),
+  ]);
   requestState = new RequestState();
 
   ngOnInit(): void {}
@@ -62,6 +68,7 @@ export class CommentEditorComponent<T = any> implements OnInit {
 
   hideTextEditor() {
     this.show = false;
+
     this.showChange.emit(this.show);
   }
 
@@ -86,7 +93,10 @@ export class CommentEditorComponent<T = any> implements OnInit {
     if (this.commentFc.invalid) return;
 
     this.postCommentFn(this.commentFc.value)
-      .pipe(this.requestStateController.handleRequest(this.requestState))
+      .pipe(
+        this.requestStateController.handleRequest(this.requestState),
+        finalize(() => this.cdr.detectChanges())
+      )
       .subscribe({
         complete: () => this.commentFc.reset(),
       });
@@ -115,6 +125,15 @@ export class CommentEditorComponent<T = any> implements OnInit {
     this.ignoreEvent(e);
     this._emitEditorClick();
   }
+
+  @HostListener('keydown', ['$event'])
+  onKeyDown(e: KeyboardEvent) {
+    if (isCtrlEnter(e)) this.saveComment(e);
+  }
+}
+
+function isCtrlEnter(event: KeyboardEvent) {
+  return event.key === Key.Enter && event.ctrlKey;
 }
 
 const CommentEditorClick = 'comment-editor-click';

@@ -1,8 +1,14 @@
 <div class="flex flex-grow flex-col gap-2" [ngClass]="show ? '' : 'hidden'">
-  <tim-text-editor
-    [formControl]="commentFc"
-    (click)="ignoreEvent($event)"
-  ></tim-text-editor>
+  <div class="flex flex-col gap-1">
+    <tim-text-editor
+      [formControl]="commentFc"
+      (click)="ignoreEvent($event)"
+    ></tim-text-editor>
+    <div class="text-2xs font-light text-gray-600">
+      <span class="font-medium">Hint</span>: Press
+      <span class="font-medium">Ctrl+Enter</span> to save your comment
+    </div>
+  </div>
 
   <div class="flex flex-grow gap-2">
     <button
@@ -10,6 +16,7 @@
       size="xs"
       color="primary"
       [loading]="requestState?.isPending"
+      [disabled]="commentFc.invalid"
       (click)="saveComment($event)"
     >
       Save
