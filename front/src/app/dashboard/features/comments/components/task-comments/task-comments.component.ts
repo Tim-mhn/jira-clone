@@ -1,13 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import {
-  combineLatest,
-  ReplaySubject,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { RequestState } from '@tim-mhn/common/http';
+import { ReplaySubject, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import { combineLatestWithTrigger } from '../../../../../shared/rxjs-operators';
 import { LoggedInUserService } from '../../../../core/state-services/logged-in-user.service';
 import { CommentsController } from '../../controllers/comments.controller';
 import { RefreshTaskCommentsService } from '../../services/refresh-comments.service';
@@ -26,8 +20,7 @@ export class TaskCommentsComponent {
   constructor(
     private controller: CommentsController,
     private loggedInUserService: LoggedInUserService,
-    private refreshCommentsService: RefreshTaskCommentsService,
-    private requestStateController: RequestStateController
+    private refreshCommentsService: RefreshTaskCommentsService
   ) {}
 
   currentUser$ = this.loggedInUserService.user$;
@@ -38,16 +31,34 @@ export class TaskCommentsComponent {
 
   requestState = new RequestState();
   taskId$ = new ReplaySubject<string>();
-  taskComments$ = combineLatest({
+  taskComments$ = combineLatestWithTrigger({
     refresh: this.refreshComments$,
     taskId: this.taskId$,
   }).pipe(
-    tap(() => this.requestState.toPending()),
-    switchMap(({ taskId }) =>
-      this.controller
-        .getComments(taskId, this.requestState)
-        .pipe(this.requestStateController.handleRequest(this.requestState))
+    tap(({ trigger }) =>
+      this._updateRequestStateCondition(trigger)
+        ? this.requestState.toPending()
+        : null
+    ),
+    switchMap(({ taskId, trigger }) =>
+      this.controller.getComments(taskId).pipe(
+        tap({
+          error: (err) =>
+            this._updateRequestStateCondition(trigger)
+              ? this.requestState.toError(err)
+              : null,
+          complete: () => this.requestState.toSuccess(),
+          next: () =>
+            this._updateRequestStateCondition(trigger)
+              ? this.requestState.toPending()
+              : null,
+        })
+      )
     ),
     shareReplay()
   );
+
+  private _updateRequestStateCondition(trigger: 'refresh' | 'taskId') {
+    return trigger === 'taskId';
+  }
 }
