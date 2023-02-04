@@ -1,4 +1,5 @@
 <jira-board-ui
+  [ngClass]="requestState?.isPending ? 'hidden' : ''"
   [project]="project$ | async"
   [projectMembers]="projectMembers$ | async"
   [sprintInfoList]="activeSprints$ | async"
@@ -6,3 +7,18 @@
   [loading]="requestState?.isPending"
   (filtersChange)="onFiltersChange($event)"
 ></jira-board-ui>
+
+<div #commentListSkeleton *ngIf="requestState?.isPending">
+  <div class="flex flex-col gap-4">
+    <div class="flex w-48 bg-slate-300 h-5"></div>
+    <div class="flex w-36 bg-slate-300 h-12"></div>
+    <div class="flex gap-2 pt-2">
+      <div *ngFor="let _ of [1, 2, 3]" class="w-40 h-12 bg-slate-300"></div>
+    </div>
+    <div class="flex flex-col gap-4 pt-4">
+      <div *ngFor="let _ of [1, 2, 3]" class="flex flex-col gap-1">
+        <div class="rounded-sm bg-slate-300 h-15"></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -16,7 +16,6 @@ export class TaskCommentsComponent {
     this.taskId$.next(taskId);
   }
 
-  // todo: show skeleton while task comments are loading
   constructor(
     private controller: CommentsController,
     private loggedInUserService: LoggedInUserService,
