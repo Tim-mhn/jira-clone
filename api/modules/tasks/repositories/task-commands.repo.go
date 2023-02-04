@@ -91,10 +91,10 @@ JOIN task_position ON task.id=task_position.task_id
 WHERE task.sprint_id='%s'
 )
 INSERT INTO task_position (position, task_id)
-SELECT positions.next_position, id
+SELECT COALESCE(positions.next_position, 0), id
 FROM insert_task
 JOIN positions ON true
-RETURNING task_id as id`, projectID, title, points, sprintID, assigneeID, description, tasks_models.NEW_STATUS, sprintID)
+RETURNING task_id as id `, projectID, title, points, sprintID, assigneeID, description, tasks_models.NEW_STATUS, sprintID)
 }
 
 func (taskRepo *TaskCommandsRepository) checkCanAssignTaskToMember(taskProjectId string, memberId string) error {

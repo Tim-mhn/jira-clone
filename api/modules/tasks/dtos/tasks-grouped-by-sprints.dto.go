@@ -3,12 +3,13 @@ package tasks_dtos
 import (
 	"time"
 
+	"github.com/tim-mhn/figma-clone/modules/sprints"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 )
 
 type SprintWithTasks struct {
 	Tasks  []tasks_models.TaskWithSprint
-	Sprint tasks_models.Sprint
+	Sprint sprints.Sprint
 }
 
 func (sprintWithTasksDTO SprintWithTasks) IsBacklog() bool {

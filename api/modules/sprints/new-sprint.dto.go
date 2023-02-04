@@ -1,4 +1,4 @@
-package tasks_dtos
+package sprints
 
 type NewSprintDTO struct {
 	Name string `json:"name" binding:"required"`

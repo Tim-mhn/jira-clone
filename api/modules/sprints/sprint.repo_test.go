@@ -1,11 +1,10 @@
-package tasks_repositories
+package sprints
 
 import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
-	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
 )
 
 func TestUpdateSprint(t *testing.T) {
@@ -23,7 +22,7 @@ func TestUpdateSprint(t *testing.T) {
 		newSprintName := "some new name"
 		err := repo.UpdateSprint(sprintID, newSprintName)
 
-		assert.Equal(t, tasks_errors.SprintNotFound, err.Code)
+		assert.Equal(t, SprintNotFound, err.Code)
 	})
 
 }

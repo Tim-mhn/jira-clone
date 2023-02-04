@@ -1,4 +1,4 @@
-package tasks_repositories
+package sprints
 
 import (
 	"database/sql"
@@ -6,18 +6,16 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/tim-mhn/figma-clone/database"
-	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
-	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 )
 
 type SprintRepository interface {
-	GetActiveSprintsOfProject(projectID string) ([]tasks_models.SprintInfo, error)
+	GetActiveSprintsOfProject(projectID string) ([]SprintInfo, error)
 	CreateSprint(name string, projectID string) (string, error)
 	DeleteSprint(sprintID string) error
-	UpdateSprint(sprintID tasks_models.SprintID, sprintName tasks_models.SprintName) tasks_errors.SprintError
+	UpdateSprint(sprintID SprintID, sprintName SprintName) SprintError
 	MarkSprintAsCompleted(sprintID string) error
-	GetSprintInfo(sprintID string) (tasks_models.SprintInfo, tasks_errors.SprintError)
+	GetSprintInfo(sprintID string) (SprintInfo, SprintError)
 }
 type SQLSprintRepository struct {
 	conn   *sql.DB
@@ -31,24 +29,24 @@ func NewSprintRepository(conn *sql.DB) SprintRepository {
 	}
 }
 
-func (sprintRepo SQLSprintRepository) GetActiveSprintsOfProject(projectID string) ([]tasks_models.SprintInfo, error) {
+func (sprintRepo SQLSprintRepository) GetActiveSprintsOfProject(projectID string) ([]SprintInfo, error) {
 	query := fmt.Sprintf(`SELECT id, name, is_backlog, created_on from sprint WHERE sprint.project_id='%s' AND sprint.deleted=false AND sprint.completed=false`, projectID)
 	rows, err := sprintRepo.conn.Query(query)
 
 	if err != nil {
-		return []tasks_models.SprintInfo{}, err
+		return []SprintInfo{}, err
 	}
 	defer rows.Close()
 
-	sprints := []tasks_models.SprintInfo{}
+	sprints := []SprintInfo{}
 
 	for rows.Next() {
-		var sprint tasks_models.SprintInfo
+		var sprint SprintInfo
 
 		err := rows.Scan(&sprint.Id, &sprint.Name, &sprint.IsBacklog, &sprint.CreationTime)
 
 		if err != nil {
-			return []tasks_models.SprintInfo{}, err
+			return []SprintInfo{}, err
 		}
 
 		sprints = append(sprints, sprint)
@@ -88,7 +86,7 @@ func (sprintRepo SQLSprintRepository) CreateSprint(name string, projectID string
 	return sprintID, nil
 }
 
-func (sprintRepo SQLSprintRepository) GetSprintInfo(sprintID string) (tasks_models.SprintInfo, tasks_errors.SprintError) {
+func (sprintRepo SQLSprintRepository) GetSprintInfo(sprintID string) (SprintInfo, SprintError) {
 	psql := database.GetPsqlQueryBuilder()
 
 	query := psql.Select("id", "name", "is_backlog", "created_on").From("sprint").Where(sq.Eq{"id": sprintID})
@@ -96,23 +94,23 @@ func (sprintRepo SQLSprintRepository) GetSprintInfo(sprintID string) (tasks_mode
 	rows, err := query.RunWith(sprintRepo.conn).Query()
 
 	if err != nil {
-		return tasks_models.SprintInfo{}, tasks_errors.BuildSprintError(tasks_errors.OtherSprintError, err)
+		return SprintInfo{}, BuildSprintError(OtherSprintError, err)
 	}
 
 	defer rows.Close()
 
-	var sprint tasks_models.SprintInfo
+	var sprint SprintInfo
 
 	if rows.Next() {
 		err := rows.Scan(&sprint.Id, &sprint.Name, &sprint.IsBacklog, &sprint.CreationTime)
 
 		if err != nil {
-			return tasks_models.SprintInfo{}, tasks_errors.BuildSprintError(tasks_errors.OtherSprintError, err)
+			return SprintInfo{}, BuildSprintError(OtherSprintError, err)
 
 		}
 	}
 
-	return sprint, tasks_errors.NoSprintError()
+	return sprint, NoSprintError()
 }
 
 func (sprintRepo SQLSprintRepository) DeleteSprint(sprintID string) error {
@@ -136,7 +134,7 @@ func (sprintRepo SQLSprintRepository) DeleteSprint(sprintID string) error {
 	return nil
 }
 
-func (sprintRepo SQLSprintRepository) UpdateSprint(sprintID tasks_models.SprintID, sprintName tasks_models.SprintName) tasks_errors.SprintError {
+func (sprintRepo SQLSprintRepository) UpdateSprint(sprintID SprintID, sprintName SprintName) SprintError {
 
 	psql := database.GetPsqlQueryBuilder()
 	query := psql.Update("sprint").Set("name", sprintName).Where(sq.Eq{"id": sprintID})
@@ -144,14 +142,14 @@ func (sprintRepo SQLSprintRepository) UpdateSprint(sprintID tasks_models.SprintI
 	res, err := query.RunWith(sprintRepo.conn).Exec()
 
 	if err != nil {
-		return tasks_errors.BuildSprintError(tasks_errors.OtherSprintError, err)
+		return BuildSprintError(OtherSprintError, err)
 	}
 
 	if rowsAffected, _ := res.RowsAffected(); rowsAffected == 0 {
-		return tasks_errors.BuildSprintError(tasks_errors.SprintNotFound, err)
+		return BuildSprintError(SprintNotFound, err)
 	}
 
-	return tasks_errors.NoSprintError()
+	return NoSprintError()
 
 }
 

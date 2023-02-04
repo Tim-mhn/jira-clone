@@ -9,6 +9,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/tim-mhn/figma-clone/database"
 	"github.com/tim-mhn/figma-clone/modules/auth"
+	"github.com/tim-mhn/figma-clone/modules/sprints"
 	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 )
@@ -75,7 +76,7 @@ func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters ta
 
 func getTaskDataFromRow(rows *sql.Rows) (tasks_models.TaskWithSprint, error) {
 	var task tasks_models.TaskWithSprint
-	var taskSprint tasks_models.SprintInfo
+	var taskSprint sprints.SprintInfo
 	var assignee auth.User
 	var assigneeIdBytes []byte // handle potential null values
 

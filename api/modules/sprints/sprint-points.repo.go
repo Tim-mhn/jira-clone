@@ -1,10 +1,8 @@
-package tasks_repositories
+package sprints
 
 import (
 	"database/sql"
 	"fmt"
-
-	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 )
 
 type SprintPointsRepository struct {
@@ -17,7 +15,7 @@ func NewSprintPointsRepository(conn *sql.DB) *SprintPointsRepository {
 	}
 }
 
-func (sprintRepo SprintPointsRepository) GetSprintPointsBreakdown(sprintID string) (tasks_models.SprintPointsBreakdown, error) {
+func (sprintRepo SprintPointsRepository) GetSprintPointsBreakdown(sprintID string) (SprintPointsBreakdown, error) {
 	query := fmt.Sprintf(`SELECT   
 COALESCE(SUM(task.points) FILTER (WHERE task_status.is_new= TRUE),0) AS is_new_points,
 COALESCE(SUM(task.points) FILTER (WHERE task_status.is_new= FALSE AND task_status.is_done=FALSE),0) AS in_progress_points,
@@ -30,10 +28,10 @@ GROUP BY  task.sprint_id`, sprintID)
 	rows, err := sprintRepo.conn.Query(query)
 
 	if err != nil {
-		return tasks_models.SprintPointsBreakdown{}, err
+		return SprintPointsBreakdown{}, err
 	}
 
-	var pointsBreakdown tasks_models.SprintPointsBreakdown
+	var pointsBreakdown SprintPointsBreakdown
 	if rows.Next() {
 
 		rows.Scan(&pointsBreakdown.New, &pointsBreakdown.InProgress, &pointsBreakdown.Done)

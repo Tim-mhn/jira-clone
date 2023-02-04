@@ -15,11 +15,11 @@ import (
 	http_utils "github.com/tim-mhn/figma-clone/utils/http"
 )
 
-type MockSprintService struct {
+type MockTasksService struct {
 	mock.Mock
 }
 
-func (mockService *MockSprintService) GetSprintListWithTasks(
+func (mockService *MockTasksService) GetTasksGroupedBySprint(
 	projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error) {
 
 	args := mockService.Called(projectID, taskFilters)
@@ -35,7 +35,7 @@ func (mockService *MockSprintService) GetSprintListWithTasks(
 	return args.Get(0).(tasks_dtos.SprintListWithTasksDTO), err
 }
 
-func (mockService *MockSprintService) UpdateSprintName(sprintID string, sprintName string) tasks_errors.SprintError {
+func (mockService *MockTasksService) UpdateSprintName(sprintID string, sprintName string) tasks_errors.SprintError {
 	return tasks_errors.NoSprintError()
 }
 
@@ -43,11 +43,11 @@ var (
 	projectID string = "id-of-project"
 )
 
-func TestGetSprintsWithTasksOfProject(t *testing.T) {
+func TestGetTasksGroupedBySprintsOfProject(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 
-	mockService := new(MockSprintService)
+	mockService := new(MockTasksService)
 	controller := TasksController{
 		sprintService: mockService,
 	}
@@ -57,7 +57,7 @@ func TestGetSprintsWithTasksOfProject(t *testing.T) {
 	router := http_utils.SetupMockRouterAndRegisterEndpoint(
 		http_utils.GET,
 		"/projects/:projectID/tasks",
-		controller.GetSprintsWithTasksOfProject)
+		controller.GetTasksGroupedBySprintsOfProject)
 
 	t.Run("should correctly use the assigneeIds from the query params", func(t *testing.T) {
 		request, allExpectedFilters := setupTestDataAndBuildRequest()
@@ -65,11 +65,11 @@ func TestGetSprintsWithTasksOfProject(t *testing.T) {
 		expectedFilters := tasks_models.TaskFilters{
 			AssigneeIds: allExpectedFilters.AssigneeIds,
 		}
-		mockService.On("GetSprintListWithTasks", mock.Anything, mock.Anything).Return(tasks_dtos.SprintListWithTasksDTO{}, nil)
+		mockService.On("GetTasksGroupedBySprint", mock.Anything, mock.Anything).Return(tasks_dtos.SprintListWithTasksDTO{}, nil)
 
 		router.ServeHTTP(responseRecorder, request)
 
-		mockService.AssertCalled(t, "GetSprintListWithTasks", projectID, matchFiltersByAssigneeIds(expectedFilters.AssigneeIds))
+		mockService.AssertCalled(t, "GetTasksGroupedBySprint", projectID, matchFiltersByAssigneeIds(expectedFilters.AssigneeIds))
 	})
 
 	t.Run("should correctly use the task status from the query params", func(t *testing.T) {
@@ -79,11 +79,11 @@ func TestGetSprintsWithTasksOfProject(t *testing.T) {
 			TaskStatuses: allExpectedFilters.TaskStatuses,
 		}
 
-		mockService.On("GetSprintListWithTasks", mock.Anything, mock.Anything).Return(tasks_dtos.SprintListWithTasksDTO{}, nil)
+		mockService.On("GetTasksGroupedBySprint", mock.Anything, mock.Anything).Return(tasks_dtos.SprintListWithTasksDTO{}, nil)
 
 		router.ServeHTTP(responseRecorder, request)
 
-		mockService.AssertCalled(t, "GetSprintListWithTasks", projectID, matchFiltersByTaskStatusList(expectedFilters.TaskStatuses))
+		mockService.AssertCalled(t, "GetTasksGroupedBySprint", projectID, matchFiltersByTaskStatusList(expectedFilters.TaskStatuses))
 	})
 
 	t.Run("should correctly use the task types from the query params", func(t *testing.T) {
@@ -94,11 +94,11 @@ func TestGetSprintsWithTasksOfProject(t *testing.T) {
 			TaskTypes: allExpectedFilters.TaskTypes,
 		}
 
-		mockService.On("GetSprintListWithTasks", mock.Anything, mock.Anything).Return(tasks_dtos.SprintListWithTasksDTO{}, nil)
+		mockService.On("GetTasksGroupedBySprint", mock.Anything, mock.Anything).Return(tasks_dtos.SprintListWithTasksDTO{}, nil)
 
 		router.ServeHTTP(responseRecorder, request)
 
-		mockService.AssertCalled(t, "GetSprintListWithTasks", projectID, matchFiltersByTaskTypesList(expectedFilters.TaskTypes))
+		mockService.AssertCalled(t, "GetTasksGroupedBySprint", projectID, matchFiltersByTaskTypesList(expectedFilters.TaskTypes))
 	})
 
 }

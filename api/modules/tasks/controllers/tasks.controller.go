@@ -19,17 +19,16 @@ import (
 type TasksController struct {
 	taskQueries      *tasks_repositories.TaskQueriesRepository
 	taskCommands     *tasks_repositories.TaskCommandsRepository
-	sprintService    tasks_services.ISprintService
+	sprintService    tasks_services.ITasksService
 	taskPositionRepo *tasks_repositories.TaskPositionRepository
 }
 
-func NewTasksController(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, sprintRepo tasks_repositories.SprintRepository, taskRepo *tasks_repositories.TaskQueriesRepository, conn *sql.DB) *TasksController {
-	sprintPointsRepo := tasks_repositories.NewSprintPointsRepository(conn)
+func NewTasksController(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, service tasks_services.ITasksService, taskRepo *tasks_repositories.TaskQueriesRepository, conn *sql.DB) *TasksController {
 
 	return &TasksController{
 		taskQueries:      tasks_repositories.NewTaskQueriesRepository(um, conn),
 		taskCommands:     tasks_repositories.NewTaskCommandsRepository(um, projectQueries, conn),
-		sprintService:    tasks_services.NewSprintService(taskRepo, sprintRepo, sprintPointsRepo),
+		sprintService:    service,
 		taskPositionRepo: tasks_repositories.NewTaskPositionRepository(conn),
 	}
 }
@@ -44,9 +43,6 @@ func (tc *TasksController) GetTaskByID(c *gin.Context) {
 		return
 	}
 
-	// SprintInfo := tasks_models.SprintInfo{}
-
-	// taskWithSprint.Id
 	c.IndentedJSON(http.StatusOK, task)
 }
 
@@ -87,14 +83,14 @@ func (tc *TasksController) UpdateTask(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, nil)
 }
 
-func (tc *TasksController) GetSprintsWithTasksOfProject(c *gin.Context) {
+func (tc *TasksController) GetTasksGroupedBySprintsOfProject(c *gin.Context) {
 	projectID := c.Param("projectID")
 
 	taskFilters := buildTasksFiltersFromRequest(c)
 
-	log.Printf(`[TasksController.GetSprintsWithTasksOfProject] projectID=%s`, projectID)
+	log.Printf(`[TasksController.GetTasksGroupedBySprintsOfProject] projectID=%s`, projectID)
 
-	sprintListWithTasksDTO, err := tc.sprintService.GetSprintListWithTasks(projectID, taskFilters)
+	sprintListWithTasksDTO, err := tc.sprintService.GetTasksGroupedBySprint(projectID, taskFilters)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())

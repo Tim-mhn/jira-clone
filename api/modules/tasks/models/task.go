@@ -2,6 +2,7 @@ package tasks_models
 
 import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
+	"github.com/tim-mhn/figma-clone/modules/sprints"
 	task_type "github.com/tim-mhn/figma-clone/modules/task-type"
 )
 
@@ -15,5 +16,5 @@ type Task struct {
 
 type TaskWithSprint struct {
 	Task
-	Sprint SprintInfo
+	Sprint sprints.SprintInfo
 }

@@ -1,4 +1,4 @@
-package tasks_errors
+package sprints
 
 import shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 

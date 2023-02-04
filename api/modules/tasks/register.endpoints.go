@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	"github.com/tim-mhn/figma-clone/modules/project"
+	"github.com/tim-mhn/figma-clone/modules/sprints"
 	tasks_controllers "github.com/tim-mhn/figma-clone/modules/tasks/controllers"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
 	tasks_services "github.com/tim-mhn/figma-clone/modules/tasks/services"
@@ -16,19 +17,14 @@ type SingleTaskRoutes = *gin.RouterGroup
 
 func RegisterEndpoints(singleProjectRoutes project.SingleProjectRoutes, conn *sql.DB) SingleTaskRoutes {
 
-	tasksController, taskStatusController, sprintsController := buildControllers(conn)
+	tasksController, taskStatusController := buildControllers(conn)
 	taskStatusRoutes := singleProjectRoutes.Group("/task-status")
 	taskStatusRoutes.GET("", taskStatusController.GetTaskStatusList)
 
 	tasksRoutes := singleProjectRoutes.Group("/tasks")
 	tasksRoutes.POST("", tasksController.CreateNewTask)
 
-	singleProjectRoutes.GET("/tasks", tasksController.GetSprintsWithTasksOfProject)
-	singleProjectRoutes.GET("/sprints", sprintsController.GetActiveSprintsOfProject)
-	singleProjectRoutes.POST("/sprints", sprintsController.CreateSprint)
-	singleProjectRoutes.DELETE("/sprints/:sprintID", sprintsController.DeleteSprint)
-	singleProjectRoutes.PATCH("/sprints/:sprintID", sprintsController.UpdateSprint)
-	singleProjectRoutes.POST("/sprints/:sprintID/complete", sprintsController.MarkSprintAsCompleted)
+	singleProjectRoutes.GET("/tasks", tasksController.GetTasksGroupedBySprintsOfProject)
 
 	singleTaskRoutes := tasksRoutes.Group(fmt.Sprintf(`/:%s`, tasks_controllers.TASK_ID_ROUTE_PARAM))
 	singleTaskRoutes.GET("", tasksController.GetTaskByID)
@@ -40,21 +36,19 @@ func RegisterEndpoints(singleProjectRoutes project.SingleProjectRoutes, conn *sq
 
 }
 
-func buildControllers(conn *sql.DB) (*tasks_controllers.TasksController, *tasks_controllers.TaskStatusController, *tasks_controllers.SprintsController) {
+func buildControllers(conn *sql.DB) (*tasks_controllers.TasksController, *tasks_controllers.TaskStatusController) {
 	userRepo := auth.NewUserRepository(conn)
 
 	projectQueriesRepo := project.NewProjectQueriesRepository(conn)
 	taskStatusRepo := tasks_repositories.NewTaskStatusRepository(conn)
-	sprintRepo := tasks_repositories.NewSprintRepository(conn)
-	sprintPointsRepo := tasks_repositories.NewSprintPointsRepository(conn)
+	sprintRepo := sprints.NewSprintRepository(conn)
+	sprintPointsRepo := sprints.NewSprintPointsRepository(conn)
 	taskQueriesRepo := tasks_repositories.NewTaskQueriesRepository(userRepo, conn)
-	sprintService := tasks_services.NewSprintService(taskQueriesRepo, sprintRepo, sprintPointsRepo)
+	tasksService := tasks_services.NewTasksService(taskQueriesRepo, sprintRepo, sprintPointsRepo)
 
-	// todo: build endpoint to get list of /active-sprints of project
-	tasksController := tasks_controllers.NewTasksController(userRepo, projectQueriesRepo, sprintRepo, taskQueriesRepo, conn)
+	tasksController := tasks_controllers.NewTasksController(userRepo, projectQueriesRepo, tasksService, taskQueriesRepo, conn)
 	taskStatusController := tasks_controllers.NewTaskStatusController(taskStatusRepo)
-	sprintsController := tasks_controllers.NewSprintsController(sprintRepo, *sprintService)
 
-	return tasksController, taskStatusController, sprintsController
+	return tasksController, taskStatusController
 
 }

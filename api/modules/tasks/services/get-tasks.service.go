@@ -5,38 +5,33 @@ import (
 	"sync"
 	"time"
 
+	"github.com/tim-mhn/figma-clone/modules/sprints"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
-	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
 
 	"github.com/tim-mhn/figma-clone/utils/arrays"
 )
 
-type ISprintService interface {
-	GetSprintListWithTasks(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error)
-	UpdateSprintName(sprintID string, newName string) tasks_errors.SprintError
+type ITasksService interface {
+	GetTasksGroupedBySprint(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error)
 }
 
-type SprintService struct {
+type TasksService struct {
 	taskRepo         *tasks_repositories.TaskQueriesRepository
-	sprintRepo       tasks_repositories.SprintRepository
-	sprintPointsRepo *tasks_repositories.SprintPointsRepository
+	sprintRepo       sprints.SprintRepository
+	sprintPointsRepo *sprints.SprintPointsRepository
 }
 
-func NewSprintService(taskRepo *tasks_repositories.TaskQueriesRepository, sprintRepo tasks_repositories.SprintRepository, sprintPointsRepo *tasks_repositories.SprintPointsRepository) *SprintService {
-	return &SprintService{
+func NewTasksService(taskRepo *tasks_repositories.TaskQueriesRepository, sprintRepo sprints.SprintRepository, sprintPointsRepo *sprints.SprintPointsRepository) *TasksService {
+	return &TasksService{
 		taskRepo:         taskRepo,
 		sprintRepo:       sprintRepo,
 		sprintPointsRepo: sprintPointsRepo,
 	}
 }
 
-func (service *SprintService) GetActiveSprintsOfProject(projectID string) ([]tasks_models.SprintInfo, error) {
-	return service.sprintRepo.GetActiveSprintsOfProject(projectID)
-}
-
-func (service *SprintService) GetSprintListWithTasks(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error) {
+func (service *TasksService) GetTasksGroupedBySprint(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error) {
 	sprintList, err := service.sprintRepo.GetActiveSprintsOfProject(projectID)
 
 	if err != nil {
@@ -50,13 +45,13 @@ func (service *SprintService) GetSprintListWithTasks(projectID string, taskFilte
 
 	for _, sprint := range sprintList {
 
-		go func(sprint tasks_models.SprintInfo) {
-			sprintTasks, pointsBreakdown, _ := service.getSprintTasksAndPointsBreakdown(sprint.Id, taskFilters)
+		go func(spr sprints.SprintInfo) {
+			sprintTasks, pointsBreakdown, _ := service.getSprintTasksAndPointsBreakdown(spr.Id, taskFilters)
 
 			sprintWithTasks := tasks_dtos.SprintWithTasks{
 				Tasks: sprintTasks,
-				Sprint: tasks_models.Sprint{
-					SprintInfo: sprint,
+				Sprint: sprints.Sprint{
+					SprintInfo: spr,
 					Points:     pointsBreakdown,
 				},
 			}
@@ -82,11 +77,11 @@ func (service *SprintService) GetSprintListWithTasks(projectID string, taskFilte
 	return sprintListWithTasks, nil
 }
 
-func (service SprintService) getSprintTasksAndPointsBreakdown(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.TaskWithSprint, tasks_models.SprintPointsBreakdown, error) {
+func (service TasksService) getSprintTasksAndPointsBreakdown(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.TaskWithSprint, sprints.SprintPointsBreakdown, error) {
 
 	var syncGroup sync.WaitGroup
 	tasksChan := make(chan []tasks_models.TaskWithSprint)
-	pointsChan := make(chan tasks_models.SprintPointsBreakdown)
+	pointsChan := make(chan sprints.SprintPointsBreakdown)
 
 	var err error
 	syncGroup.Add(2)
@@ -116,7 +111,7 @@ func (service SprintService) getSprintTasksAndPointsBreakdown(sprintID string, f
 
 	if err != nil {
 		log.Printf(`Error when fetching tasks or points breakdown from sprint %s. Error: %s`, sprintID, err.Error())
-		return nil, tasks_models.SprintPointsBreakdown{}, err
+		return nil, sprints.SprintPointsBreakdown{}, err
 	}
 
 	return sprintTasks, pointsBreakdown, nil
@@ -125,14 +120,6 @@ func (service SprintService) getSprintTasksAndPointsBreakdown(sprintID string, f
 type HasBackLog interface {
 	IsBacklog() bool
 	CreatedOn() time.Time
-}
-
-func (service SprintService) UpdateSprintName(sprintID string, newName string) tasks_errors.SprintError {
-	sprintInfo, _ := service.sprintRepo.GetSprintInfo(sprintID)
-	if sprintInfo.IsBacklog {
-		return tasks_errors.BuildSprintError(tasks_errors.UnauthorizedToChangeBacklogSprint, nil)
-	}
-	return service.sprintRepo.UpdateSprint(sprintID, newName)
 }
 
 func moveBacklogSprintAtTheEnd[T HasBackLog](sprints []T) []T {

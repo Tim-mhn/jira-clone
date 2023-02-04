@@ -1,4 +1,4 @@
-package tasks_models
+package sprints
 
 type SprintPointsBreakdown struct {
 	New        int
