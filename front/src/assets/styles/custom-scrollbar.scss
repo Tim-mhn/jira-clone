@@ -1,0 +1,19 @@
+@layer utilities {
+  $border-color: #d0d5dd;
+  // scrollbar style for Firefox
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: $border-color transparent;
+  }
+
+  // scrollbar style for others browsers
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: 6px;
+  }
+}

@@ -23,7 +23,6 @@ export class BoardUiComponent implements OnInit {
   @Input() projectMembers: ProjectMembers;
   @Input() sprintWithTasksList: SprintWithTasks[];
   @Input() sprintInfoList: SprintInfo[];
-  @Input() loading: boolean;
 
   @Output() filtersChange = new EventEmitter<BoardFilters>();
 

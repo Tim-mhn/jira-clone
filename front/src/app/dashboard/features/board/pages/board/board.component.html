@@ -4,7 +4,6 @@
   [projectMembers]="projectMembers$ | async"
   [sprintInfoList]="activeSprints$ | async"
   [sprintWithTasksList]="sprintsService.tasksGroupedBySprints$ | async"
-  [loading]="requestState?.isPending"
   (filtersChange)="onFiltersChange($event)"
 ></jira-board-ui>
 
