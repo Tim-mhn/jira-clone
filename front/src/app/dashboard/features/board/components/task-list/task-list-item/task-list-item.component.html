@@ -57,7 +57,10 @@
       <div class="flex gap-2">
         <tim-input
           [formControl]="titleFc"
+          [blurOnEnter]="true"
+          (blur)="updateTitle()"
           (click)="stopPropagation($event)"
+          (escaped)="cancelEditMode()"
         ></tim-input>
 
         <div class="flex gap-0.5">
@@ -73,7 +76,7 @@
             tim-faint-button
             color="destructive"
             size="xs"
-            (click)="cancelEditModeOnDocumentClick()"
+            (click)="cancelEditMode()"
           >
             X
           </button>

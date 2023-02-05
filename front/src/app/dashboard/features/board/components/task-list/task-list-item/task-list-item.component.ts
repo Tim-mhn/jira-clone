@@ -51,8 +51,8 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   }
 
   updateTitle(event?: Event) {
-    event.stopPropagation();
-    this.cancelEditModeOnDocumentClick({ resetControlValue: false });
+    event?.stopPropagation();
+    this.cancelEditMode({ resetControlValue: false });
     const newTitle = this.titleFc.value;
     this.controller
       .updateTask(
@@ -81,7 +81,11 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   stopPropagation = (event: Event) => event.stopPropagation();
 
   @HostListener('document:click')
-  cancelEditModeOnDocumentClick(
+  cancelEditModeOnDocumentClick() {
+    this.cancelEditMode();
+  }
+
+  cancelEditMode(
     opts: { resetControlValue: boolean } = { resetControlValue: true }
   ) {
     if (opts?.resetControlValue)
