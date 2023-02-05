@@ -3,6 +3,11 @@
 
 name: Go
 
+defaults:
+      run:
+        working-directory: api
+    
+    
 on:
   push:
     branches: [ "master" ]
@@ -13,6 +18,8 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    
+
     steps:
     - uses: actions/checkout@v3
 
