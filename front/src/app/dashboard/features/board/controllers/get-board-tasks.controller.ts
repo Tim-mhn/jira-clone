@@ -4,11 +4,12 @@ import { map, Observable, tap } from 'rxjs';
 import { BoardProvidersModule } from '../board-providers.module';
 import { GetTasksAPI } from '../../../core/apis/get-tasks.api';
 import { TasksGroupedBySprintsDTO } from '../../../core/dtos';
-import { TaskMapper } from '../../../core/mappers/task.mapper';
 import { CurrentProjectService } from '../../../core/state-services/current-project.service';
 import { CurrentSprintsService } from '../state-services/current-sprints.service';
-import { BoardFilters, Sprint } from '../../../core/models';
+import { BoardFilters, SprintWithTasks } from '../../../core/models';
 import { filterTasks } from '../../../core/utils/filter-tasks.util';
+import { SprintMapper } from '../../../core/mappers/sprint.mapper';
+import { TaskMapper } from '../../../core/mappers/task.mapper';
 
 @Injectable({
   providedIn: BoardProvidersModule,
@@ -19,7 +20,8 @@ export class GetTasksOfBoardController {
     private api: GetTasksAPI,
     private sprintsService: CurrentSprintsService,
     private currentProjectService: CurrentProjectService,
-    private mapper: TaskMapper
+    private tasksMapper: TaskMapper,
+    private sprintMapper: SprintMapper
   ) {}
 
   getSprintsTasksForProject(
@@ -57,22 +59,29 @@ export class GetTasksOfBoardController {
   private _mapDataAndUpdateSprintListState(requestState?: RequestState) {
     return (source: Observable<TasksGroupedBySprintsDTO>) =>
       source.pipe(
-        map((tasksGroupedBySprint) => {
-          const sprintsTasks = tasksGroupedBySprint?.map(
-            ({ Sprint: sprintProps, Tasks }) => ({
-              Sprint: new Sprint(sprintProps),
-              Tasks: this.mapper.mapTaskList(Tasks),
-            })
-          );
-
-          return sprintsTasks || [];
-        }),
+        map((tasksGroupedBySprint) => this._mapDTO(tasksGroupedBySprint)),
         tap((sprintsTasks) =>
           this.sprintsService.updateSprintList(sprintsTasks)
         ),
+        tap(console.log),
         this.requestStateController.handleRequest(requestState),
         map(() => null)
       );
+  }
+
+  private _mapDTO(
+    tasksGroupedBySprintsDTO: TasksGroupedBySprintsDTO
+  ): SprintWithTasks[] {
+    return (
+      tasksGroupedBySprintsDTO?.map(({ Sprint: sprintDTO, Tasks: tasks }) => {
+        const Sprint = this.sprintMapper.toDomain(sprintDTO);
+        const Tasks = this.tasksMapper.mapTaskList(tasks);
+        return {
+          Sprint,
+          Tasks,
+        };
+      }) || []
+    );
   }
 
   private get _currentProjectId() {

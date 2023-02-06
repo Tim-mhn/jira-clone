@@ -6,6 +6,7 @@ import { TimInputModule } from '@tim-mhn/ng-forms/input';
 import { TimInputFieldModule } from '@tim-mhn/ng-forms/input-field';
 import { TimUIDialogModule } from '@tim-mhn/ng-ui/dialog';
 import { TimUIButtonModule } from '@tim-mhn/ng-ui/button';
+import { DateRangePickerModule } from '@tim-mhn/ng-forms/date-range-picker';
 import { DialogContainerModule } from '../../../../../../shared/components/dialog-container/dialog-container.module';
 import { EditSprintDialogComponent } from './edit-sprint-dialog/edit-sprint-dialog.component';
 import { EditSprintButtonDirective } from './edit-sprint-button.directive';
@@ -20,6 +21,7 @@ import { EditSprintButtonDirective } from './edit-sprint-button.directive';
     TimInputModule,
     TimInputFieldModule,
     TimUIButtonModule,
+    DateRangePickerModule,
   ],
   declarations: [EditSprintDialogComponent, EditSprintButtonDirective],
   exports: [EditSprintButtonDirective],

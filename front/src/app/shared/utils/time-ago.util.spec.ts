@@ -1,5 +1,3 @@
-import { CDK_DESCRIBEDBY_HOST_ATTRIBUTE } from '@angular/cdk/a11y';
-import { IQAirDate } from '@tim-mhn/common/date';
 import { timeAgoLabel } from './time-ago.util';
 
 describe('timeAgoLabel', () => {

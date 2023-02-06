@@ -1,11 +1,17 @@
-<jira-dialog-container>
-  <div class="text-gray-800 text-xl pb-2">Edit sprint: {{ sprint?.Name }}</div>
+<jira-dialog-container [formGroup]="editSprintForm">
+  <div class="text-gray-800 text-xl pb-2">
+    Edit sprint: <span class="font-medium italic">{{ sprint?.Name }}</span>
+  </div>
 
   <tim-input-field name="Name">
     <tim-input-label>Sprint name</tim-input-label>
-    <tim-input [flexWidth]="true" [formControl]="sprintNameControl"></tim-input>
+    <tim-input [flexWidth]="true" formControlName="name"></tim-input>
   </tim-input-field>
 
+  <tim-input-field>
+    <tim-input-label>Start / End dates</tim-input-label>
+    <tim-date-range-picker formControlName="dateRange"></tim-date-range-picker>
+  </tim-input-field>
   <div class="flex flex-grow justify-end gap-2">
     <button tim-simple-button color="neutral" size="xs" timCloseDialogButton>
       Cancel
@@ -15,10 +21,8 @@
       color="primary"
       size="xs"
       [loading]="requestState?.isPending"
-      [disabled]="
-        sprintNameControl.value == sprint.Name || sprintNameControl.invalid
-      "
-      (click)="updateSprintName()"
+      [disabled]="editSprintForm.invalid"
+      (click)="updateSprint()"
     >
       Update
     </button>

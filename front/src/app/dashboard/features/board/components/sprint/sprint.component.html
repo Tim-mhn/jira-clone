@@ -11,6 +11,7 @@
     />
     <div>{{ sprint?.Name }}</div>
 
+    <ng-container *ngTemplateOutlet="sprintSchedule"></ng-container>
     <div class="flex flex-grow justify-end gap-2 items-center">
       <jira-sprint-points-breakdown
         [points]="sprint?.Points"
@@ -45,3 +46,14 @@
     <jira-create-task-row [sprint]="sprint"></jira-create-task-row>
   </div>
 </div>
+
+<ng-template #sprintSchedule>
+  <div
+    class="flex gap-0.5 text-xs font-light"
+    *ngIf="sprint?.StartDate && sprint?.EndDate"
+  >
+    <span>{{ sprint?.StartDate | dateTimeFormat }}</span>
+    <span>-</span>
+    <span>{{ sprint?.EndDate | dateTimeFormat }}</span>
+  </div>
+</ng-template>

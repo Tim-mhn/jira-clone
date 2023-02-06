@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { DashboardCoreProvidersModule } from '../core.providers.module';
-import { ProjectId, SprintInfo } from '../models';
+import { SprintInfoDTO, UpdateSprintDTO } from '../dtos/sprints.dtos';
+import { ProjectId } from '../models';
 import { buildSingleSprintsEndpoint, buildSprintsEndpoint } from './endpoints';
 
 @Injectable({
@@ -37,14 +38,14 @@ export class SprintsAPI {
     return this.http.post<void>(endpoint, null);
   }
 
-  getActiveSprints(projectId: ProjectId): Observable<SprintInfo[]> {
+  getActiveSprints(projectId: ProjectId): Observable<SprintInfoDTO[]> {
     const endpoint = buildSprintsEndpoint({ projectId });
-    return this.http.get<SprintInfo[]>(endpoint);
+    return this.http.get<SprintInfoDTO[]>(endpoint);
   }
 
-  updateSprintName(
+  updateSprint(
     ids: { projectId: string; sprintId: string },
-    newName: string
+    dto: UpdateSprintDTO
   ) {
     const { projectId, sprintId } = ids;
     const endpoint = buildSingleSprintsEndpoint({
@@ -52,6 +53,6 @@ export class SprintsAPI {
       sprintId,
     });
 
-    return this.http.patch<void>(endpoint, { name: newName });
+    return this.http.patch<void>(endpoint, dto);
   }
 }

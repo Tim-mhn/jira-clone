@@ -11,17 +11,17 @@ describe('getSprintsTaskDoesNotBelongTo', () => {
       Id: '1',
       IsBacklog: false,
       Name: 'sprint1',
-    };
+    } as SprintInfo;
     sprint2 = {
       Id: '2',
       IsBacklog: false,
       Name: 'sprint2',
-    };
+    } as SprintInfo;
     sprint3 = {
       Id: '3',
       IsBacklog: false,
       Name: 'sprint3',
-    };
+    } as SprintInfo;
     sprints = [sprint1, sprint2, sprint3];
   });
   it('should return every sprint except the one the task belongs to', () => {
