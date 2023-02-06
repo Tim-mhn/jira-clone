@@ -1,6 +1,8 @@
 package sprints
 
-import "time"
+import (
+	"time"
+)
 
 type SprintID = string
 type SprintName = string
@@ -9,9 +11,17 @@ type SprintInfo struct {
 	Name         SprintName
 	IsBacklog    bool
 	CreationTime time.Time
+	StartDate    *time.Time
+	EndDate      *time.Time
 }
 
 type Sprint struct {
 	SprintInfo
 	Points SprintPointsBreakdown
+}
+
+type _UpdateSprint struct {
+	Name      *string    `json:"name,omitempty"`
+	StartDate *time.Time `json:"startDate,omitempty"`
+	EndDate   *time.Time `json:"endDate,omitempty"`
 }

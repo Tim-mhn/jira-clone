@@ -7,6 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/tim-mhn/figma-clone/utils/primitives"
 )
 
 type _TestSprint struct {
@@ -21,39 +22,6 @@ func (s _TestSprint) IsBacklog() bool {
 
 func (s _TestSprint) CreatedOn() time.Time {
 	return s.CreationTime
-}
-func TestMoveBacklogSprintAtTheEnd(t *testing.T) {
-	decemberSprint := _TestSprint{
-		Name:         "Sprint 1",
-		Backlog:      false,
-		CreationTime: time.Date(2022, 12, 1, 1, 0, 0, 0, time.Local),
-	}
-
-	backlog := _TestSprint{
-		Name:         "Backlog sprint",
-		Backlog:      true,
-		CreationTime: time.Date(2023, 1, 1, 1, 0, 0, 0, time.Local),
-	}
-	februarySprint := _TestSprint{
-		Name:         "Sprint 2",
-		Backlog:      false,
-		CreationTime: time.Date(2022, 2, 1, 1, 0, 0, 0, time.Local),
-	}
-
-	julySprint := _TestSprint{
-		Name:         "Sprint 3",
-		Backlog:      false,
-		CreationTime: time.Date(2022, 7, 1, 1, 0, 0, 0, time.Local),
-	}
-
-	var sprints = []_TestSprint{decemberSprint, backlog, februarySprint, julySprint}
-
-	sortedSprints := moveBacklogSprintAtTheEnd(sprints)
-
-	expectedSortedSprints := []_TestSprint{decemberSprint, julySprint, februarySprint, backlog}
-
-	assert.EqualValues(t, sortedSprints, expectedSortedSprints, "it should sort sprints by descending creationDate and move backlog at the end regardless")
-
 }
 
 type MockSprintRepository struct {
@@ -70,8 +38,8 @@ func (repo *MockSprintRepository) CreateSprint(name string, projectID string) (s
 func (repo *MockSprintRepository) DeleteSprint(sprintID string) error {
 	return nil
 }
-func (repo *MockSprintRepository) UpdateSprint(sprintID SprintID, sprintName SprintName) SprintError {
-	args := repo.Called(sprintID, sprintName)
+func (repo *MockSprintRepository) UpdateSprint(sprintID SprintID, updateSprint _UpdateSprint) SprintError {
+	args := repo.Called(sprintID, updateSprint)
 	return args.Get(0).(SprintError)
 }
 func (repo *MockSprintRepository) MarkSprintAsCompleted(sprintID string) error {
@@ -83,7 +51,7 @@ func (repo *MockSprintRepository) GetSprintInfo(sprintID string) (SprintInfo, Sp
 	return args.Get(0).(SprintInfo), NoSprintError()
 }
 
-func TestUpdateSprintName(t *testing.T) {
+func TestServiceUpdateSprint(t *testing.T) {
 	t.Run("it should return a SprintNotFound error if sprint is not returned by the repo", func(t *testing.T) {
 		service := new(SprintService)
 		mockRepo := new(MockSprintRepository)
@@ -91,10 +59,14 @@ func TestUpdateSprintName(t *testing.T) {
 
 		returnsNonBacklogSprintOnGetSprintInfo(mockRepo)
 
+		var updateSprint = _UpdateSprint{
+			Name: primitives.CreateStringPointer("new name"),
+		}
+
 		sprintNotFoundError := BuildSprintError(SprintNotFound, fmt.Errorf("not found"))
 		mockRepo.On("UpdateSprint", mock.Anything, mock.Anything).Return(sprintNotFoundError)
 
-		err := service.UpdateSprintName("sprint-id", "new name")
+		err := service.UpdateSprintIfNotBacklog("sprint-id", updateSprint)
 
 		assert.Equal(t, SprintNotFound, err.Code, "should return SprintNotFound")
 
@@ -108,12 +80,15 @@ func TestUpdateSprintName(t *testing.T) {
 		sprintNotFoundError := BuildSprintError(SprintNotFound, fmt.Errorf("not found"))
 		returnsNonBacklogSprintOnGetSprintInfo(mockRepo)
 		mockRepo.On("UpdateSprint", mock.Anything, mock.Anything).Return(sprintNotFoundError)
-
-		sprintID := "this-is-the-sprint-id"
 		newName := "sprint's new name"
-		service.UpdateSprintName(sprintID, newName)
 
-		mockRepo.AssertCalled(t, "UpdateSprint", sprintID, newName)
+		updateSprint := _UpdateSprint{
+			Name: primitives.CreateStringPointer(newName),
+		}
+		sprintID := "this-is-the-sprint-id"
+		service.UpdateSprintIfNotBacklog(sprintID, updateSprint)
+
+		mockRepo.AssertCalled(t, "UpdateSprint", sprintID, updateSprint)
 
 	})
 
@@ -131,7 +106,11 @@ func TestUpdateSprintName(t *testing.T) {
 
 		sprintID := "this-is-the-sprint-id"
 		newName := "sprint's new name"
-		err := service.UpdateSprintName(sprintID, newName)
+
+		updateSprint := _UpdateSprint{
+			Name: &newName,
+		}
+		err := service.UpdateSprintIfNotBacklog(sprintID, updateSprint)
 
 		mockRepo.AssertNotCalled(t, "UpdateSprint")
 		assert.Equal(t, UnauthorizedToChangeBacklogSprint, err.Code)

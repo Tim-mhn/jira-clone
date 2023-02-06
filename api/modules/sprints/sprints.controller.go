@@ -51,7 +51,7 @@ func (controller SprintsController) UpdateSprint(c *gin.Context) {
 		return
 	}
 
-	err := controller.service.UpdateSprintName(sprintID, updateSprintDTO.Name)
+	err := controller.service.UpdateSprintIfNotBacklog(sprintID, updateSprintDTO)
 
 	if err.HasError {
 		statusCode := getHttpStatusCode(err)

@@ -1,9 +1,13 @@
 package shared
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"reflect"
+
+	sq "github.com/Masterminds/squirrel"
+	"github.com/tim-mhn/figma-clone/database"
 )
 
 type FieldValuesToUpdate struct {
@@ -81,34 +85,42 @@ func stringNULLIfEmptyString(strValue string) string {
 	}
 }
 
-func BuildSQLUpdateQuery(FieldsToUpdate interface{}, apiToDBFieldMap map[string]string, condition SQLCondition) string {
+func BuildSQLUpdateQuery(tableName string, fieldsToUpdate interface{}, apiToDBFieldMap map[string]string, condition SQLCondition) sq.UpdateBuilder {
 	log.Printf(`[BuildSQLUpdateQuery] starting with condition: Field=%s -- Value=%s`, condition.Field, condition.Value)
-	sqlUpdates := BuildFieldValuesToUpdate(FieldsToUpdate)
 
-	var dbFields []string
+	psql := database.GetPsqlQueryBuilder()
 
-	for i := range sqlUpdates.Fields {
-		apiField := sqlUpdates.Fields[i]
-		dbFields = append(dbFields, apiToDBFieldMap[apiField])
-	}
+	queryBuilder := psql.Update(tableName)
 
-	var updateQuery = "UPDATE task SET "
-
-	n := len(sqlUpdates.Fields)
-
-	for i := 0; i < n; i++ {
-		dbField := dbFields[i]
-		newValue := sqlUpdates.Values[i]
-		updateQuery += fmt.Sprintf(`%s=%s`, dbField, newValue)
-
-		if i < n-1 {
-			updateQuery += ","
+	fieldsValuesMap := convertStructToMap(fieldsToUpdate)
+	for field, value := range fieldsValuesMap {
+		dbField, ok := apiToDBFieldMap[field]
+		if !ok {
+			dbField = field
 		}
+
+		correctValue := value
+		kind := reflect.ValueOf(value).Kind()
+		fmt.Print(kind)
+		isPointer := reflect.ValueOf(value).Kind() == reflect.Ptr
+
+		if isPointer {
+			correctValue = *(value.(*interface{}))
+		}
+		queryBuilder = queryBuilder.Set(dbField, correctValue)
 	}
 
-	updateQuery += fmt.Sprintf(` WHERE %s=%s`, condition.Field, condition.Value)
+	queryBuilder = queryBuilder.Where(sq.Eq{
+		condition.Field: condition.Value,
+	})
 
-	log.Printf(`[BuildSQLUpdateQuery] Result: %s`, updateQuery)
-	return updateQuery
+	return queryBuilder
 
+}
+
+func convertStructToMap(fieldsToUpdate interface{}) map[string]interface{} {
+	bytes, _ := json.Marshal(&fieldsToUpdate)
+	var jsonMap map[string]interface{}
+	_ = json.Unmarshal(bytes, &jsonMap)
+	return jsonMap
 }

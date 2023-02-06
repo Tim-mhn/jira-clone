@@ -2,6 +2,7 @@ package tasks_repositories
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -120,21 +121,25 @@ func (taskRepo *TaskCommandsRepository) checkCanAssignTaskToMember(taskProjectId
 func (taskRepo *TaskCommandsRepository) UpdateTask(taskID string, patchDTO tasks_dtos.PatchTaskDTO) error {
 
 	ApiToDBFields := map[string]string{
-		"AssigneeId":  "assignee_id",
-		"Status":      "status",
-		"Description": "description",
-		"Title":       "title",
-		"Points":      "points",
-		"SprintId":    "sprint_id",
-		"Type":        "task_type",
+		"assigneeId":  "assignee_id",
+		"status":      "status",
+		"description": "description",
+		"title":       "title",
+		"points":      "points",
+		"sprintId":    "sprint_id",
+		"type":        "task_type",
 	}
 
-	updateQuery := shared.BuildSQLUpdateQuery(patchDTO, ApiToDBFields, shared.SQLCondition{
+	patchBytes, _ := json.Marshal(&patchDTO)
+	var patchJSON map[string]interface{}
+	_ = json.Unmarshal(patchBytes, &patchJSON)
+
+	updateQuery := shared.BuildSQLUpdateQuery("task", patchJSON, ApiToDBFields, shared.SQLCondition{
 		Field: "id",
-		Value: fmt.Sprintf(`'%s'`, taskID),
+		Value: taskID,
 	})
 
-	_, err := taskRepo.conn.Exec(updateQuery)
+	_, err := updateQuery.RunWith(taskRepo.conn).Exec()
 
 	if err != nil {
 		log.Printf(`Error in TaskCommandsRepository.UpdateTask: %s`, err.Error())

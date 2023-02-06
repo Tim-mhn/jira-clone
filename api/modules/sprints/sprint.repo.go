@@ -6,6 +6,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/tim-mhn/figma-clone/database"
+	"github.com/tim-mhn/figma-clone/shared"
 	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 )
 
@@ -13,7 +14,7 @@ type SprintRepository interface {
 	GetActiveSprintsOfProject(projectID string) ([]SprintInfo, error)
 	CreateSprint(name string, projectID string) (string, error)
 	DeleteSprint(sprintID string) error
-	UpdateSprint(sprintID SprintID, sprintName SprintName) SprintError
+	UpdateSprint(sprintID SprintID, updateSprint _UpdateSprint) SprintError
 	MarkSprintAsCompleted(sprintID string) error
 	GetSprintInfo(sprintID string) (SprintInfo, SprintError)
 }
@@ -30,8 +31,20 @@ func NewSprintRepository(conn *sql.DB) SprintRepository {
 }
 
 func (sprintRepo SQLSprintRepository) GetActiveSprintsOfProject(projectID string) ([]SprintInfo, error) {
-	query := fmt.Sprintf(`SELECT id, name, is_backlog, created_on from sprint WHERE sprint.project_id='%s' AND sprint.deleted=false AND sprint.completed=false`, projectID)
-	rows, err := sprintRepo.conn.Query(query)
+
+	query := sprintQueryBuilder().
+		Where(sq.And{
+			sq.Eq{
+				"sprint.project_id": projectID,
+			},
+			sq.Eq{
+				"sprint.deleted": false,
+			},
+			sq.Eq{
+				"sprint.completed": false,
+			},
+		})
+	rows, err := query.RunWith(sprintRepo.conn).Query()
 
 	if err != nil {
 		return []SprintInfo{}, err
@@ -41,9 +54,7 @@ func (sprintRepo SQLSprintRepository) GetActiveSprintsOfProject(projectID string
 	sprints := []SprintInfo{}
 
 	for rows.Next() {
-		var sprint SprintInfo
-
-		err := rows.Scan(&sprint.Id, &sprint.Name, &sprint.IsBacklog, &sprint.CreationTime)
+		sprint, err := scanSQLRowToSprintInfo(rows)
 
 		if err != nil {
 			return []SprintInfo{}, err
@@ -87,9 +98,7 @@ func (sprintRepo SQLSprintRepository) CreateSprint(name string, projectID string
 }
 
 func (sprintRepo SQLSprintRepository) GetSprintInfo(sprintID string) (SprintInfo, SprintError) {
-	psql := database.GetPsqlQueryBuilder()
-
-	query := psql.Select("id", "name", "is_backlog", "created_on").From("sprint").Where(sq.Eq{"id": sprintID})
+	query := sprintQueryBuilder().Where(sq.Eq{"id": sprintID})
 
 	rows, err := query.RunWith(sprintRepo.conn).Query()
 
@@ -102,8 +111,7 @@ func (sprintRepo SQLSprintRepository) GetSprintInfo(sprintID string) (SprintInfo
 	var sprint SprintInfo
 
 	if rows.Next() {
-		err := rows.Scan(&sprint.Id, &sprint.Name, &sprint.IsBacklog, &sprint.CreationTime)
-
+		sprint, err = scanSQLRowToSprintInfo(rows)
 		if err != nil {
 			return SprintInfo{}, BuildSprintError(OtherSprintError, err)
 
@@ -111,6 +119,35 @@ func (sprintRepo SQLSprintRepository) GetSprintInfo(sprintID string) (SprintInfo
 	}
 
 	return sprint, NoSprintError()
+}
+
+func scanSQLRowToSprintInfo(rows *sql.Rows) (SprintInfo, error) {
+	var sprint SprintInfo
+	var startDate sql.NullTime
+	var endDate sql.NullTime
+	err := rows.Scan(&sprint.Id, &sprint.Name, &sprint.IsBacklog, &sprint.CreationTime, &startDate, &endDate)
+
+	if err != nil {
+		return SprintInfo{}, err
+	}
+	if startDate.Valid {
+		sprint.StartDate = &startDate.Time
+	}
+
+	if endDate.Valid {
+		sprint.EndDate = &endDate.Time
+	}
+
+	return sprint, nil
+}
+
+func sprintQueryBuilder() sq.SelectBuilder {
+	psql := database.GetPsqlQueryBuilder()
+	queryBuilder := psql.Select("id", "name", "is_backlog", "created_on", "start_date", "end_date").
+		From("sprint")
+
+	return queryBuilder
+
 }
 
 func (sprintRepo SQLSprintRepository) DeleteSprint(sprintID string) error {
@@ -134,12 +171,20 @@ func (sprintRepo SQLSprintRepository) DeleteSprint(sprintID string) error {
 	return nil
 }
 
-func (sprintRepo SQLSprintRepository) UpdateSprint(sprintID SprintID, sprintName SprintName) SprintError {
+func (sprintRepo SQLSprintRepository) UpdateSprint(sprintID SprintID, updateSprint _UpdateSprint) SprintError {
 
-	psql := database.GetPsqlQueryBuilder()
-	query := psql.Update("sprint").Set("name", sprintName).Where(sq.Eq{"id": sprintID})
+	ApiToDBFields := map[string]string{
+		"name":      "name",
+		"startDate": "start_date",
+		"endDate":   "end_date",
+	}
 
-	res, err := query.RunWith(sprintRepo.conn).Exec()
+	updateQuery := shared.BuildSQLUpdateQuery("sprint", updateSprint, ApiToDBFields, shared.SQLCondition{
+		Field: "id",
+		Value: sprintID,
+	})
+
+	res, err := updateQuery.RunWith(sprintRepo.conn).Exec()
 
 	if err != nil {
 		return BuildSprintError(OtherSprintError, err)
