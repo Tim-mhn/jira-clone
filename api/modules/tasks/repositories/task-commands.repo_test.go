@@ -23,7 +23,7 @@ func TestUpdateTask(t *testing.T) {
 			AssigneeId: newAssigneeIDPtr,
 		}
 
-		mock.ExpectExec("UPDATE task SET assignee_id")
+		mock.ExpectExec("UPDATE task SET assignee_id").WillReturnResult(sqlmock.NewResult(1, 1))
 
 		repo.UpdateTask(taskID, dto)
 

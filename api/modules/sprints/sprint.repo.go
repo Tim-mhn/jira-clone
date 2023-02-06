@@ -184,6 +184,8 @@ func (sprintRepo SQLSprintRepository) UpdateSprint(sprintID SprintID, updateSpri
 		Value: sprintID,
 	})
 
+	sql, args, _ := updateQuery.ToSql()
+	fmt.Print(sql, args)
 	res, err := updateQuery.RunWith(sprintRepo.conn).Exec()
 
 	if err != nil {

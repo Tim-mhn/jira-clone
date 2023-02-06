@@ -41,9 +41,9 @@ func TestUpdateSprint(t *testing.T) {
 		repo := NewSprintRepository(db)
 
 		var startDate *time.Time = new(time.Time)
-		*startDate = time.Date(2024, 12, 10, 0, 0, 0, 0, time.Local)
+		*startDate = time.Date(2022, 12, 10, 0, 0, 0, 0, time.UTC)
 		var endDate *time.Time = new(time.Time)
-		*endDate = time.Date(2024, 12, 10, 0, 0, 0, 0, time.Local)
+		*endDate = time.Date(2024, 12, 10, 0, 0, 0, 0, time.UTC)
 
 		newName := "some new name"
 		updateSprint := _UpdateSprint{
@@ -57,8 +57,8 @@ func TestUpdateSprint(t *testing.T) {
 		unorderedArgs := tests_utils.MatchSQLUnorderedArgs{
 			ArgValues: map[string]interface{}{
 				"name":       newName,
-				"start_date": *startDate,
-				"end_date":   *endDate,
+				"start_date": "2022-12-10T00:00:00Z",
+				"end_date":   "2024-12-10T00:00:00Z",
 			},
 		}
 
