@@ -162,7 +162,7 @@ func TestGetTaskComments(t *testing.T) {
 		taskID := "some-random-id"
 		request := buildGetCommentsRequest(taskID)
 
-		mockRepo.On("getTaskComments", taskID).Return(nil)
+		mockRepo.On("getTaskComments", taskID).Return([]TaskComment{}, NO_COMMENTS_ERROR())
 		router.ServeHTTP(responseRecorder, request)
 
 		mockRepo.AssertCalled(t, "getTaskComments", taskID)
@@ -176,7 +176,7 @@ func TestGetTaskComments(t *testing.T) {
 		taskID := ""
 		request := buildGetCommentsRequest(taskID)
 
-		mockRepo.On("getTaskComments", taskID).Return(nil)
+		mockRepo.On("getTaskComments", taskID).Return([]TaskComment{}, NO_COMMENTS_ERROR())
 		router.ServeHTTP(responseRecorder, request)
 
 		expectedCode := http.StatusNotFound
