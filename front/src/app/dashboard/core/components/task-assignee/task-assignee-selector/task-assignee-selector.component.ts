@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { User } from '../../../../../auth/models/user';
 import { UpdateTaskController } from '../../../controllers/update-task.controller';
-import { ProjectMember } from '../../../models/project-member';
 import { Task } from '../../../models/task';
 
 @Component({
@@ -14,7 +14,7 @@ export class TaskAssigneeSelectorComponent implements OnInit {
   constructor(private controller: UpdateTaskController) {}
 
   @Input() task: Task;
-  @Input('assigneeOptions') set _assigneeOptions(_members: ProjectMember[]) {
+  @Input('assigneeOptions') set _assigneeOptions(_members: User[]) {
     const members = _members || [];
     this.assigneeOptions = [
       {
@@ -27,11 +27,11 @@ export class TaskAssigneeSelectorComponent implements OnInit {
     ];
   }
 
-  assigneeOptions: ProjectMember[];
+  assigneeOptions: User[];
 
   ngOnInit(): void {}
 
-  updateTaskAssignee(newAssignee: ProjectMember) {
+  updateTaskAssignee(newAssignee: User) {
     this.controller
       .updateTask({
         taskId: this.task.Id,

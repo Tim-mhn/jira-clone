@@ -5,6 +5,7 @@ import { ProjectSettingsUiComponent } from './project-settings-ui.component';
 import { FeaturePageContainerModule } from '../../../../core/components/feature-page-container/feature-page-container.module';
 import { AddMembersDialogModule } from '../add-members-dialog/add-members-dialog.module';
 import { InvitePeopleModule } from '../../../../../invitations/components/invite-people/invite-people.module';
+import { ProjectMembersListModule } from '../project-members-list/project-members-list.module';
 
 @NgModule({
   declarations: [ProjectSettingsUiComponent],
@@ -14,6 +15,7 @@ import { InvitePeopleModule } from '../../../../../invitations/components/invite
     AddMembersDialogModule,
     TimUIDialogModule,
     InvitePeopleModule,
+    ProjectMembersListModule,
   ],
   exports: [ProjectSettingsUiComponent],
 })

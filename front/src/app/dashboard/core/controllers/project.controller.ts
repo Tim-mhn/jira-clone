@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
-import { forkJoin, map, Observable, tap } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
 import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { SingleProjectAPI } from '../apis/single-project.api';
 import { TaskStatusAPI } from '../apis/task-status.api';
 import { Project } from '../models/project';
 import { TaskTypeAPI } from '../apis/task-type.api';
+import { ProjectMembers } from '../models';
+import { ProjectMembersAPI } from '../apis/project-members.api';
+import { ProjectMemberMapper } from '../mappers/sprint.mapper copy';
 
 @Injectable({
   providedIn: DashboardCoreProvidersModule,
@@ -12,8 +15,10 @@ import { TaskTypeAPI } from '../apis/task-type.api';
 export class ProjectController {
   constructor(
     private projectApi: SingleProjectAPI,
+    private membersAPI: ProjectMembersAPI,
     private taskStatusApi: TaskStatusAPI,
-    private taskTypesApi: TaskTypeAPI
+    private taskTypesApi: TaskTypeAPI,
+    private membersMapper: ProjectMemberMapper
   ) {}
 
   getProject(projectId: string): Observable<Project> {
@@ -32,8 +37,13 @@ export class ProjectController {
           TaskTypes: taskTypes,
         };
         return projectData;
-      }),
-      tap(console.log)
+      })
     );
+  }
+
+  getProjectMembers(projectId: string): Observable<ProjectMembers> {
+    return this.membersAPI
+      .getProjectMembers(projectId)
+      .pipe(map((dtoList) => this.membersMapper.toDomain(dtoList)));
   }
 }

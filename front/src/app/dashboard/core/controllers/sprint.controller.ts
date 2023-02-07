@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { switchMap, tap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
-import { logMethod } from '../../../shared/utils/log-method.decorator';
 import { BoardProvidersModule } from '../../features/board/board-providers.module';
 import { GetTasksOfBoardController } from '../../features/board/controllers/get-board-tasks.controller';
 import { SprintsAPI } from '../apis/sprints.api';
@@ -65,7 +64,6 @@ export class SprintController {
     );
   }
 
-  @logMethod
   updateSprintAndUpdateState(
     sprint: Sprint,
     updateSprint: UpdateSprint,
@@ -78,7 +76,13 @@ export class SprintController {
     return this.api.updateSprint({ projectId, sprintId: sprint.Id }, dto).pipe(
       this.requestStateController.handleRequest(requestState),
       this.snackbarFeedback.showFeedbackSnackbars(),
-      tap(() => sprint.updateName(updateSprint.name))
+      tap(() => {
+        sprint.updateName(updateSprint.name);
+        sprint.updateStartEndDates({
+          start: updateSprint?.startDate,
+          end: updateSprint?.endDate,
+        });
+      })
     );
   }
   private get _currentProjectId() {

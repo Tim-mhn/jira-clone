@@ -1,0 +1,63 @@
+<div class="overflow-hidden h-full">
+  <div class="flex flex-col overflow-hidden h-full">
+    <div class="overflow-hidden h-full">
+      <div
+        class="inline-block min-w-full py-2 align-middle overflow-hidden h-full"
+      >
+        <div
+          class="shadow-sm ring-1 ring-black ring-opacity-5 overflow-auto h-full"
+        >
+          <table class="min-w-full border-separate" style="border-spacing: 0">
+            <thead class="bg-gray-50">
+              <tr>
+                <th
+                  *ngFor="let col of columns"
+                  scope="col"
+                  class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-100 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                >
+                  {{ col?.label }}
+                </th>
+
+                <th
+                  scope="col"
+                  class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-100 py-3.5 pr-4 pl-3 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
+                >
+                  <span class="sr-only">Edit</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white">
+              <tr *ngFor="let rowData of data">
+                <td
+                  *ngFor="let col of columns"
+                  class="whitespace-nowrap border-b border-gray-200 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8 sm:table-cell"
+                >
+                  <ng-container
+                    *ngTemplateOutlet="
+                      col?.template ? col?.template : defaultCell;
+                      context: { $implicit: rowData?.[col.key] }
+                    "
+                  ></ng-container>
+                </td>
+
+                <td
+                  class="relative whitespace-nowrap border-b border-gray-200 py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-6 lg:pr-8"
+                >
+                  <a href="#" class="text-indigo-600 hover:text-indigo-900"
+                    >Edit</a
+                  >
+                </td>
+              </tr>
+
+              <!-- More people... -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #defaultCell let-data>
+  {{ data }}
+</ng-template>

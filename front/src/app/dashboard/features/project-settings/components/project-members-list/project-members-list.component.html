@@ -1,0 +1,13 @@
+<jira-table
+  class="absolute left-0 right-0 top-20 bottom-0"
+  [columns]="TABLE_COLUMNS"
+  [data]="tableData"
+></jira-table>
+
+<ng-template #memberIcon let-member>
+  <jira-member-icon [member]="member" [showTooltip]="true"></jira-member-icon>
+</ng-template>
+
+<ng-template #joinedDate let-joinedDate>
+  {{ joinedDate | dateTimeFormat }}
+</ng-template>

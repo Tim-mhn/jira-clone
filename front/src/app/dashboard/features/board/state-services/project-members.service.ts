@@ -6,8 +6,10 @@ import {
   startWith,
   switchMap,
   shareReplay,
+  Observable,
 } from 'rxjs';
-import { ProjectMembersAPI } from '../../../core/apis/project-members.api';
+import { ProjectController } from '../../../core/controllers/project.controller';
+import { ProjectMembers } from '../../../core/models';
 import { CurrentProjectService } from '../../../core/state-services/current-project.service';
 import { DashboardSingletonsProvidersModule } from '../../../dashboard-singletons.providers.module';
 
@@ -17,19 +19,20 @@ import { DashboardSingletonsProvidersModule } from '../../../dashboard-singleton
 export class ProjectMembersService {
   constructor(
     private projectService: CurrentProjectService,
-    private api: ProjectMembersAPI
+    private controller: ProjectController
   ) {
     console.count('ProjectMembersService');
   }
 
-  public projectMembers$ = this.projectService.currentProject$.pipe(
-    catchError((err) => {
-      console.error(err);
-      return of(null);
-    }),
-    filter((id) => !!id),
-    switchMap(({ Id }) => this.api.getProjectMembers(Id)),
-    startWith([]),
-    shareReplay()
-  );
+  public projectMembers$: Observable<ProjectMembers> =
+    this.projectService.currentProject$.pipe(
+      catchError((err) => {
+        console.error(err);
+        return of(null);
+      }),
+      filter((id) => !!id),
+      switchMap(({ Id }) => this.controller.getProjectMembers(Id)),
+      startWith([]),
+      shareReplay()
+    );
 }

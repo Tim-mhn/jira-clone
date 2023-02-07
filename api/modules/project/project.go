@@ -16,5 +16,5 @@ type ProjectWithMembers struct {
 	Id      string
 	Name    string
 	Key     string
-	Members []auth.User
+	Members []ProjectMember
 }

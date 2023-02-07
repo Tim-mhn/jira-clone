@@ -3,6 +3,7 @@ package project
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 
@@ -51,31 +52,44 @@ func (pm *ProjectQueriesRepository) GetProjectByID(projectID string) (Project, e
 
 }
 
-func (pm *ProjectQueriesRepository) GetProjectMembers(projectID string) ([]auth.User, error) {
+func (repo *ProjectQueriesRepository) GetProjectMembers(projectID string) ([]ProjectMember, error) {
 
-	var projectMembers []auth.User
-	getMembersQuery := fmt.Sprintf(`
-	SELECT user_id, "user".name as user_name, "user".email as user_email FROM project_user 
-	INNER JOIN project ON project.id=project_user.project_id 
-	INNER JOIN "user" ON "user".id=project_user.user_id
-	WHERE project.id=project_user.project_id
-	AND project.id='%s';`, projectID)
+	builder := database.GetPsqlQueryBuilder()
+	query := builder.Select("user_id", `"user".name as username`, `"user".email as user_email`, "joined_on").
+		From("project_user").
+		InnerJoin("project ON project.id=project_user.project_id ").
+		InnerJoin(`"user" ON "user".id=project_user.user_id`).
+		Where(
+			sq.Eq{
+				"project.id": projectID,
+			},
+		)
 
-	rows, err := pm.conn.Query(getMembersQuery)
+	sql, args, _ := query.ToSql()
+	fmt.Print(sql, args)
+	rows, err := query.RunWith(repo.conn).Query()
 
 	if err != nil {
-		return []auth.User{}, err
+		return []ProjectMember{}, err
 	}
 
 	defer rows.Close()
+
+	var projectMembers []ProjectMember
 
 	for rows.Next() {
 		var memberId string
 		var memberName string
 		var memberEmail string
-		rows.Scan(&memberId, &memberName, &memberEmail)
+		var joinedOn time.Time
+		rows.Scan(&memberId, &memberName, &memberEmail, &joinedOn)
 
-		member := auth.BuildUserWithIcon(memberId, memberName, memberEmail)
+		user := auth.BuildUserWithIcon(memberId, memberName, memberEmail)
+
+		member := ProjectMember{
+			user,
+			joinedOn,
+		}
 		projectMembers = append(projectMembers, member)
 	}
 

@@ -1,4 +1,5 @@
 import { TimDate } from '@tim-mhn/common/date';
+import { DateRange } from '@tim-mhn/ng-forms/date-range-picker';
 import { Subject } from 'rxjs';
 
 export type SprintPointsBreakdown = {
@@ -38,6 +39,13 @@ export class Sprint implements SprintProps {
 
   public updateName(newName: string) {
     this.Name = newName;
+    this._emitUpdate();
+  }
+
+  public updateStartEndDates(startEndDates: DateRange) {
+    const { start, end } = startEndDates;
+    this.StartDate = start;
+    this.EndDate = end;
     this._emitUpdate();
   }
 

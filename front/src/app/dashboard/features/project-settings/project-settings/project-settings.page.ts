@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { switchMap } from 'rxjs';
-import { ProjectMembersAPI } from '../../../core/apis/project-members.api';
+import { ProjectController } from '../../../core/controllers/project.controller';
 import { CurrentProjectService } from '../../../core/state-services/current-project.service';
 
 @Component({
@@ -10,11 +10,11 @@ import { CurrentProjectService } from '../../../core/state-services/current-proj
 export class ProjectSettingsComponent implements OnInit {
   constructor(
     public projectService: CurrentProjectService,
-    private membersAPI: ProjectMembersAPI
+    private projectController: ProjectController
   ) {}
 
   members$ = this.projectService.currentProject$.pipe(
-    switchMap(({ Id }) => this.membersAPI.getProjectMembers(Id))
+    switchMap(({ Id }) => this.projectController.getProjectMembers(Id))
   );
 
   ngOnInit(): void {}

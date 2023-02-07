@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
 import { finalize, tap } from 'rxjs';
-import { ProjectMember } from '../../../../core/models';
+import { User } from '../../../../../auth/models/user';
 import { CommentsController } from '../../controllers/comments.controller';
 import { PostCommentFn } from '../comment-editor/comment-editor.component';
 
@@ -17,7 +17,7 @@ import { PostCommentFn } from '../comment-editor/comment-editor.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WriteCommentComponent implements OnInit {
-  @Input() currentUser: ProjectMember;
+  @Input() currentUser: User;
   @Input() set taskId(taskId: string) {
     this.createCommentFn = this._buildCreateCommentFn(taskId);
   }

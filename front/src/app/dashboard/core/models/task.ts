@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { ProjectMember } from './project-member';
+import { User } from '../../../auth/models/user';
 import { SprintInfo } from './sprint';
 import { TaskStatus } from './task-status';
 import { TaskType } from './task-type';
@@ -10,7 +10,7 @@ export interface ITask {
   Description: string;
   Status: TaskStatus;
   Points: number;
-  Assignee: ProjectMember;
+  Assignee: User;
   Key: string;
   Sprint: SprintInfo;
   Type: TaskType;
@@ -22,7 +22,7 @@ export class Task implements ITask {
   Description: string;
   Status: TaskStatus;
   Points: number;
-  Assignee: ProjectMember;
+  Assignee: User;
   Key: string;
   Sprint: SprintInfo;
   Type: TaskType;
@@ -62,7 +62,7 @@ export class Task implements ITask {
     this._emitUpdate();
   }
 
-  public updateAssignee(newAssignee: ProjectMember) {
+  public updateAssignee(newAssignee: User) {
     this.Assignee = newAssignee;
     this._emitUpdate();
   }

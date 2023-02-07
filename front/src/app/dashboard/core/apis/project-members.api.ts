@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PROJECTS_API_ENDPOINT } from './endpoints';
 import { DashboardCoreProvidersModule } from '../core.providers.module';
-import { ProjectMember } from '../models/project-member';
+import { ProjectMemberDTO } from '../dtos/project-member.dto';
 
 @Injectable({
   providedIn: DashboardCoreProvidersModule,
@@ -12,6 +12,6 @@ export class ProjectMembersAPI {
 
   getProjectMembers(projectId: string) {
     const endpoint = `${PROJECTS_API_ENDPOINT}/${projectId}/members`;
-    return this.http.get<ProjectMember[]>(endpoint);
+    return this.http.get<ProjectMemberDTO[]>(endpoint);
   }
 }
