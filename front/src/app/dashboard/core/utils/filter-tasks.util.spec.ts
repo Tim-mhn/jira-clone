@@ -30,14 +30,14 @@ describe('filterTasks', () => {
     Icon: '',
     Id: 'assignee1-id',
     Name: 'assignee 1',
-  };
+  } as ProjectMember;
 
   const assignee2: ProjectMember = {
     Email: '',
     Icon: '',
     Id: 'assignee2-id',
     Name: 'assignee 2',
-  };
+  } as ProjectMember;
 
   const NEW: TaskStatus = {
     Color: 'neutral',
