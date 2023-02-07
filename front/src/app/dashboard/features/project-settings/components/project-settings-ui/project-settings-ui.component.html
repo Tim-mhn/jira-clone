@@ -1,7 +1,17 @@
 <jira-feature-page-container [breadcrumbs]="breadcrumbs">
-  <jira-invite-people-button
-    [projectId]="projectInfo?.Id"
-  ></jira-invite-people-button>
+  <feature-page-title>
+    <div class="flex items-center">
+      <div class="flex">Project members</div>
+      <div class="flex flex-grow justify-end">
+        <jira-invite-people-button
+          [projectId]="projectInfo?.Id"
+        ></jira-invite-people-button>
+      </div>
+    </div>
+  </feature-page-title>
 
-  <jira-project-members-list [members]="members"></jira-project-members-list>
+  <jira-project-members-list
+    class="flex flex-grow"
+    [members]="members"
+  ></jira-project-members-list>
 </jira-feature-page-container>
