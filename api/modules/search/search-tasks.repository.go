@@ -18,9 +18,9 @@ func NewSearchTasksRepository(conn *sql.DB) *SearchTasksRepository {
 	}
 }
 
-func (taskRepo *SearchTasksRepository) SearchTasksWithMatchingContentInUserProjects(userID UserID, searchText SearchText) ([]TaskInfo, error) {
+func (taskRepo *SearchTasksRepository) SearchTasksWithMatchingContentInUserProjects(input SearchInput) ([]TaskInfo, error) {
 
-	builder := getSQLBuilder(userID, searchText)
+	builder := getSQLBuilder(UserID(input.UserID), SearchText(input.Text))
 
 	fmt.Print(builder.ToSql())
 	rows, err := builder.RunWith(taskRepo.conn).Query()

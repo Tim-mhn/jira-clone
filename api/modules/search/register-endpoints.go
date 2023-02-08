@@ -9,8 +9,10 @@ import (
 
 func RegisterEndpoints(router *gin.Engine, conn *sql.DB) {
 
-	repo := NewSearchTasksRepository(conn)
-	controller := NewSearchController(repo)
+	searchTasksRepo := NewSearchTasksRepository(conn)
+	searchSprintsRepo := NewSearchSprintsRepository(conn)
+	service := NewSearchService(searchTasksRepo, searchSprintsRepo)
+	controller := NewSearchController(service)
 
 	router.GET("/search", auth.IsAuthenticatedMiddleware(), controller.SearchTasksWithMatchingContentInUserProjects)
 }

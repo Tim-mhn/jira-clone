@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { SearchProvidersModule } from '../search-providers.module';
-import { SearchTasksAPI } from '../apis/search-tasks.api';
+import { SearchAPI } from '../apis/search-tasks.api';
 import { SearchText } from '../models/search-text';
 
 @Injectable({
@@ -9,14 +9,16 @@ import { SearchText } from '../models/search-text';
 })
 export class SearchTasksController {
   constructor(
-    private api: SearchTasksAPI,
+    private api: SearchAPI,
     private requestStateController: RequestStateController
   ) {}
 
-  searchTasksByContent(searchText: SearchText, requestState?: RequestState) {
+  searchTasksSprintsByContent(
+    searchText: SearchText,
+    requestState?: RequestState
+  ) {
     return this.api
-      .searchTasksByContent(searchText)
-
+      .searchTasksSprintsByContent(searchText)
       .pipe(this.requestStateController.handleRequest(requestState));
   }
 }

@@ -13,6 +13,7 @@ import {
   distinctUntilChanged,
   EMPTY,
   filter,
+  map,
   shareReplay,
   switchMap,
   tap,
@@ -20,14 +21,14 @@ import {
 import { SearchTasksController } from '../../controllers/search-tasks.controller';
 
 @Component({
-  selector: 'jira-tasks-search-bar',
-  templateUrl: './tasks-search-bar.component.html',
+  selector: 'jira-global-search-bar',
+  templateUrl: './global-search-bar.component.html',
   host: {
     class: 'flex flex-grow justify-end',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TasksSearchBarComponent implements OnInit {
+export class GlobalSearchBarComponent implements OnInit {
   constructor(private controller: SearchTasksController) {}
 
   @ViewChild(TimUIDropdownMenu) dropdownMenu: TimUIDropdownMenu;
@@ -38,18 +39,23 @@ export class TasksSearchBarComponent implements OnInit {
   hasFocus = false;
 
   hasAlreadyFetchedData = false;
-  tasksList$ = this.searchControl.valueChanges.pipe(
+  searchResults$ = this.searchControl.valueChanges.pipe(
     filter((searchText) => !!searchText),
     tap(() => this.requestState.toPending()),
     debounceTime(500),
     distinctUntilChanged(),
     switchMap((searchText) =>
       this.controller
-        .searchTasksByContent(searchText, this.requestState)
+        .searchTasksSprintsByContent(searchText, this.requestState)
         .pipe(catchError(() => EMPTY))
     ),
     tap(() => (this.hasAlreadyFetchedData = true)),
     shareReplay()
+  );
+
+  tasksResults$ = this.searchResults$.pipe(map(({ Tasks }) => Tasks || []));
+  sprintsResults$ = this.searchResults$.pipe(
+    map(({ Sprints }) => Sprints || [])
   );
 
   toggleFocus(hasFocus: boolean) {

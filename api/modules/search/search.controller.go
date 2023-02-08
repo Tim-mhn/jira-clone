@@ -8,24 +8,28 @@ import (
 )
 
 type SearchController struct {
-	repo *SearchTasksRepository
+	service *SearchService
 }
 
-func NewSearchController(repo *SearchTasksRepository) *SearchController {
+func NewSearchController(service *SearchService) *SearchController {
 	return &SearchController{
-		repo: repo,
+		service: service,
 	}
 }
 
 func (controller *SearchController) SearchTasksWithMatchingContentInUserProjects(c *gin.Context) {
 	currentUser, _ := auth.GetUserFromRequestContext(c)
 	searchContent := c.Query("content")
+	searchInput := SearchInput{
+		UserID: currentUser.Id,
+		Text:   searchContent,
+	}
 
-	taskInfoList, err := controller.repo.SearchTasksWithMatchingContentInUserProjects(UserID(currentUser.Id), SearchText(searchContent))
+	searchResults, err := controller.service.searchTasksOrSprintsOfUserByText(searchInput)
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 	}
 
-	c.IndentedJSON(http.StatusOK, taskInfoList)
+	c.IndentedJSON(http.StatusOK, searchResults)
 }

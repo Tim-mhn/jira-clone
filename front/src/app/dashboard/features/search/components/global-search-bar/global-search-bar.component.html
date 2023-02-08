@@ -1,0 +1,66 @@
+<div [class]="hasFocus ? 'flex flex-grow' : 'w-80'">
+  <tim-input
+    timDropdownTrigger
+    [timDropdownMenuTriggerFor]="taskResultsDropdown"
+    [timDropdownMenuTriggerCloseOnClick]="false"
+    [flexWidth]="true"
+    class="flex flew-grow w-full"
+    size="sm"
+    [formControl]="searchControl"
+    placeholder="Search items across projects"
+    (focus)="toggleFocus(true)"
+    (blur)="toggleFocus(false)"
+  >
+  </tim-input>
+</div>
+<tim-dropdown-menu #taskResultsDropdown [sameWidthAsTrigger]="true">
+  <ng-container *ngTemplateOutlet="tasksResultsTemplate"></ng-container>
+
+  <tim-divider *ngIf="hasAlreadyFetchedData"></tim-divider>
+
+  <ng-container *ngTemplateOutlet="sprintsResultsTemplate"></ng-container>
+
+  <tim-dropdown-item *ngIf="requestState?.isPending">
+    <div class="flex flex-grow justify-center"><tim-spinner></tim-spinner></div>
+  </tim-dropdown-item>
+
+  <tim-dropdown-item *ngIf="!hasAlreadyFetchedData && !requestState?.isPending">
+    Start typing to see some results
+  </tim-dropdown-item>
+</tim-dropdown-menu>
+
+<ng-template #tasksResultsTemplate>
+  <tim-dropdown-item *ngIf="hasAlreadyFetchedData">
+    <span class="text-lg font-medium">Tasks</span></tim-dropdown-item
+  >
+
+  <tim-dropdown-item *ngFor="let task of tasksResults$ | async">
+    <jira-tasks-search-item
+      class="flex-grow"
+      [taskInfo]="task"
+    ></jira-tasks-search-item>
+  </tim-dropdown-item>
+
+  <tim-dropdown-item
+    *ngIf="(tasksResults$ | async)?.length == 0 && !requestState?.isPending"
+    >No results</tim-dropdown-item
+  >
+</ng-template>
+
+<ng-template #sprintsResultsTemplate>
+  <tim-dropdown-item *ngIf="hasAlreadyFetchedData"
+    ><span class="text-lg font-medium">Sprints</span></tim-dropdown-item
+  >
+
+  <tim-dropdown-item *ngFor="let sprint of sprintsResults$ | async">
+    <jira-sprint-search-item
+      class="flex-grow"
+      [sprintInfo]="sprint"
+    ></jira-sprint-search-item>
+  </tim-dropdown-item>
+
+  <tim-dropdown-item
+    *ngIf="(sprintsResults$ | async)?.length == 0 && !requestState?.isPending"
+    >No results</tim-dropdown-item
+  >
+</ng-template>
