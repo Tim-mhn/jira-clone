@@ -14,7 +14,8 @@ describe('SprintMapper', () => {
         Name: 'name',
         EndDate: null,
         StartDate: null,
-      };
+        Completed: false,
+      } as SprintInfoDTO;
 
       const sprintInfo = mapper.dtoToSprintInfo(dto);
 
