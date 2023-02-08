@@ -15,7 +15,7 @@ type SprintRepository interface {
 	CreateSprint(name string, projectID string) (string, error)
 	DeleteSprint(sprintID string) error
 	UpdateSprint(sprintID SprintID, updateSprint _UpdateSprint) SprintError
-	MarkSprintAsCompleted(sprintID string) error
+	UpdateCompletedStatus(sprintID string, isCompleted bool) error
 	GetSprintInfo(sprintID string) (SprintInfo, SprintError)
 }
 type SQLSprintRepository struct {
@@ -125,7 +125,7 @@ func scanSQLRowToSprintInfo(rows *sql.Rows) (SprintInfo, error) {
 	var sprint SprintInfo
 	var startDate sql.NullTime
 	var endDate sql.NullTime
-	err := rows.Scan(&sprint.Id, &sprint.Name, &sprint.IsBacklog, &sprint.CreationTime, &startDate, &endDate)
+	err := rows.Scan(&sprint.Id, &sprint.Name, &sprint.IsBacklog, &sprint.CreationTime, &startDate, &endDate, &sprint.Completed)
 
 	if err != nil {
 		return SprintInfo{}, err
@@ -143,7 +143,7 @@ func scanSQLRowToSprintInfo(rows *sql.Rows) (SprintInfo, error) {
 
 func sprintQueryBuilder() sq.SelectBuilder {
 	psql := database.GetPsqlQueryBuilder()
-	queryBuilder := psql.Select("id", "name", "is_backlog", "created_on", "start_date", "end_date").
+	queryBuilder := psql.Select("id", "name", "is_backlog", "created_on", "start_date", "end_date", "completed").
 		From("sprint")
 
 	return queryBuilder
@@ -200,11 +200,12 @@ func (sprintRepo SQLSprintRepository) UpdateSprint(sprintID SprintID, updateSpri
 
 }
 
-func (sprintRepo SQLSprintRepository) MarkSprintAsCompleted(sprintID string) error {
+func (sprintRepo SQLSprintRepository) UpdateCompletedStatus(sprintID string, isCompleted bool) error {
 
-	query := fmt.Sprintf(`UPDATE sprint SET completed=true WHERE id='%s'`, sprintID)
+	psql := database.GetPsqlQueryBuilder()
+	query := psql.Update("sprint").Set("completed", isCompleted).Where(sq.Eq{"id": sprintID})
 
-	res, err := sprintRepo.conn.Exec(query)
+	res, err := query.RunWith(sprintRepo.conn).Exec()
 
 	if err != nil {
 		errorWithContext := sprintRepo.logger.LogAndBuildError("MarkSprintAsCompleted", err)

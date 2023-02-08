@@ -1,4 +1,9 @@
-import { Component, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+} from '@angular/core';
 import { RequestState } from '@tim-mhn/common/http';
 import { ReplaySubject, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { combineLatestWithTrigger } from '../../../../../shared/rxjs-operators';
@@ -9,6 +14,7 @@ import { RefreshTaskCommentsService } from '../../services/refresh-comments.serv
 @Component({
   selector: 'jira-task-comments',
   templateUrl: './task-comments.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskCommentsComponent {
   @Input() set taskId(taskId: string) {
@@ -19,7 +25,8 @@ export class TaskCommentsComponent {
   constructor(
     private controller: CommentsController,
     private loggedInUserService: LoggedInUserService,
-    private refreshCommentsService: RefreshTaskCommentsService
+    private refreshCommentsService: RefreshTaskCommentsService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   currentUser$ = this.loggedInUserService.user$;
@@ -34,11 +41,13 @@ export class TaskCommentsComponent {
     refresh: this.refreshComments$,
     taskId: this.taskId$,
   }).pipe(
-    tap(({ trigger }) =>
+    tap(({ trigger }) => {
+      // eslint-disable-next-line no-unused-expressions
       this._updateRequestStateCondition(trigger)
         ? this.requestState.toPending()
-        : null
-    ),
+        : null;
+      this.cdr.detectChanges();
+    }),
     switchMap(({ taskId, trigger }) =>
       this.controller.getComments(taskId).pipe(
         tap({

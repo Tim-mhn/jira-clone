@@ -13,6 +13,7 @@ type SprintInfo struct {
 	CreationTime time.Time
 	StartDate    *time.Time
 	EndDate      *time.Time
+	Completed    bool
 }
 
 type Sprint struct {

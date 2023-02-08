@@ -5,7 +5,7 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core';
-import { buildTaskPageRoute } from '../../../../core/utils/build-task-page-route.util';
+import { buildTaskPageRoute } from '../../../browse/utils/build-browse-page-routes.util';
 import { TaskInfo } from '../../models/task-info';
 
 @Component({

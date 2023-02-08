@@ -7,6 +7,7 @@ import { BreadcrumbParts } from '../../../../shared/components/breadcrumb/breadc
 })
 export class FeaturePageContainerComponent implements OnInit {
   @Input() breadcrumbs: BreadcrumbParts;
+
   constructor() {}
 
   ngOnInit(): void {}

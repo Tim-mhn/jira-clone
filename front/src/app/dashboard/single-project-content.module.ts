@@ -29,11 +29,10 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'browse/:taskId',
+        path: 'browse',
+
         loadChildren: () =>
-          import(
-            './features/task-details/pages/task-details-page/task-details-page.module'
-          ).then((m) => m.TaskDetailsPageModule),
+          import('./features/browse/browse.module').then((m) => m.BrowseModule),
       },
     ],
   },

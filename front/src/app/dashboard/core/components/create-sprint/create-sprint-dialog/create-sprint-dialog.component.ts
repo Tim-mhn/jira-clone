@@ -3,7 +3,7 @@ import { Validators } from '@angular/forms';
 import { RequestState } from '@tim-mhn/common/http';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
 import { TimUIDialogRef } from '@tim-mhn/ng-ui/dialog';
-import { SprintController } from '../../../controllers/sprint.controller';
+import { BoardSprintController } from '../../../../features/board/controllers/board-sprint.controller';
 
 @Component({
   selector: 'jira-create-sprint-dialog',
@@ -11,7 +11,7 @@ import { SprintController } from '../../../controllers/sprint.controller';
 })
 export class CreateSprintDialogComponent implements OnInit {
   constructor(
-    private controller: SprintController,
+    private controller: BoardSprintController,
     private tfb: TypedFormBuilder,
     private dialogRef: TimUIDialogRef
   ) {}
@@ -32,7 +32,7 @@ export class CreateSprintDialogComponent implements OnInit {
     }
     const sprintName = this.sprintNameControl.value;
     this.controller
-      .createSprint(sprintName, this.requestState)
+      .createSprintAndUpdateBoardList(sprintName, this.requestState)
       .subscribe(() => this.dialogRef.close());
   }
 }

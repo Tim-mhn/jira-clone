@@ -97,7 +97,7 @@ func (service TasksService) getSprintTasksAndPointsBreakdown(sprintID string, fi
 
 	go func() {
 		pointsBreakdown, pointsError := service.sprintPointsRepo.GetSprintPointsBreakdown(sprintID)
-		if pointsError != nil {
+		if pointsError.HasError {
 			err = pointsError
 		}
 		pointsChan <- pointsBreakdown

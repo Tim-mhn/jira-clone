@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
-import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import { switchMap, tap } from 'rxjs';
+import {
+  MockAPI,
+  RequestState,
+  RequestStateController,
+} from '@tim-mhn/common/http';
+import { map, Observable, switchMap, tap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
-import { BoardProvidersModule } from '../../features/board/board-providers.module';
-import { GetTasksOfBoardController } from '../../features/board/controllers/get-board-tasks.controller';
 import { SprintsAPI } from '../apis/sprints.api';
+import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { SprintMapper } from '../mappers/sprint.mapper';
 import { Sprint } from '../models';
 import { UpdateSprint } from '../models/update-sprint';
 import { CurrentProjectService } from '../state-services/current-project.service';
 
 @Injectable({
-  providedIn: BoardProvidersModule,
+  providedIn: DashboardCoreProvidersModule,
 })
 export class SprintController {
   constructor(
@@ -19,8 +22,8 @@ export class SprintController {
     private currentProjectService: CurrentProjectService,
     private snackbarFeedback: SnackbarFeedbackService,
     private api: SprintsAPI,
-    private tasksOfBoardController: GetTasksOfBoardController,
-    private mapper: SprintMapper
+    private mapper: SprintMapper,
+    private mockAPI: MockAPI
   ) {}
 
   createSprint(sprintName: string, requestState?: RequestState) {
@@ -31,7 +34,18 @@ export class SprintController {
         loadingMessage: 'Creating sprint ...',
         successMessage: 'Sprint successfully created',
       }),
-      switchMap(() => this.tasksOfBoardController?.refreshSprintsTasks()),
+      this.requestStateController.handleRequest(requestState)
+    );
+  }
+
+  getSprint(sprintId: string, requestState?: RequestState): Observable<Sprint> {
+    const { currentProject$ } = this.currentProjectService;
+
+    return currentProject$.pipe(
+      switchMap((project) =>
+        this.api.getSprint({ projectId: project.Id, sprintId })
+      ),
+      map((dto) => this.mapper.toDomain(dto)),
       this.requestStateController.handleRequest(requestState)
     );
   }
@@ -44,22 +58,37 @@ export class SprintController {
         loadingMessage: 'Deleting sprint ...',
         successMessage: 'Sprint successfully deleted',
       }),
-      switchMap(() => this.tasksOfBoardController?.refreshSprintsTasks()),
       this.requestStateController.handleRequest(requestState)
     );
   }
 
-  completeSprint(sprintId: string, requestState?: RequestState) {
+  completeSprint(sprint: Sprint, requestState?: RequestState) {
     const projectId = this._currentProjectId;
 
-    return this.api.completeSprint({ sprintId, projectId }).pipe(
+    return this.api.completeSprint({ sprintId: sprint.Id, projectId }).pipe(
       this.snackbarFeedback.showFeedbackSnackbars(
         {
           successMessage: 'Sprint successfully completed',
         },
         { showLoadingMessage: false }
       ),
-      switchMap(() => this.tasksOfBoardController?.refreshSprintsTasks()),
+      tap(() => sprint.updateComplete(true)),
+      this.requestStateController.handleRequest(requestState)
+    );
+  }
+
+  reactiveSprintAndUpdateState(sprint: Sprint, requestState?: RequestState) {
+    const projectId = this._currentProjectId;
+
+    return this.api.reactiveSprint({ projectId, sprintId: sprint.Id }).pipe(
+      tap(() => sprint.updateComplete(false)),
+      this.snackbarFeedback.showFeedbackSnackbars(
+        {
+          successMessage:
+            'Sprint has been marked as active and is now visible in the board',
+        },
+        { showLoadingMessage: false }
+      ),
       this.requestStateController.handleRequest(requestState)
     );
   }

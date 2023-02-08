@@ -26,6 +26,7 @@ export class TaskDetailsPage implements OnInit {
   activeSprints$ = this.sprintsService.activeSprints$;
 
   task$ = this._buildTask$();
+
   ngOnInit(): void {}
 
   private _buildTask$() {

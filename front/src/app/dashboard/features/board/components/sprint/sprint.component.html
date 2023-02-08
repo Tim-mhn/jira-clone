@@ -19,12 +19,13 @@
 
       <jira-complete-sprint-button
         *ngIf="!sprint?.IsBacklog"
-        [sprintId]="sprint?.Id"
+        [sprint]="sprint"
       ></jira-complete-sprint-button>
 
       <jira-sprint-side-actions
         *ngIf="!sprint?.IsBacklog"
         [sprint]="sprint"
+        [project]="project"
       ></jira-sprint-side-actions>
     </div>
   </div>

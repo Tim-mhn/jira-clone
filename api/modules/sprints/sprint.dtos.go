@@ -5,3 +5,7 @@ type NewSprintDTO struct {
 }
 
 type UpdateSprintDTO = _UpdateSprint
+
+type UpdateSprintCompletedDTO struct {
+	Completed *bool `json:"completed" binding:"required"`
+}

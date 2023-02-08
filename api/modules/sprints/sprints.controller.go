@@ -40,7 +40,7 @@ func (controller SprintsController) CreateSprint(c *gin.Context) {
 }
 
 func (controller SprintsController) UpdateSprint(c *gin.Context) {
-	sprintID := c.Param("sprintID")
+	sprintID := getSprintIDParam(c)
 
 	var updateSprintDTO UpdateSprintDTO
 
@@ -64,20 +64,8 @@ func (controller SprintsController) UpdateSprint(c *gin.Context) {
 
 }
 
-func getHttpStatusCode(err SprintError) int {
-	if err.Code == SprintNotFound {
-		return http.StatusBadRequest
-	}
-
-	if err.Code == UnauthorizedToChangeBacklogSprint {
-		return http.StatusForbidden
-	}
-
-	return http.StatusInternalServerError
-}
-
 func (controller SprintsController) DeleteSprint(c *gin.Context) {
-	sprintID := c.Param("sprintID")
+	sprintID := getSprintIDParam(c)
 
 	err := controller.sprintRepo.DeleteSprint(sprintID)
 
@@ -89,10 +77,19 @@ func (controller SprintsController) DeleteSprint(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, nil)
 }
 
-func (controller SprintsController) MarkSprintAsCompleted(c *gin.Context) {
-	sprintID := c.Param("sprintID")
+func (controller SprintsController) UpdateSprintCompletedStatus(c *gin.Context) {
+	sprintID := getSprintIDParam(c)
 
-	err := controller.sprintRepo.MarkSprintAsCompleted(sprintID)
+	var dto UpdateSprintCompletedDTO
+
+	if err := c.BindJSON(&dto); err != nil {
+		domainError := BuildSprintError(OtherSprintError, err)
+		apiError := shared_errors.BuildAPIErrorFromDomainError(domainError)
+		http_utils.ReturnJsonAndAbort(c, http.StatusUnprocessableEntity, apiError)
+		return
+	}
+
+	err := controller.sprintRepo.UpdateCompletedStatus(sprintID, *dto.Completed)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
@@ -114,4 +111,34 @@ func (controller SprintsController) GetActiveSprintsOfProject(c *gin.Context) {
 
 	c.IndentedJSON(http.StatusOK, activeSprints)
 
+}
+
+func (controller SprintsController) GetSprintInfo(c *gin.Context) {
+	sprintID := getSprintIDParam(c)
+	sprint, err := controller.service.GetSprintDetails(sprintID)
+
+	if err.HasError {
+		apiError := shared_errors.BuildAPIErrorFromDomainError(err)
+		code := getHttpStatusCode(err)
+		http_utils.ReturnJsonAndAbort(c, code, apiError)
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, sprint)
+}
+
+func getSprintIDParam(c *gin.Context) string {
+	return c.Param("sprintID")
+}
+
+func getHttpStatusCode(err SprintError) int {
+	if err.Code == SprintNotFound {
+		return http.StatusBadRequest
+	}
+
+	if err.Code == UnauthorizedToChangeBacklogSprint {
+		return http.StatusForbidden
+	}
+
+	return http.StatusInternalServerError
 }

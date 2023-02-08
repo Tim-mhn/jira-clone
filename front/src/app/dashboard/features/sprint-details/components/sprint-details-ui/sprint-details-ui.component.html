@@ -1,0 +1,78 @@
+<jira-feature-page-container
+  [breadcrumbs]="breadcrumbs"
+  *ngIf="sprint; else skeleton"
+>
+  <feature-page-title>
+    <div class="flex items-center">
+      <div>Sprint: {{ sprint?.Name }}</div>
+      <div class="flex flex-grow justify-end">
+        <button tim-simple-button edit-sprint-button [sprint]="sprint">
+          Edit
+        </button>
+      </div>
+    </div>
+  </feature-page-title>
+
+  <div class="flex flex-col gap-4">
+    <jira-sprint-status-tag [sprint]="sprint"></jira-sprint-status-tag>
+
+    <tim-card cardClass="flex flex-grow">
+      <tim-card-header>
+        <tim-card-header-title
+          ><span class="text-lg font-normal"
+            >Breakdown</span
+          ></tim-card-header-title
+        >
+      </tim-card-header>
+      <tim-card-content>
+        <jira-sprint-points-breakdown
+          [points]="sprint?.Points"
+        ></jira-sprint-points-breakdown>
+      </tim-card-content>
+    </tim-card>
+
+    <tim-card cardClass="flex flex-grow">
+      <tim-card-header>
+        <tim-card-header-title
+          ><span class="text-lg font-normal"
+            >Timeline</span
+          ></tim-card-header-title
+        >
+      </tim-card-header>
+      <tim-card-content>
+        <div
+          class="flex flex-col text-gray-600 font-medium"
+          *ngIf="sprint?.StartDate && sprint?.EndDate"
+        >
+          {{ sprint?.StartDate | dateTimeFormat }} -
+          {{ sprint?.EndDate | dateTimeFormat }}
+        </div>
+      </tim-card-content>
+    </tim-card>
+
+    <jira-complete-sprint-button
+      *ngIf="!sprint?.Completed"
+      [sprint]="sprint"
+    ></jira-complete-sprint-button>
+
+    <jira-reactive-sprint-button
+      *ngIf="sprint?.Completed"
+      [sprint]="sprint"
+    ></jira-reactive-sprint-button>
+  </div>
+</jira-feature-page-container>
+
+<ng-template #skeleton>
+  <div class="animate-pulse flex space-y-4 flex-col">
+    <div class="rounded-sm bg-slate-300 h-5 w-1/3"></div>
+    <div class="rounded-sm bg-slate-300 h-8 w-1/3"></div>
+    <div class="rounded-sm bg-slate-300 h-3 w-10"></div>
+
+    <div
+      class="rounded-sm bg-slate-300 h-24 flex flex-grow"
+      *ngFor="let _ of [1, 2]"
+    ></div>
+
+    <div class="rounded-sm bg-slate-300 h-8 w-30"></div>
+  </div>
+</ng-template>

@@ -3,26 +3,11 @@ package sprints
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/tim-mhn/figma-clone/utils/primitives"
 )
-
-type _TestSprint struct {
-	Name         string
-	Backlog      bool
-	CreationTime time.Time
-}
-
-func (s _TestSprint) IsBacklog() bool {
-	return s.Backlog
-}
-
-func (s _TestSprint) CreatedOn() time.Time {
-	return s.CreationTime
-}
 
 type MockSprintRepository struct {
 	mock.Mock
@@ -42,7 +27,7 @@ func (repo *MockSprintRepository) UpdateSprint(sprintID SprintID, updateSprint _
 	args := repo.Called(sprintID, updateSprint)
 	return args.Get(0).(SprintError)
 }
-func (repo *MockSprintRepository) MarkSprintAsCompleted(sprintID string) error {
+func (repo *MockSprintRepository) UpdateCompletedStatus(sprintID string, completed bool) error {
 	return nil
 }
 

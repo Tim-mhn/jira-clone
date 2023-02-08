@@ -25,7 +25,7 @@
     "@angular/router": "~13.3.0",
     "@tim-mhn/common": "^1.4.2",
     "@tim-mhn/ng-forms": "^0.4.2",
-    "@tim-mhn/ng-ui": "^1.5.5",
+    "@tim-mhn/ng-ui": "^1.5.6",
     "eslint-config-airbnb": "^19.0.4",
     "iqair-tailwind": "^1.0.11",
     "rxjs": "~7.5.0",

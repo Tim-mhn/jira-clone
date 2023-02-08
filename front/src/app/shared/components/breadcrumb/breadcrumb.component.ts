@@ -31,7 +31,12 @@ export function breadcrumbsWithConcatenatedRoutes(
     const fullRoutes = bs
       .filter((_, idx) => idx <= index)
       .reduce(
-        (tmpRoute, lastPart) => [...tmpRoute, <string>(<any>lastPart.route)],
+        (tmpRoute, lastPart) => {
+          if (typeof lastPart.route === 'string') {
+            return [...tmpRoute, lastPart.route];
+          }
+          return [...tmpRoute, ...lastPart.route];
+        },
         ['/']
       );
     breadcrumbs.push({ label, route: fullRoutes });

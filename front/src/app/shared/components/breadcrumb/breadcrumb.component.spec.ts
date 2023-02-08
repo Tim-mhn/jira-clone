@@ -34,5 +34,37 @@ describe('BreadcrumbComponent', () => {
     it('should not change the labels', () => {
       expect(breadcrumbs[2].label).toEqual('Board');
     });
+
+    it('should work with arrays for Breadcrumb part routes', () => {
+      const parts: BreadcrumbParts = [
+        {
+          label: 'Project',
+          route: 'projects',
+        },
+        {
+          label: 'My project',
+          route: projectId,
+        },
+        {
+          label: 'Board',
+          route: 'board',
+        },
+        {
+          label: 'My Task',
+          route: ['browse', 'tasks', 'task-id'],
+        },
+      ];
+
+      const breadcrumbs = breadcrumbsWithConcatenatedRoutes(parts);
+      expect(breadcrumbs[3].route).toEqual([
+        '/',
+        'projects',
+        projectId,
+        'board',
+        'browse',
+        'tasks',
+        'task-id',
+      ]);
+    });
   });
 });

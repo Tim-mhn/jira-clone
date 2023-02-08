@@ -14,6 +14,7 @@ export type SprintInfo = {
   IsBacklog: boolean;
   StartDate: TimDate;
   EndDate: TimDate;
+  Completed: boolean;
 };
 export type SprintProps = SprintInfo & {
   Points: SprintPointsBreakdown;
@@ -26,15 +27,19 @@ export class Sprint implements SprintProps {
   Points: SprintPointsBreakdown;
   StartDate: TimDate;
   EndDate: TimDate;
+  ProjectId: string;
+  Completed: boolean;
 
   constructor(props: SprintProps) {
-    const { Id, IsBacklog, Name, Points, EndDate, StartDate } = props;
+    const { Id, IsBacklog, Name, Points, EndDate, StartDate, Completed } =
+      props;
     this.Id = Id;
     this.IsBacklog = IsBacklog;
     this.Name = Name;
     this.Points = Points;
     this.StartDate = StartDate;
     this.EndDate = EndDate;
+    this.Completed = Completed;
   }
 
   public updateName(newName: string) {
@@ -46,6 +51,11 @@ export class Sprint implements SprintProps {
     const { start, end } = startEndDates;
     this.StartDate = start;
     this.EndDate = end;
+    this._emitUpdate();
+  }
+
+  public updateComplete(isComplete: boolean) {
+    this.Completed = isComplete;
     this._emitUpdate();
   }
 

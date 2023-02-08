@@ -1,0 +1,10 @@
+<tim-chip *ngIf="sprint?.Completed" color="success-darker" size="lg">
+  <div class="flex items-center gap-1">
+    <img [src]="CHECK_ICON" height="16" width="16" class="h-4 w-4" />
+    Completed
+  </div></tim-chip
+>
+
+<tim-chip *ngIf="!sprint?.Completed" color="primary-darker" size="lg"
+  >Active</tim-chip
+>

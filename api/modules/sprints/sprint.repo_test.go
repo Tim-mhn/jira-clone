@@ -141,8 +141,8 @@ func TestGetActiveSprintsOfProject(t *testing.T) {
 		endDate := time.Date(2020, 12, 15, 4, 0, 0, 0, time.Local)
 		createdOn := time.Date(2020, 10, 1, 4, 0, 0, 0, time.Local)
 
-		rows := sqlmock.NewRows([]string{"id", "name", "is_backlog", "created_on", "start_date", "end_date"}).
-			AddRow("sprint-id", "My Sprint", false, createdOn, startDate, endDate)
+		rows := sqlmock.NewRows([]string{"id", "name", "is_backlog", "created_on", "start_date", "end_date", "completed"}).
+			AddRow("sprint-id", "My Sprint", false, createdOn, startDate, endDate, false)
 
 		mock.ExpectQuery("^SELECT.*").WillReturnRows(rows)
 
@@ -161,8 +161,8 @@ func TestGetActiveSprintsOfProject(t *testing.T) {
 
 		createdOn := time.Date(2020, 10, 1, 4, 0, 0, 0, time.Local)
 
-		rows := sqlmock.NewRows([]string{"id", "name", "is_backlog", "created_on", "start_date", "end_date"}).
-			AddRow("sprint-id", "My Sprint", false, createdOn, sql.NullTime{}, sql.NullTime{})
+		rows := sqlmock.NewRows([]string{"id", "name", "is_backlog", "created_on", "start_date", "end_date", "completed"}).
+			AddRow("sprint-id", "My Sprint", false, createdOn, sql.NullTime{}, sql.NullTime{}, false)
 
 		mock.ExpectQuery("^SELECT.*").WillReturnRows(rows)
 
@@ -187,8 +187,8 @@ func TestGetSprintInfo(t *testing.T) {
 		endDate := time.Date(2020, 12, 15, 4, 0, 0, 0, time.Local)
 		createdOn := time.Date(2020, 10, 1, 4, 0, 0, 0, time.Local)
 
-		rows := sqlmock.NewRows([]string{"id", "name", "is_backlog", "created_on", "start_date", "end_date"}).
-			AddRow("sprint-id", "My Sprint", false, createdOn, startDate, endDate)
+		rows := sqlmock.NewRows([]string{"id", "name", "is_backlog", "created_on", "start_date", "end_date", "completed"}).
+			AddRow("sprint-id", "My Sprint", false, createdOn, startDate, endDate, false)
 
 		mock.ExpectQuery("^SELECT.*").WillReturnRows(rows)
 
@@ -207,8 +207,8 @@ func TestGetSprintInfo(t *testing.T) {
 
 		createdOn := time.Date(2020, 10, 1, 4, 0, 0, 0, time.Local)
 
-		rows := sqlmock.NewRows([]string{"id", "name", "is_backlog", "created_on", "start_date", "end_date"}).
-			AddRow("sprint-id", "My Sprint", false, createdOn, sql.NullTime{}, sql.NullTime{})
+		rows := sqlmock.NewRows([]string{"id", "name", "is_backlog", "created_on", "start_date", "end_date", "completed"}).
+			AddRow("sprint-id", "My Sprint", false, createdOn, sql.NullTime{}, sql.NullTime{}, false)
 
 		mock.ExpectQuery("^SELECT.*").WillReturnRows(rows)
 

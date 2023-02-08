@@ -22,6 +22,7 @@ func RegisterEndpoints(singleProjectRoutes project.SingleProjectRoutes, conn *sq
 	singleSprintRoutes := sprintsRoutes.Group("/:sprintID")
 	singleSprintRoutes.DELETE("", controller.DeleteSprint)
 	singleSprintRoutes.PATCH("", controller.UpdateSprint)
-	singleSprintRoutes.POST("/complete", controller.MarkSprintAsCompleted)
+	singleSprintRoutes.GET("", controller.GetSprintInfo)
+	singleSprintRoutes.POST("/complete", controller.UpdateSprintCompletedStatus)
 
 }

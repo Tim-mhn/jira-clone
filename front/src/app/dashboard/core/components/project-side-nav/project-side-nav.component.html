@@ -3,13 +3,11 @@
 >
   <div class="text-md font-medium">{{ (currentProject$ | async)?.Name }}</div>
 
-  <jira-side-nav-item
-    [link]="['/', 'projects', (currentProject$ | async)?.Id, 'board']"
+  <jira-side-nav-item [link]="['/', 'projects', projectId$ | async, 'board']"
     >Board</jira-side-nav-item
   >
 
-  <jira-side-nav-item
-    [link]="['/', 'projects', (currentProject$ | async)?.Id, 'settings']"
+  <jira-side-nav-item [link]="['/', 'projects', projectId$ | async, 'settings']"
     >Settings</jira-side-nav-item
   >
 </div>

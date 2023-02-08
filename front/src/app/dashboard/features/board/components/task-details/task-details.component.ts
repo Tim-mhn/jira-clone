@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { ProjectMember, SprintInfo, Task } from '../../../../core/models';
 import { Project } from '../../../../core/models/project';
-import { buildTaskPageRoute } from '../../../../core/utils/build-task-page-route.util';
+import { buildTaskPageRoute } from '../../../browse/utils/build-browse-page-routes.util';
 
 @Component({
   selector: 'jira-task-details',
