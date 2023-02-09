@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { forkJoin, map, Observable } from 'rxjs';
+import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { SingleProjectAPI } from '../apis/single-project.api';
 import { TaskStatusAPI } from '../apis/task-status.api';
@@ -18,7 +19,8 @@ export class ProjectController {
     private membersAPI: ProjectMembersAPI,
     private taskStatusApi: TaskStatusAPI,
     private taskTypesApi: TaskTypeAPI,
-    private membersMapper: ProjectMemberMapper
+    private membersMapper: ProjectMemberMapper,
+    private requestStateController: RequestStateController
   ) {}
 
   getProject(projectId: string): Observable<Project> {
@@ -41,9 +43,13 @@ export class ProjectController {
     );
   }
 
-  getProjectMembers(projectId: string): Observable<ProjectMembers> {
-    return this.membersAPI
-      .getProjectMembers(projectId)
-      .pipe(map((dtoList) => this.membersMapper.toDomain(dtoList)));
+  getProjectMembers(
+    projectId: string,
+    requestState?: RequestState
+  ): Observable<ProjectMembers> {
+    return this.membersAPI.getProjectMembers(projectId).pipe(
+      map((dtoList) => this.membersMapper.toDomain(dtoList)),
+      this.requestStateController.handleRequest(requestState)
+    );
   }
 }

@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { TypedChanges } from '@tim-mhn/common/extra-types';
+import { RequestState } from '@tim-mhn/common/http';
 import { TimUIDialogService } from '@tim-mhn/ng-ui/dialog';
 import { BreadcrumbParts } from '../../../../../shared/components/breadcrumb/breadcrumbs';
 import { ProjectInfo, ProjectMembers } from '../../../../core/models';
@@ -15,6 +16,7 @@ import {
 export class ProjectSettingsUiComponent implements OnInit, OnChanges {
   @Input() projectInfo: ProjectInfo;
   @Input() members: ProjectMembers;
+  @Input() requestState: RequestState;
   constructor(private _dialog: TimUIDialogService) {}
 
   breadcrumbs: BreadcrumbParts;

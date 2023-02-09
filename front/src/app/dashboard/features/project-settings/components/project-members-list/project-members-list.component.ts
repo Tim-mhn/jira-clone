@@ -31,6 +31,8 @@ export class ProjectMembersListComponent implements OnInit {
     this._setTableData(members);
   }
 
+  @Input() loading: boolean;
+
   allMembers: ProjectMembers;
 
   private _setTableData(members: ProjectMembers) {

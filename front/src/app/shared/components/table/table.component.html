@@ -17,38 +17,28 @@
                 >
                   {{ col?.label }}
                 </th>
-
-                <!-- <th
-                  scope="col"
-                  class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-100 py-3.5 pr-4 pl-3 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
-                >
-                  <span class="sr-only">Edit</span>
-                </th> -->
               </tr>
             </thead>
             <tbody class="bg-white">
-              <tr *ngFor="let rowData of data">
-                <td
-                  *ngFor="let col of columns"
-                  class="whitespace-nowrap border-b border-gray-200 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8 sm:table-cell"
-                >
-                  <ng-container
-                    *ngTemplateOutlet="
+              <ng-container *ngIf="!loading; else loadingTempl">
+                <tr *ngFor="let rowData of data">
+                  <td
+                    *ngFor="let col of columns"
+                    class="whitespace-nowrap border-b border-gray-200 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8 sm:table-cell"
+                  >
+                    <ng-container
+                      *ngTemplateOutlet="
                       col?.template ? col?.template : defaultCell;
                       context: { $implicit: rowData?.[col.key] }
                     "
-                  ></ng-container>
-                </td>
+                    ></ng-container>
+                  </td>
+                </tr>
+              </ng-container>
 
-                <!-- <td
-                  class="relative whitespace-nowrap border-b border-gray-200 py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-6 lg:pr-8"
-                >
-                  <a href="#" class="text-indigo-600 hover:text-indigo-900"
-                    >Edit</a
-                  >
-                </td> -->
-              </tr>
+              <!-- <div class="animate-pulse"> -->
 
+              <!-- </div> -->
               <!-- More people... -->
             </tbody>
           </table>
@@ -60,4 +50,12 @@
 
 <ng-template #defaultCell let-data>
   {{ data }}
+</ng-template>
+
+<ng-template #loadingTempl>
+  <tr *ngFor="let _ of [1, 2, 3, 4, 5, 6]">
+    <td *ngFor="let _ of columns">
+      <div class="flex flex-grow bg-slate-300 h-8 my-3 mx-8 rounded-sm"></div>
+    </td>
+  </tr>
 </ng-template>

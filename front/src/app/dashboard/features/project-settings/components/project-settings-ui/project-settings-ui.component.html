@@ -13,5 +13,6 @@
   <jira-project-members-list
     class="flex flex-grow"
     [members]="members"
+    [loading]="requestState?.isPending"
   ></jira-project-members-list>
 </jira-feature-page-container>

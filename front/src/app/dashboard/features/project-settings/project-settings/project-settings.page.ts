@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { RequestState } from '@tim-mhn/common/http';
 import { switchMap } from 'rxjs';
 import { ProjectController } from '../../../core/controllers/project.controller';
 import { CurrentProjectService } from '../../../core/state-services/current-project.service';
@@ -13,9 +14,14 @@ export class ProjectSettingsComponent implements OnInit {
     private projectController: ProjectController
   ) {}
 
+  requestState = new RequestState();
   members$ = this.projectService.currentProject$.pipe(
-    switchMap(({ Id }) => this.projectController.getProjectMembers(Id))
+    switchMap(({ Id }) =>
+      this.projectController.getProjectMembers(Id, this.requestState)
+    )
   );
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.requestState.toPending();
+  }
 }

@@ -14,6 +14,7 @@ import { TableColumns, TableData } from './models/table';
 export class TableComponent<T = any> implements OnInit {
   @Input() columns: TableColumns<T> = [];
   @Input() data: TableData<T>;
+  @Input() loading: boolean;
   constructor() {}
 
   ngOnInit(): void {}
