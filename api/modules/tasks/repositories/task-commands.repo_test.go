@@ -12,7 +12,7 @@ func TestUpdateTask(t *testing.T) {
 	t.Run("it should use the 'assignee_id' field in the SQL Query", func(t *testing.T) {
 		db, mock, _ := sqlmock.New()
 
-		repo := new(TaskCommandsRepository)
+		repo := new(SQLTaskCommandsRepository)
 		repo.conn = db
 
 		taskID := "id-of-task-1234"

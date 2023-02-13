@@ -31,6 +31,8 @@ GROUP BY  task.sprint_id`, sprintID)
 		return SprintPointsBreakdown{}, BuildSprintError(OtherSprintError, err)
 	}
 
+	defer rows.Close()
+
 	var pointsBreakdown SprintPointsBreakdown
 	if rows.Next() {
 

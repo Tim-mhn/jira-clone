@@ -13,14 +13,18 @@ import (
 	"github.com/tim-mhn/figma-clone/shared"
 )
 
-type TaskCommandsRepository struct {
+type TaskCommandsRepository interface {
+	CreateTask(projectID string, sprintID string, title string, assigneeID string, points int, description string) (tasks_models.Task, error)
+	UpdateTask(taskID string, patchDTO tasks_dtos.PatchTaskDTO) error
+}
+type SQLTaskCommandsRepository struct {
 	um             *auth.UserRepository
 	projectQueries *project.ProjectQueriesRepository
 	conn           *sql.DB
 }
 
-func NewTaskCommandsRepository(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, conn *sql.DB) *TaskCommandsRepository {
-	taskRepo := TaskCommandsRepository{}
+func NewSQLTaskCommandsRepository(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, conn *sql.DB) *SQLTaskCommandsRepository {
+	taskRepo := SQLTaskCommandsRepository{}
 	taskRepo.um = um
 	taskRepo.projectQueries = projectQueries
 	taskRepo.conn = conn
@@ -28,7 +32,7 @@ func NewTaskCommandsRepository(um *auth.UserRepository, projectQueries *project.
 	return &taskRepo
 }
 
-func (taskRepo *TaskCommandsRepository) CreateTask(projectID string, sprintID string, title string, assigneeID string, points int, description string) (tasks_models.Task, error) {
+func (taskRepo *SQLTaskCommandsRepository) CreateTask(projectID string, sprintID string, title string, assigneeID string, points int, description string) (tasks_models.Task, error) {
 
 	log.Printf("create task called")
 
@@ -98,7 +102,7 @@ JOIN positions ON true
 RETURNING task_id as id `, projectID, title, points, sprintID, assigneeID, description, tasks_models.NEW_STATUS, sprintID)
 }
 
-func (taskRepo *TaskCommandsRepository) checkCanAssignTaskToMember(taskProjectId string, memberId string) error {
+func (taskRepo *SQLTaskCommandsRepository) checkCanAssignTaskToMember(taskProjectId string, memberId string) error {
 
 	noAssignee := memberId == ""
 	if noAssignee {
@@ -118,7 +122,7 @@ func (taskRepo *TaskCommandsRepository) checkCanAssignTaskToMember(taskProjectId
 	return nil
 }
 
-func (taskRepo *TaskCommandsRepository) UpdateTask(taskID string, patchDTO tasks_dtos.PatchTaskDTO) error {
+func (taskRepo *SQLTaskCommandsRepository) UpdateTask(taskID string, patchDTO tasks_dtos.PatchTaskDTO) error {
 
 	ApiToDBFields := map[string]string{
 		"assigneeId":  "assignee_id",
@@ -142,7 +146,7 @@ func (taskRepo *TaskCommandsRepository) UpdateTask(taskID string, patchDTO tasks
 	_, err := updateQuery.RunWith(taskRepo.conn).Exec()
 
 	if err != nil {
-		log.Printf(`Error in TaskCommandsRepository.UpdateTask: %s`, err.Error())
+		log.Printf(`Error in SQLTaskCommandsRepository.UpdateTask: %s`, err.Error())
 	}
 	return err
 
@@ -152,7 +156,7 @@ type DeleteTaskResponse struct {
 	NotFound bool
 }
 
-func (taskRepo *TaskCommandsRepository) DeleteTask(taskID string) (DeleteTaskResponse, error) {
+func (taskRepo *SQLTaskCommandsRepository) DeleteTask(taskID string) (DeleteTaskResponse, error) {
 	deleteQuery := fmt.Sprintf(`DELETE FROM task WHERE task.id='%s'`, taskID)
 
 	res, err := taskRepo.conn.Exec(deleteQuery)

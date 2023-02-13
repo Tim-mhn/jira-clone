@@ -10,26 +10,31 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
+	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
 	tasks_services "github.com/tim-mhn/figma-clone/modules/tasks/services"
+	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 	"github.com/tim-mhn/figma-clone/utils/arrays"
 )
 
 type TasksController struct {
-	taskQueries      *tasks_repositories.TaskQueriesRepository
-	taskCommands     *tasks_repositories.TaskCommandsRepository
-	sprintService    tasks_services.ITasksService
-	taskPositionRepo *tasks_repositories.TaskPositionRepository
+	taskQueries       *tasks_repositories.TaskQueriesRepository
+	taskCommands      *tasks_repositories.SQLTaskCommandsRepository
+	sprintService     tasks_services.ITasksService
+	taskPositionRepo  *tasks_repositories.TaskPositionRepository
+	createTaskService tasks_services.TaskCommandsService
 }
 
-func NewTasksController(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, service tasks_services.ITasksService, taskRepo *tasks_repositories.TaskQueriesRepository, conn *sql.DB) *TasksController {
+func NewTasksController(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, service tasks_services.ITasksService, taskRepo *tasks_repositories.TaskQueriesRepository, tagsService tags.ITagsService, conn *sql.DB) *TasksController {
 
+	taskCommands := tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn)
 	return &TasksController{
-		taskQueries:      tasks_repositories.NewTaskQueriesRepository(um, conn),
-		taskCommands:     tasks_repositories.NewTaskCommandsRepository(um, projectQueries, conn),
-		sprintService:    service,
-		taskPositionRepo: tasks_repositories.NewTaskPositionRepository(conn),
+		taskQueries:       tasks_repositories.NewTaskQueriesRepository(um, conn),
+		taskCommands:      tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn),
+		sprintService:     service,
+		createTaskService: *tasks_services.NewTaskCommandsService(taskCommands, tagsService),
+		taskPositionRepo:  tasks_repositories.NewTaskPositionRepository(conn),
 	}
 }
 
@@ -54,10 +59,21 @@ func (tc *TasksController) CreateNewTask(c *gin.Context) {
 	}
 
 	projectID := project.GetProjectIDParam(c)
-	newTask, newTaskErr := tc.taskCommands.CreateTask(projectID, taskDTO.SprintId, taskDTO.Title, taskDTO.AssigneeId, taskDTO.Points, taskDTO.Description)
 
-	if newTaskErr != nil {
-		c.IndentedJSON(http.StatusUnprocessableEntity, newTaskErr.Error())
+	createTaskInput := tasks_services.CreateTaskInput{
+		ProjectID:   projectID,
+		SprintID:    taskDTO.SprintId,
+		Title:       taskDTO.Title,
+		Description: taskDTO.Description,
+		AssigneeID:  taskDTO.AssigneeId,
+	}
+
+	// todo: improve error handling and return API Error
+	newTask, newTaskErr := tc.createTaskService.CreateTask(createTaskInput)
+
+	if newTaskErr.HasError {
+		apiError := shared_errors.BuildAPIErrorFromDomainError(newTaskErr)
+		c.IndentedJSON(http.StatusUnprocessableEntity, apiError)
 		return
 	}
 
@@ -73,10 +89,11 @@ func (tc *TasksController) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	err := tc.taskCommands.UpdateTask(taskID, updateTaskDTO)
+	updateTaskError := tc.createTaskService.UpdateTaskAndTags(taskID, updateTaskDTO)
 
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+	if updateTaskError.HasError {
+		apiError := shared_errors.BuildAPIErrorFromDomainError(updateTaskError)
+		c.IndentedJSON(http.StatusUnprocessableEntity, apiError)
 		return
 	}
 
