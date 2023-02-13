@@ -7,6 +7,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { TaskCommandsAPI } from '../../../../core/apis/task-commands.api';
 import { TaskPositionController } from '../../../../core/controllers/task-position.controller';
 import {
@@ -36,6 +37,7 @@ export class TaskListComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  fc = new FormControl('');
   trackById = (_index: number, t: Task) => t.Id;
 
   updateTaskAssignee(task: Task, newAssignee: ProjectMember) {

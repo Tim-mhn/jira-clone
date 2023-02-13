@@ -5,9 +5,6 @@
 >
   <jira-task-list-item
     *ngFor="let task of tasks; trackBy: trackById"
-    cdkDrag
-    [cdkDragPreviewClass]="['bg-blue-50', 'shadow-md']"
-    [cdkDragData]="task"
     (click)="taskClicked.emit(task)"
     [project]="project"
     [task]="task"

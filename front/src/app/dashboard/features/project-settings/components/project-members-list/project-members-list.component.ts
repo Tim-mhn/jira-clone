@@ -9,6 +9,8 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ICONS } from '@tim-mhn/common/icons';
+import { TagTemplateBuilder } from '@tim-mhn/ng-forms/autocomplete';
+
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import {
   TableColumns,
@@ -44,6 +46,18 @@ export class ProjectMembersListComponent implements OnInit {
   }
 
   tableData$ = new Subject<TableData<ProjectMemberTableItem>>();
+
+  tagCtrl = new FormControl('');
+
+  /**
+   *
+   * @param tagText check out https://stackoverflow.com/questions/17890568/contenteditable-div-backspace-and-deleting-text-node-problems for more information how how to prevent editing of fancy tags
+   * @returns
+   */
+  tagTemplate: TagTemplateBuilder = (tagText: string) =>
+    `<span contenteditable="false" class="bg-blue-200 text-blue-600 font-medium  border border-gray-100 rounded-sm shadow-lg px-1 py-0.5 text-xs">#${tagText}</span>`;
+
+  ALL_TAGS = ['frontend', 'backend', 'design', 'data'];
 
   searchMembersByNameCtrl = new FormControl('');
   @ViewChild('memberIcon', { static: true })

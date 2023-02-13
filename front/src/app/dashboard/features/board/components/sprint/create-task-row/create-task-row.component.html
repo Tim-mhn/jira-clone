@@ -8,12 +8,22 @@
     Create task
   </div>
 
-  <tim-input
+  <tim-html-input
     (click)="stopPropagation($event)"
+    [noLineBreak]="true"
+    placeholder="What needs to be done ?"
+    [timHashtagAutocomplete]="hashtagsAutocomplete"
     class="flex flex-grow"
     *ngIf="createTaskMode"
     [formControl]="taskTitleFc"
-    placeholder="What needs to be done ?"
-    [flexWidth]="true"
-  ></tim-input>
+  ></tim-html-input>
+
+  <tim-hashtag-autocomplete #hashtagsAutocomplete [tagTemplate]="tagTemplate">
+    <tim-hashtag-option
+      *ngFor="let tag of ['frontend', 'backend', 'UI', 'urgent']"
+      [value]="tag"
+    >
+      {{ tag }}
+    </tim-hashtag-option>
+  </tim-hashtag-autocomplete>
 </div>

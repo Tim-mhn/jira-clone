@@ -1,10 +1,15 @@
 <div
+  cdkDrag
+  [cdkDragPreviewClass]="['bg-blue-50', 'shadow-md']"
+  [cdkDragData]="task"
+  [cdkDragDisabled]="editTitleModeActive"
   class="flex flex-row items-center gap-2 cursor-pointer hover:bg-gray-100 p-1 pl-4 pr-2 group"
 >
   <jira-task-type-selector
     [task]="task"
     [allTypes]="project?.TaskTypes"
   ></jira-task-type-selector>
+
   <div class="text-gray-600 font-light text-sm">{{ task.Key }}</div>
 
   <ng-container *ngTemplateOutlet="editableTitle"></ng-container>
@@ -33,10 +38,10 @@
 <ng-template #editableTitle>
   <div class="flex flex-grow overflow-x-auto group items-center">
     <div
-      *ngIf="!editTitleModeActive; else titleInput"
+      *ngIf="!editTitleModeActive; else titleInputTempl"
       class="text-xs flex flex-grow gap-2 items-center"
     >
-      {{ task.Title }}
+      <span [innerHTML]="task.Title | sanitizeHtml"></span>
 
       <tim-spinner *ngIf="requestState.isPending" size="xs"></tim-spinner>
 
@@ -53,15 +58,31 @@
       </button>
     </div>
 
-    <ng-template #titleInput>
-      <div class="flex gap-2">
-        <tim-input
+    <ng-template #titleInputTempl>
+      <div class="flex flex-grow gap-2">
+        <tim-html-input
+          #titleInput
+          class="flex flex-grow children:flex children flex-grow overflow-hidden"
           [formControl]="titleFc"
-          [blurOnEnter]="true"
-          (blur)="updateTitle()"
+          [noLineBreak]="true"
           (click)="stopPropagation($event)"
+          (blur)="updateTitleIfNoOptionIsClicked()"
           (escaped)="cancelEditMode()"
-        ></tim-input>
+          [timHashtagAutocomplete]="hashtagsAutocomplete"
+          (optionClicked)="markOptionsHaveBeenClicked()"
+        ></tim-html-input>
+
+        <tim-hashtag-autocomplete
+          #hashtagsAutocomplete
+          [tagTemplate]="tagTemplate"
+        >
+          <tim-hashtag-option
+            *ngFor="let tag of ['frontend', 'backend', 'UI', 'urgent']"
+            [value]="tag"
+          >
+            {{ tag }}
+          </tim-hashtag-option>
+        </tim-hashtag-autocomplete>
 
         <div class="flex gap-0.5">
           <button

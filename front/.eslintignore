@@ -1,6 +1,5 @@
 *.conf.js
 *.json
-*.spec.ts
 *.scss
 *.md
 *.scss

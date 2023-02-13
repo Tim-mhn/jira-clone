@@ -6,10 +6,15 @@ import {
   Input,
   OnChanges,
   OnInit,
+  ViewChild,
 } from '@angular/core';
 import { TypedChanges } from '@tim-mhn/common/extra-types';
 import { RequestState } from '@tim-mhn/common/http';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
+import {
+  TagTemplateBuilder,
+  TimHtmlInput,
+} from '@tim-mhn/ng-forms/autocomplete';
 import { finalize } from 'rxjs';
 import { UpdateTaskController } from '../../../../../core/controllers/update-task.controller';
 import {
@@ -36,10 +41,15 @@ export class TaskListItemComponent implements OnInit, OnChanges {
     private cdr: ChangeDetectorRef
   ) {}
 
+  @ViewChild('titleInput') titleInput: TimHtmlInput;
+
   titleFc = this.tfb.control('');
   pointsFc = this.tfb.control<number>(null);
   editTitleModeActive = false;
   requestState = new RequestState();
+
+  tagTemplate: TagTemplateBuilder = (tagText: string) =>
+    `<span contentEditable="false" class="bg-blue-200 text-blue-600 font-medium  border border-gray-100 rounded-sm px-1 py-0.5 text-xs">#${tagText}</span>`;
 
   ngOnInit(): void {}
 
@@ -48,6 +58,18 @@ export class TaskListItemComponent implements OnInit, OnChanges {
       this.titleFc.setValue(this.task.Title, { emitEvent: false });
       this.pointsFc.setValue(this.task.Points, { emitEvent: false });
     }
+  }
+
+  markOptionsHaveBeenClicked() {
+    this.optionHasBeenClicked = true;
+  }
+  optionHasBeenClicked = false;
+  updateTitleIfNoOptionIsClicked() {
+    const delay = 200;
+    setTimeout(() => {
+      if (this.optionHasBeenClicked) this.optionHasBeenClicked = false;
+      else this.updateTitle();
+    }, delay);
   }
 
   updateTitle(event?: Event) {
@@ -74,8 +96,9 @@ export class TaskListItemComponent implements OnInit, OnChanges {
 
   activateEditMode(event: Event) {
     this.editTitleModeActive = true;
-    event.stopPropagation();
+    this.stopPropagation(event);
     event.preventDefault();
+    setTimeout(() => this.titleInput.focusInput());
   }
 
   stopPropagation = (event: Event) => event.stopPropagation();
@@ -84,6 +107,8 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   cancelEditModeOnDocumentClick() {
     this.cancelEditMode();
   }
+
+  log = console.log;
 
   cancelEditMode(
     opts: { resetControlValue: boolean } = { resetControlValue: true }

@@ -1,6 +1,7 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { ICONS } from '@tim-mhn/common/icons';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
+import { TagTemplateBuilder } from '@tim-mhn/ng-forms/autocomplete';
 import { CreateTaskController } from '../../../../../core/controllers/create-task.controller';
 import { Sprint } from '../../../../../core/models/sprint';
 
@@ -31,6 +32,9 @@ export class CreateTaskRowComponent implements OnInit {
 
   stopPropagation = (e: Event) => e?.stopPropagation();
 
+  tagTemplate: TagTemplateBuilder = (tagText: string) =>
+    `<span contentEditable="false" class="bg-blue-200 text-blue-600 font-medium  border border-gray-100 rounded-sm px-1 py-0.5 text-xs">#${tagText}</span>`;
+
   @HostListener('keydown.enter', ['$event'])
   createTaskOnEnter(e: Event) {
     e.stopPropagation();
@@ -46,6 +50,7 @@ export class CreateTaskRowComponent implements OnInit {
         title: this.taskTitleFc.value,
       })
       .subscribe({
+        complete: () => this.taskTitleFc.reset(),
         error: () => this.activateCreateTaskMode(),
       });
   }
@@ -56,5 +61,7 @@ export class CreateTaskRowComponent implements OnInit {
   }
 
   @HostListener('keydown.escape')
-  onEscape() {}
+  onEscape() {
+    this.deactivateCreateTaskMode();
+  }
 }
