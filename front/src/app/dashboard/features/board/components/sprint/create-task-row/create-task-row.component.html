@@ -21,11 +21,9 @@
   <tim-hashtag-autocomplete
     #hashtagsAutocomplete
     [tagTemplate]="tagTemplate$ | async"
+    (newTag)="createNewTag($event)"
   >
-    <tim-hashtag-option
-      *ngFor="let tag of ['frontend', 'backend', 'UI', 'urgent']"
-      [value]="tag"
-    >
+    <tim-hashtag-option *ngFor="let tag of allTags$ | async" [value]="tag">
       {{ tag }}
     </tim-hashtag-option>
   </tim-hashtag-autocomplete>

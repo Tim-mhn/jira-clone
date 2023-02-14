@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { buildSingleProjectEndpoint } from '../../core/apis/endpoints';
-import { TaskTag } from './task-tag';
+import { TaskTag, TaskTags } from './task-tag';
 
 @Injectable()
 export class TaskTagsAPI {
@@ -19,9 +19,9 @@ export class TaskTagsAPI {
     return this.http.post<void>(endpoint, body);
   }
 
-  getProjectTags(ids: { projectId: string }): Observable<TaskTag[]> {
+  getProjectTags(ids: { projectId: string }): Observable<TaskTags> {
     const endpoint = this._buildTagsEndpoint(ids);
-    return this.http.get<TaskTag[]>(endpoint);
+    return this.http.get<TaskTags>(endpoint);
   }
 
   private _buildTagsEndpoint(ids: { projectId: string }) {

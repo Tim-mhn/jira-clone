@@ -5,6 +5,7 @@ import { TagTemplateBuilder } from '@tim-mhn/ng-forms/autocomplete';
 import { Observable } from 'rxjs';
 import { CreateTaskController } from '../../../../../core/controllers/create-task.controller';
 import { Sprint } from '../../../../../core/models/sprint';
+import { TaskTag } from '../../../../tags';
 import { TaskTagsController } from '../../../../tags/task-tags.controller';
 
 @Component({
@@ -13,7 +14,9 @@ import { TaskTagsController } from '../../../../tags/task-tags.controller';
 })
 export class CreateTaskRowComponent implements OnInit {
   readonly PLUS_ICON = ICONS.PLUS_BLUE;
+
   @Input() sprint: Sprint;
+
   constructor(
     private tfb: TypedFormBuilder,
     private controller: CreateTaskController,
@@ -27,6 +30,12 @@ export class CreateTaskRowComponent implements OnInit {
   private _setTagTemplate() {
     this.tagTemplate$ = this.tagsController.getTagTemplateFn();
   }
+
+  createNewTag(newTag: TaskTag) {
+    this.tagsController.createTagAndUpdateList(newTag).subscribe();
+  }
+
+  allTags$ = this.tagsController.getProjectTags();
 
   createTaskMode = false;
 

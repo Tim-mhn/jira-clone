@@ -59,6 +59,10 @@ export class TaskListItemComponent implements OnInit, OnChanges {
     }
   }
 
+  createNewTag(newTag: string) {
+    this.tagsController.createTagAndUpdateList(newTag).subscribe();
+  }
+
   markOptionsHaveBeenClicked() {
     this.optionHasBeenClicked = true;
   }
