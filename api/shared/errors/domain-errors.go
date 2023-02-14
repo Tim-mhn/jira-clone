@@ -61,6 +61,6 @@ func BuildError[T DomainErrorCode](code T, source error) DomainError[T] {
 	return DomainError[T]{
 		Source:   source,
 		Code:     code,
-		HasError: source != nil,
+		HasError: true,
 	}
 }
