@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
+	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 	"github.com/tim-mhn/figma-clone/utils/primitives"
 )
@@ -20,6 +21,11 @@ func (service *MockTagService) ExtractAndUpdateTagsOfTask(taskID string, htmlTit
 	args := service.Mock.Called()
 	err := args.Get(0).(error)
 	return err
+
+}
+
+func (service *MockTagService) GetTaskTagTemplate() tags.TaskTagTemplate {
+	return ""
 
 }
 

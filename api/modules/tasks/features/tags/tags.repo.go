@@ -28,7 +28,7 @@ func (repo TagsRepository) UpdateTaskTags(taskID string, tags []TaskTag) error {
 	psql := database.GetPsqlQueryBuilder()
 	query := psql.
 		Update("task_tags").
-		Set("tags", pq.StringArray([]string{"test", "test2"})).
+		Set("tags", pq.StringArray(tags)).
 		Where(sq.Eq{
 			"task_id": taskID,
 		})
@@ -68,7 +68,7 @@ func (repo TagsRepository) _insertTaskTagsForFirstTime(taskID string, tags []Tas
 	insertQuery := psql.
 		Insert("task_tags").
 		Columns("task_id", "tags").
-		Values(taskID, pq.StringArray([]string{"test", "test2"}))
+		Values(taskID, pq.StringArray(tags))
 
 	_, err := insertQuery.RunWith(repo.conn).Exec()
 

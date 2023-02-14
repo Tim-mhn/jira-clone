@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/tim-mhn/figma-clone/utils/arrays"
@@ -8,7 +9,8 @@ import (
 
 func extractTagsFromHTMLTitle(htmlTitle string) []string {
 
-	regex := regexp.MustCompile(`<tag>(.*?)</tag>`)
+	fmt.Println(htmlTitle)
+	regex := buildFindTagsRegex()
 
 	matches := regex.FindAllStringSubmatch(htmlTitle, -1)
 	for i, name := range regex.SubexpNames() {
@@ -21,5 +23,12 @@ func extractTagsFromHTMLTitle(htmlTitle string) []string {
 		return match[1]
 	})
 
+	fmt.Println(tags)
+
 	return tags
+}
+
+func buildFindTagsRegex() *regexp.Regexp {
+	regexString := fmt.Sprintf(`%s#?(.*?)%s`, TASK_TAG_TEMPLATE_OPENING_TAG, TASK_TAG_TEMPLATE_CLOSING_TAG)
+	return regexp.MustCompile(regexString)
 }

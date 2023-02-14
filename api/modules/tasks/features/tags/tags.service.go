@@ -10,6 +10,7 @@ import "database/sql"
 */
 type ITagsService interface {
 	ExtractAndUpdateTagsOfTask(taskID string, htmlTitle string) error
+	GetTaskTagTemplate() TaskTagTemplate
 }
 type TagsService struct {
 	repo TagsRepository
@@ -28,5 +29,10 @@ func (service TagsService) ExtractAndUpdateTagsOfTask(taskID string, htmlTitle s
 	 */
 	tags := extractTagsFromHTMLTitle(htmlTitle)
 	return service.repo.UpdateTaskTags(taskID, tags)
+
+}
+
+func (service TagsService) GetTaskTagTemplate() TaskTagTemplate {
+	return TASK_TAG_TEMPLATE()
 
 }
