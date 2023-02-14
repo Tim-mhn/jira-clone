@@ -11,10 +11,7 @@ import {
 import { TypedChanges } from '@tim-mhn/common/extra-types';
 import { RequestState } from '@tim-mhn/common/http';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
-import {
-  TagTemplateBuilder,
-  TimHtmlInput,
-} from '@tim-mhn/ng-forms/autocomplete';
+import { TimHtmlInput } from '@tim-mhn/ng-forms/autocomplete';
 import { finalize } from 'rxjs';
 import { UpdateTaskController } from '../../../../../core/controllers/update-task.controller';
 import {
@@ -23,6 +20,7 @@ import {
   SprintInfo,
   Task,
 } from '../../../../../core/models';
+import { TaskTagsController } from '../../../../tags/task-tags.controller';
 
 @Component({
   selector: 'jira-task-list-item',
@@ -38,7 +36,8 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   constructor(
     private tfb: TypedFormBuilder,
     private controller: UpdateTaskController,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private tagsController: TaskTagsController
   ) {}
 
   @ViewChild('titleInput') titleInput: TimHtmlInput;
@@ -48,9 +47,7 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   editTitleModeActive = false;
   requestState = new RequestState();
 
-  tagTemplate: TagTemplateBuilder = (tagText: string) =>
-    `<span contentEditable="false" class="bg-blue-200 text-blue-600 font-medium  border border-gray-100 rounded-sm px-1 py-0.5 text-xs">#${tagText}</span>`;
-
+  tagTemplate$ = this.tagsController.getTagTemplateFn();
   ngOnInit(): void {}
 
   ngOnChanges(ch: TypedChanges<TaskListItemComponent>) {

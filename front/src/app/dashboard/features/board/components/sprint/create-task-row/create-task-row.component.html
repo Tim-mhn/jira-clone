@@ -18,7 +18,10 @@
     [formControl]="taskTitleFc"
   ></tim-html-input>
 
-  <tim-hashtag-autocomplete #hashtagsAutocomplete [tagTemplate]="tagTemplate">
+  <tim-hashtag-autocomplete
+    #hashtagsAutocomplete
+    [tagTemplate]="tagTemplate$ | async"
+  >
     <tim-hashtag-option
       *ngFor="let tag of ['frontend', 'backend', 'UI', 'urgent']"
       [value]="tag"

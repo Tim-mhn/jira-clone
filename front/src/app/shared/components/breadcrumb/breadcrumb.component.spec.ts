@@ -55,7 +55,7 @@ describe('BreadcrumbComponent', () => {
         },
       ];
 
-      const breadcrumbs = breadcrumbsWithConcatenatedRoutes(parts);
+      breadcrumbs = breadcrumbsWithConcatenatedRoutes(parts);
       expect(breadcrumbs[3].route).toEqual([
         '/',
         'projects',
@@ -65,6 +65,33 @@ describe('BreadcrumbComponent', () => {
         'tasks',
         'task-id',
       ]);
+    });
+
+    it('should ignore parts with null routes', () => {
+      const parts: BreadcrumbParts = [
+        {
+          label: 'Project',
+          route: 'projects',
+        },
+        {
+          label: '',
+          route: null,
+        },
+        {
+          label: 'Board',
+          route: 'board',
+        },
+        {
+          label: 'My Task',
+          route: ['browse', 'tasks', 'task-id'],
+        },
+      ];
+
+      const buildBreadcrumbsFn = () => breadcrumbsWithConcatenatedRoutes(parts);
+      expect(buildBreadcrumbsFn).not.toThrow();
+
+      breadcrumbs = buildBreadcrumbsFn();
+      expect(breadcrumbs.length).toEqual(3);
     });
   });
 });

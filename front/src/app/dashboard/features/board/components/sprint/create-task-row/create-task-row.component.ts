@@ -2,8 +2,10 @@ import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { ICONS } from '@tim-mhn/common/icons';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
 import { TagTemplateBuilder } from '@tim-mhn/ng-forms/autocomplete';
+import { Observable } from 'rxjs';
 import { CreateTaskController } from '../../../../../core/controllers/create-task.controller';
 import { Sprint } from '../../../../../core/models/sprint';
+import { TaskTagsController } from '../../../../tags/task-tags.controller';
 
 @Component({
   selector: 'jira-create-task-row',
@@ -14,10 +16,17 @@ export class CreateTaskRowComponent implements OnInit {
   @Input() sprint: Sprint;
   constructor(
     private tfb: TypedFormBuilder,
-    private controller: CreateTaskController
+    private controller: CreateTaskController,
+    private tagsController: TaskTagsController
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this._setTagTemplate();
+  }
+
+  private _setTagTemplate() {
+    this.tagTemplate$ = this.tagsController.getTagTemplateFn();
+  }
 
   createTaskMode = false;
 
@@ -32,8 +41,7 @@ export class CreateTaskRowComponent implements OnInit {
 
   stopPropagation = (e: Event) => e?.stopPropagation();
 
-  tagTemplate: TagTemplateBuilder = (tagText: string) =>
-    `<span contentEditable="false" class="bg-blue-200 text-blue-600 font-medium  border border-gray-100 rounded-sm px-1 py-0.5 text-xs">#${tagText}</span>`;
+  tagTemplate$: Observable<TagTemplateBuilder>;
 
   @HostListener('keydown.enter', ['$event'])
   createTaskOnEnter(e: Event) {

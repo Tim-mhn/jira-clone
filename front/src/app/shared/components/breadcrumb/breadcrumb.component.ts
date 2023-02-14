@@ -26,21 +26,25 @@ export function breadcrumbsWithConcatenatedRoutes(
   bs: BreadcrumbParts
 ): Breadcrumbs {
   const breadcrumbs: Breadcrumbs = [];
-  bs?.forEach((b, index) => {
-    const { label } = b;
-    const fullRoutes = bs
-      .filter((_, idx) => idx <= index)
-      .reduce(
-        (tmpRoute, lastPart) => {
-          if (typeof lastPart.route === 'string') {
-            return [...tmpRoute, lastPart.route];
-          }
-          return [...tmpRoute, ...lastPart.route];
-        },
-        ['/']
-      );
-    breadcrumbs.push({ label, route: fullRoutes });
-  });
+
+  const partsWithoutNullRoutes = bs?.filter((b) => !!b.route);
+  partsWithoutNullRoutes
+    ?.filter((b) => !!b.route)
+    .forEach((b, index) => {
+      const { label } = b;
+      const fullRoutes = partsWithoutNullRoutes
+        .filter((_, idx) => idx <= index)
+        .reduce(
+          (tmpRoute, lastPart) => {
+            if (typeof lastPart.route === 'string') {
+              return [...tmpRoute, lastPart.route];
+            }
+            return [...tmpRoute, ...lastPart.route];
+          },
+          ['/']
+        );
+      breadcrumbs.push({ label, route: fullRoutes });
+    });
 
   return breadcrumbs;
 }
