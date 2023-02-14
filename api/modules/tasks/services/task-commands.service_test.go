@@ -29,6 +29,14 @@ func (service *MockTagService) GetTaskTagTemplate() tags.TaskTagTemplate {
 
 }
 
+func (service *MockTagService) CreateTagForProject(tag tags.TaskTag, projectID string) error {
+	return nil
+}
+
+func (service *MockTagService) GetProjectTags(projectID string) ([]tags.TaskTag, error) {
+	return []tags.TaskTag{}, nil
+}
+
 type MockTaskCommandsRepo struct {
 	mock.Mock
 }

@@ -11,6 +11,10 @@ func RegisterEndpoints(singleProjectRoutes project.SingleProjectRoutes, conn *sq
 	service := NewTagsService(conn)
 	controller := NewTagsController(service)
 
-	singleProjectRoutes.GET("/tags/template", controller.GetTaskTagTemplate)
+	tagsRoutes := singleProjectRoutes.Group("/tags")
+
+	tagsRoutes.GET("", controller.GetTagsOfProject)
+	tagsRoutes.POST("", controller.CreateTagForProject)
+	tagsRoutes.GET("/template", controller.GetTaskTagTemplate)
 
 }

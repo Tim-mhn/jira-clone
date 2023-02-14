@@ -74,3 +74,45 @@ func (repo TagsRepository) _insertTaskTagsForFirstTime(taskID string, tags []Tas
 
 	return err
 }
+
+func (repo TagsRepository) getProjectTags(projectID string) ([]TaskTag, error) {
+	psql := database.GetPsqlQueryBuilder()
+
+	query := psql.Select("tag").From("project_tags").Where(sq.Eq{
+		"project_id": projectID,
+	})
+
+	rows, err := query.RunWith(repo.conn).Query()
+
+	if err != nil {
+		return []TaskTag{}, err
+	}
+
+	defer rows.Close()
+
+	var taskTags []TaskTag = []TaskTag{}
+
+	for rows.Next() {
+		var tag TaskTag
+		if err := rows.Scan(&tag); err != nil {
+			return []TaskTag{}, err
+		}
+
+		taskTags = append(taskTags, tag)
+	}
+
+	return taskTags, nil
+
+}
+
+func (repo TagsRepository) createTagForProject(tag TaskTag, projectID string) error {
+	psql := database.GetPsqlQueryBuilder()
+
+	insertQuery := psql.Insert("project_tags").
+		Columns("project_id", "tag").
+		Values(projectID, tag)
+
+	_, err := insertQuery.RunWith(repo.conn).Exec()
+
+	return err
+}

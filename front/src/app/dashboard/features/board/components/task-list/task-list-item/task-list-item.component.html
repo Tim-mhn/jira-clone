@@ -76,10 +76,7 @@
           #hashtagsAutocomplete
           [tagTemplate]="tagTemplate$ | async"
         >
-          <tim-hashtag-option
-            *ngFor="let tag of ['frontend', 'backend', 'UI', 'urgent']"
-            [value]="tag"
-          >
+          <tim-hashtag-option *ngFor="let tag of tags$ | async" [value]="tag">
             {{ tag }}
           </tim-hashtag-option>
         </tim-hashtag-autocomplete>

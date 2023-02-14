@@ -48,6 +48,8 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   requestState = new RequestState();
 
   tagTemplate$ = this.tagsController.getTagTemplateFn();
+  tags$ = this.tagsController.getProjectTags();
+
   ngOnInit(): void {}
 
   ngOnChanges(ch: TypedChanges<TaskListItemComponent>) {
