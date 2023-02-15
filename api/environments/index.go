@@ -1,19 +1,31 @@
 package environments
 
 import (
+	"fmt"
+
 	"github.com/spf13/viper"
 )
 
-func LoadVariables() error {
-	viper.SetConfigFile(".env")
+func LoadVariables() {
 
 	viper.AutomaticEnv()
 
-	if err := viper.ReadInConfig(); err != nil {
-		return err
+	if isDevelopment() {
+		loadVariablesFromConfigFile()
 	}
 
-	return nil
+}
+
+func loadVariablesFromConfigFile() {
+	viper.SetConfigFile(".env")
+	if err := viper.ReadInConfig(); err != nil {
+		panic(fmt.Errorf("fatal error config file: %w", err))
+	}
+}
+
+func isDevelopment() bool {
+	env := GetEnv("environment")
+	return env != "production"
 }
 
 func GetEnv(key string) string {
