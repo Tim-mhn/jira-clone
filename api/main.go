@@ -11,7 +11,11 @@ import (
 )
 
 func main() {
-	environments.LoadVariables()
+	err := environments.LoadVariables()
+
+	if err != nil {
+		fmt.Printf("error loading environment variables: %s", err.Error())
+	}
 	db := database.ConnectToDatabase()
 	defer db.Close()
 
