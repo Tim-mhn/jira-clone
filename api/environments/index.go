@@ -2,6 +2,7 @@ package environments
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/viper"
 )
@@ -24,8 +25,9 @@ func loadVariablesFromConfigFile() {
 }
 
 func isDevelopment() bool {
-	env := GetEnv("environment")
-	return env != "production"
+	env := os.Getenv("environment")
+	fmt.Printf("environment = %s", env)
+	return env == "develop"
 }
 
 func GetEnv(key string) string {
