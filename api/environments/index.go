@@ -31,5 +31,10 @@ func isDevelopment() bool {
 }
 
 func GetEnv(key string) string {
-	return viper.GetString(key)
+	if isDevelopment() {
+		return viper.GetString(key)
+	}
+
+	return os.Getenv(key)
+
 }
