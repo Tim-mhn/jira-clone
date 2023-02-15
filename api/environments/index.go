@@ -5,13 +5,9 @@ import (
 )
 
 func LoadVariables() error {
-	viper.SetConfigName("config")
-
-	viper.AddConfigPath(".")
+	viper.SetConfigFile(".env")
 
 	viper.AutomaticEnv()
-
-	viper.SetConfigType("yml")
 
 	if err := viper.ReadInConfig(); err != nil {
 		return err
