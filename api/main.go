@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"github.com/tim-mhn/figma-clone/database"
@@ -15,5 +17,8 @@ func main() {
 
 	router := gin.Default()
 	endpoints.RegisterAllEndpoints(router, db)
-	router.Run("localhost:8080")
+
+	address := environments.GetEnv("address")
+	fmt.Printf("Running add on %s", address)
+	router.Run(address)
 }

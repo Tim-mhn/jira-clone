@@ -1,0 +1,9 @@
+{
+  "database.driver": "",
+  "database.url": "",
+  "mailjet.api_key": "",
+  "mailjet.secret_key": "",
+  "mailjet.sender.email": "",
+  "mailjet.sender.name": "",
+  "address": "localhost:xxxx"
+}
