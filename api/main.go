@@ -19,7 +19,9 @@ func main() {
 	router := gin.Default()
 	endpoints.RegisterAllEndpoints(router, db)
 
-	host := environments.GetEnv("host")
-	fmt.Printf("Running add on %s", host)
-	router.Run(host)
+	host := environments.GetEnv("HOST")
+	port := environments.GetEnv("PORT")
+	ADDRESS := fmt.Sprintf("%s:%s", host, port)
+	fmt.Printf("\n\nRunning app on %s\n\n", ADDRESS)
+	router.Run(ADDRESS)
 }
