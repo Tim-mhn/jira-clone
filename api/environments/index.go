@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/fatih/structs"
 	"github.com/spf13/viper"
 )
 
@@ -12,8 +13,8 @@ type MailjetSenderConfig struct {
 	Name  string
 }
 type MailjetConfig struct {
-	ApiKey    string `mapstructure:"api_key"`
-	SecretKey string `mapstructure:"secret_key"`
+	ApiKey    string `mapstructure:"api_key" `
+	SecretKey string `mapstructure:"secret_key" `
 	Sender    MailjetSenderConfig
 }
 
@@ -36,19 +37,27 @@ func LoadVariables() {
 
 	err := loadVariablesFromConfigFile()
 
-	if err == EnvironmentConfigFileNotFound {
+	if err == nil {
 		loadFromEnvironment()
 	}
+
+	checkConfigAndPanicIfInvalid(*_config)
 
 }
 
 var _config *Config
 
 func loadFromEnvironment() {
+
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.BindEnv("database.driver")
 	viper.BindEnv("database.url")
 	viper.BindEnv("mailjet.sender.email")
+	viper.BindEnv("mailjet.send.name")
+	viper.BindEnv("mailjet.api_key")
+	viper.BindEnv("mailjet.secret_key")
+	viper.BindEnv("server.host")
+	viper.BindEnv("server.host")
 
 	err := viper.Unmarshal(&_config)
 
@@ -71,6 +80,14 @@ func loadVariablesFromConfigFile() EnvironmentsError {
 	}
 
 	return nil
+}
+
+func checkConfigAndPanicIfInvalid(config Config) {
+	configIsValid := !structs.HasZero(config)
+
+	if !configIsValid {
+		panic(fmt.Errorf("environments configuration not valid. Some fields are missing"))
+	}
 }
 
 func GetConfig() Config {
