@@ -2,6 +2,7 @@ package environments
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/fatih/structs"
@@ -43,12 +44,15 @@ func LoadVariables() {
 	}
 
 	checkConfigAndPanicIfInvalid(*_config)
+	log.Print("[Environment] Successfully loaded environment variables")
 
 }
 
 var _config *Config
 
 func loadFromEnvironment() {
+
+	log.Print("[Environment] Loading environment variables from os environment")
 
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.BindEnv("database.driver")
@@ -69,6 +73,8 @@ func loadFromEnvironment() {
 }
 
 func loadVariablesFromConfigFile() EnvironmentsError {
+	log.Print("[Environment] Loading environment variables from configuration file")
+
 	viper.SetConfigFile("config.yml")
 	if err := viper.ReadInConfig(); err != nil {
 		return EnvironmentConfigFileNotFound
