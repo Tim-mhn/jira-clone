@@ -24,15 +24,11 @@ type DatabaseConfig struct {
 	URL    string
 }
 
-type ServerConfig struct {
-	Host string
-	Port string
-}
 type Config struct {
 	Database DatabaseConfig
 	Mailjet  MailjetConfig
-	Server   ServerConfig
-	Hello    string
+	Host     string
+	Port     string
 }
 
 func LoadVariables() {
@@ -61,8 +57,8 @@ func loadFromEnvironment() {
 	viper.BindEnv("mailjet.send.name")
 	viper.BindEnv("mailjet.api_key")
 	viper.BindEnv("mailjet.secret_key")
-	viper.BindEnv("server.host")
-	viper.BindEnv("server.host")
+	viper.BindEnv("host")
+	viper.BindEnv("port")
 
 	err := viper.Unmarshal(&_config)
 
@@ -83,7 +79,7 @@ func loadVariablesFromConfigFile() EnvironmentsError {
 	err := viper.Unmarshal(&_config)
 
 	if err != nil {
-		panic(fmt.Errorf("error when unmarshalling variables into config : %w", err))
+		panic(fmt.Errorf("[Environment] error when unmarshalling variables into config : %w", err))
 	}
 
 	return nil
@@ -93,7 +89,7 @@ func checkConfigAndPanicIfInvalid(config Config) {
 	configIsValid := !structs.HasZero(config)
 
 	if !configIsValid {
-		panic(fmt.Errorf("environments configuration not valid. Some fields are missing. Current config %s", config))
+		panic(fmt.Errorf("[Environment] environments configuration not valid. Some fields are missing. Current config %s", config))
 	}
 }
 

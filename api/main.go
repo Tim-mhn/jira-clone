@@ -24,8 +24,8 @@ func main() {
 	router := gin.Default()
 	endpoints.RegisterAllEndpoints(router, db)
 
-	host := environments.GetConfig().Server.Host
-	port := environments.GetConfig().Server.Port
+	host := environments.GetConfig().Host
+	port := environments.GetConfig().Port
 	ADDRESS := fmt.Sprintf("%s:%s", host, port)
 	fmt.Printf("\n\nRunning app on %s\n\n", ADDRESS)
 	router.Run(ADDRESS)
