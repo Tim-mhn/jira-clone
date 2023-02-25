@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["dtos", "middlewares"],
+  "cSpell.words": ["dtos", "Mailjet", "mapstructure", "middlewares"],
   "editor.wordWrap": "wordWrapColumn",
   "editor.wordWrapColumn": 140
 }

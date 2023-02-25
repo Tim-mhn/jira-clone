@@ -15,8 +15,8 @@ func SendEmail(email Email) error {
 }
 
 func initClient() *mailjet.Client {
-	API_KEY := environments.GetEnv("mailjet.api_key")
-	SECRET_KEY := environments.GetEnv("mailjet.secret_key")
+	API_KEY := environments.GetConfig().Mailjet.ApiKey
+	SECRET_KEY := environments.GetConfig().Mailjet.SecretKey
 	mailjetClient := mailjet.NewMailjetClient(API_KEY, SECRET_KEY)
 	return mailjetClient
 
@@ -26,8 +26,8 @@ func buildEmailInformation(email Email) []mailjet.InfoMessagesV31 {
 	messagesInfo := []mailjet.InfoMessagesV31{
 		{
 			From: &mailjet.RecipientV31{
-				Email: environments.GetEnv("mailjet.sender.email"),
-				Name:  environments.GetEnv("mailjet.sender.name"),
+				Email: environments.GetConfig().Mailjet.Sender.Email,
+				Name:  environments.GetConfig().Mailjet.Sender.Name,
 			},
 			To: &mailjet.RecipientsV31{
 				mailjet.RecipientV31{

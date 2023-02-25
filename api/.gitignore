@@ -1,4 +1,5 @@
 config.json
+config.yml
 bin
 tmp/
 .idea/

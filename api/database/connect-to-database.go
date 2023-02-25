@@ -8,8 +8,8 @@ import (
 )
 
 func ConnectToDatabase() *sql.DB {
-	dbDriver := environments.GetEnv("database.driver")
-	dbUrl := environments.GetEnv("database.url")
+	dbDriver := environments.GetConfig().Database.Driver
+	dbUrl := environments.GetConfig().Database.URL
 
 	db, err := sql.Open(dbDriver, dbUrl)
 

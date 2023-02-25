@@ -11,6 +11,11 @@ import (
 )
 
 func main() {
+
+	//todo:
+	// - clean up variables logic (try to use Viper for os variables)
+	// - meta variable with host + address
+	// - add proxy check
 	environments.LoadVariables()
 
 	db := database.ConnectToDatabase()
@@ -19,8 +24,8 @@ func main() {
 	router := gin.Default()
 	endpoints.RegisterAllEndpoints(router, db)
 
-	host := environments.GetEnv("HOST")
-	port := environments.GetEnv("PORT")
+	host := environments.GetConfig().Server.Host
+	port := environments.GetConfig().Server.Port
 	ADDRESS := fmt.Sprintf("%s:%s", host, port)
 	fmt.Printf("\n\nRunning app on %s\n\n", ADDRESS)
 	router.Run(ADDRESS)
