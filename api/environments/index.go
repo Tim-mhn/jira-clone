@@ -90,7 +90,7 @@ func checkConfigAndPanicIfInvalid(config Config) {
 
 	if !configIsValid {
 
-		panic(fmt.Errorf("[Environment] environments configuration not valid. Current config %s\nThe following fields are missing %q", config, invalidFields[]))
+		panic(fmt.Errorf("[Environment] environments configuration not valid. Current config %s\nThe following fields are missing %q", config, invalidFields))
 	}
 }
 
