@@ -37,7 +37,7 @@ func LoadVariables() {
 
 	err := loadVariablesFromConfigFile()
 
-	if err == nil {
+	if err == EnvironmentConfigFileNotFound {
 		loadFromEnvironment()
 	}
 
