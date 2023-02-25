@@ -31,6 +31,7 @@ type Config struct {
 	Database DatabaseConfig
 	Mailjet  MailjetConfig
 	Server   ServerConfig
+	Hello    string
 }
 
 func LoadVariables() {
