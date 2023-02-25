@@ -54,7 +54,7 @@ func loadFromEnvironment() {
 	viper.BindEnv("database.driver")
 	viper.BindEnv("database.url")
 	viper.BindEnv("mailjet.sender.email")
-	viper.BindEnv("mailjet.send.name")
+	viper.BindEnv("mailjet.sender.name")
 	viper.BindEnv("mailjet.api_key")
 	viper.BindEnv("mailjet.secret_key")
 	viper.BindEnv("host")
