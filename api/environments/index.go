@@ -86,7 +86,7 @@ func checkConfigAndPanicIfInvalid(config Config) {
 	configIsValid := !structs.HasZero(config)
 
 	if !configIsValid {
-		panic(fmt.Errorf("environments configuration not valid. Some fields are missing"))
+		panic(fmt.Errorf("environments configuration not valid. Some fields are missing. Current config %s", config))
 	}
 }
 
