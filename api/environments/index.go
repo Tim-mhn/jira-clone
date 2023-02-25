@@ -86,11 +86,62 @@ func loadVariablesFromConfigFile() EnvironmentsError {
 }
 
 func checkConfigAndPanicIfInvalid(config Config) {
-	configIsValid := !structs.HasZero(config)
+	configIsValid, invalidFields := configIsValid(config)
 
 	if !configIsValid {
-		panic(fmt.Errorf("[Environment] environments configuration not valid. Some fields are missing. Current config %s", config))
+
+		panic(fmt.Errorf("[Environment] environments configuration not valid. Current config %s\nThe following fields are missing %q", config, invalidFields[]))
 	}
+}
+
+func configIsValid(config Config) (bool, []string) {
+	var invalidFields []string
+	isValid := !structs.HasZero(config)
+
+	if !isValid {
+
+		host := config.Host
+		if host == "" {
+			invalidFields = append(invalidFields, "Host")
+		}
+
+		if config.Port == "" {
+			invalidFields = append(invalidFields, "Port")
+		}
+
+		mailjetConfig := config.Mailjet
+
+		if structs.HasZero(mailjetConfig) {
+			if mailjetConfig.ApiKey == "" {
+				invalidFields = append(invalidFields, "Mailjet.ApiKey")
+			}
+			if mailjetConfig.SecretKey == "" {
+				invalidFields = append(invalidFields, "Mailjet.SecretKey")
+			}
+			if mailjetConfig.Sender.Email == "" {
+				invalidFields = append(invalidFields, "Mailjet.Sender.Email")
+			}
+			if mailjetConfig.Sender.Name == "" {
+				invalidFields = append(invalidFields, "Mailjet.Sender.Name")
+			}
+
+		}
+
+		if structs.HasZero(config.Database) {
+
+			if config.Database.Driver == "" {
+				invalidFields = append(invalidFields, "Database.Driver")
+			}
+
+			if config.Database.URL == "" {
+				invalidFields = append(invalidFields, "Database.URL")
+			}
+
+		}
+
+	}
+
+	return isValid, invalidFields
 }
 
 func GetConfig() Config {
