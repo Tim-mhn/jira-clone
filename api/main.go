@@ -30,6 +30,7 @@ func main() {
 
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"*"}
+	config.AllowWildcard = true
 
 	router.Use(cors.New(config))
 	endpoints.RegisterAllEndpoints(router, db)
