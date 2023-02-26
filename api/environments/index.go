@@ -94,6 +94,7 @@ func checkConfigAndPanicIfInvalid(config Config) {
 	}
 }
 
+// todo: improve this to do it dynamically instead of hard-coded
 func configIsValid(config Config) (bool, []string) {
 	var invalidFields []string
 	isValid := !structs.HasZero(config)
