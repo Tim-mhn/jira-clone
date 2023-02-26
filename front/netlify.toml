@@ -1,7 +1,7 @@
 [build]
   base="front/"
   command="ng build"
-  publish="front/dist/app"
+  publish="dist/app"
 
 [[redirects]]
   from = "/*"
