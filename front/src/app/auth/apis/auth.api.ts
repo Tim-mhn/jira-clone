@@ -21,11 +21,13 @@ export class AuthAPI {
   }
 
   login(loginDTO: LoginDTO) {
-    return this.http.post(this.LOGIN_ENDPOINT, loginDTO);
+    return this.http.post(this.LOGIN_ENDPOINT, loginDTO, {
+      withCredentials: true,
+    });
   }
 
   me() {
-    return this.http.get<UserDTO>(this.ME_ENDPOINT);
+    return this.http.get<UserDTO>(this.ME_ENDPOINT, { withCredentials: true });
   }
 
   signOut() {
