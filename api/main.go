@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 	"github.com/tim-mhn/figma-clone/database"
@@ -22,6 +23,11 @@ func main() {
 	defer db.Close()
 
 	router := gin.Default()
+
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"https://tim-jira.netlify.app/"}
+
+	router.Use(cors.New(config))
 	endpoints.RegisterAllEndpoints(router, db)
 
 	host := environments.GetConfig().Host
