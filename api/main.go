@@ -25,7 +25,7 @@ func main() {
 	router := gin.Default()
 
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"https://tim-jira.netlify.app/"}
+	config.AllowOrigins = []string{"*"}
 
 	router.Use(cors.New(config))
 	endpoints.RegisterAllEndpoints(router, db)
