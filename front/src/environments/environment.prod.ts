@@ -1,4 +1,6 @@
+const API_URL = 'https://jira-api-production.up.railway.app/';
+
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8080/',
+  apiUrl: API_URL,
 };
