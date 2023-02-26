@@ -14,6 +14,5 @@ func RegisterEndpoints(router *gin.Engine, conn *sql.DB) {
 	router.POST("/sign-in", uc.SignIn)
 	router.POST("/sign-out", uc.SignOut)
 
-	requiresAuthRoutes := router.Group("", IsAuthenticatedMiddleware())
-	requiresAuthRoutes.GET("/me", IsAuthenticatedMiddleware(), uc.Me)
+	router.GET("/me", IsAuthenticatedMiddleware(), uc.Me)
 }

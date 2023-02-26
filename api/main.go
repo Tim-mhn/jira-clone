@@ -28,16 +28,27 @@ func main() {
 
 	router := gin.Default()
 
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"*"}
-	config.AllowWildcard = true
+	if environments.IsProduction() {
+		config := cors.DefaultConfig()
 
-	router.Use(cors.New(config))
+		config.AllowOrigins = []string{"https://tim-jira.netlify.app"}
+		config.AllowCredentials = true
+		router.Use(cors.New(config))
+	}
+
 	endpoints.RegisterAllEndpoints(router, db)
 
 	host := environments.GetConfig().Host
 	port := environments.GetConfig().Port
 	ADDRESS := fmt.Sprintf("%s:%s", host, port)
-	fmt.Printf("\n\nRunning app on %s\n\n", ADDRESS)
+	fmt.Printf("\n\nRunning app on %s\nEnvironment: %s\n\n. ", ADDRESS, getEnv())
 	router.Run(ADDRESS)
+}
+
+func getEnv() string {
+	if environments.IsProduction() {
+		return "production"
+	}
+
+	return "development"
 }
