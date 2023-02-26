@@ -9,7 +9,7 @@ import (
 func SetAuthCookieFromUser(user User, c *gin.Context) {
 	ss := CreateJWTSignedString(user)
 
-	c.SetCookie("Authorization", ss, 365*24*60*60, "/", "", true, true)
+	c.SetCookie("Authorization", ss, 365*24*60*60, "/", "tim-jira.netlify.app", true, true)
 	// http.SetCookie(c.Writer, &http.Cookie{
 	// 	Name:     "Authorization",
 	// 	Value:    url.QueryEscape(ss),
@@ -30,5 +30,5 @@ func DeleteAuthCookie(c *gin.Context) {
 		HttpOnly: true,
 	}
 
-	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, ".app.localhost", true, true)
+	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, "tim-jira.netlify.app", true, true)
 }
