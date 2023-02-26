@@ -64,6 +64,7 @@ func loadFromEnvironment() {
 	viper.BindEnv("mailjet.secret_key")
 	viper.BindEnv("host")
 	viper.BindEnv("port")
+	viper.BindEnv("environment")
 
 	err := viper.Unmarshal(&_config)
 
