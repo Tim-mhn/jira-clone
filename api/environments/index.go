@@ -25,10 +25,11 @@ type DatabaseConfig struct {
 }
 
 type Config struct {
-	Database DatabaseConfig
-	Mailjet  MailjetConfig
-	Host     string
-	Port     string
+	Database    DatabaseConfig
+	Mailjet     MailjetConfig
+	Host        string
+	Port        string
+	Environment string
 }
 
 func LoadVariables() {
@@ -42,6 +43,10 @@ func LoadVariables() {
 	checkConfigAndPanicIfInvalid(*_config)
 	log.Print("[Environment] Successfully loaded environment variables")
 
+}
+
+func IsProduction() bool {
+	return GetConfig().Environment == "production"
 }
 
 var _config *Config

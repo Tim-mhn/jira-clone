@@ -19,6 +19,10 @@ func main() {
 	// - add proxy check
 	environments.LoadVariables()
 
+	if environments.IsProduction() {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	db := database.ConnectToDatabase()
 	defer db.Close()
 
