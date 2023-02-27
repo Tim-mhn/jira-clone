@@ -5,7 +5,6 @@ import (
 	"net/url"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tim-mhn/figma-clone/environments"
 )
 
 // todo: look into
@@ -38,5 +37,5 @@ func DeleteAuthCookie(c *gin.Context) {
 		HttpOnly: true,
 	}
 
-	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, environments.GetConfig().ClientDomain, true, false)
+	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, "tim-jira.netlify.app", true, false)
 }

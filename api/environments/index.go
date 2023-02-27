@@ -25,12 +25,11 @@ type DatabaseConfig struct {
 }
 
 type Config struct {
-	Database     DatabaseConfig
-	Mailjet      MailjetConfig
-	Host         string
-	Port         string
-	Environment  string
-	ClientDomain string `mapstructure:"client_domain"`
+	Database    DatabaseConfig
+	Mailjet     MailjetConfig
+	Host        string
+	Port        string
+	Environment string
 }
 
 func LoadVariables() {
@@ -66,7 +65,6 @@ func loadFromEnvironment() {
 	viper.BindEnv("host")
 	viper.BindEnv("port")
 	viper.BindEnv("environment")
-	viper.BindEnv("client_domain")
 
 	err := viper.Unmarshal(&_config)
 
