@@ -1,4 +1,4 @@
-const API_URL = 'https://jira-api-production.up.railway.app/';
+const API_URL = 'https://api.tim-jira.live/';
 
 export const environment = {
   production: true,
