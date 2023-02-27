@@ -31,7 +31,7 @@ func main() {
 	if environments.IsProduction() {
 		config := cors.DefaultConfig()
 
-		config.AllowOrigins = []string{"https://tim-jira.netlify.app"}
+		config.AllowOrigins = []string{environments.GetConfig().ClientDomain}
 		config.AllowCredentials = true
 		router.Use(cors.New(config))
 	}
