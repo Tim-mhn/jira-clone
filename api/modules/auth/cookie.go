@@ -5,8 +5,15 @@ import (
 	"net/url"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tim-mhn/figma-clone/environments"
 )
 
+// todo: look into
+/*
+*Set-Cookie
+was blocked because its Domain attribute was invalid
+with regards to the current host url
+*/
 func SetAuthCookieFromUser(user User, c *gin.Context) {
 	ss := CreateJWTSignedString(user)
 
@@ -19,7 +26,7 @@ func SetAuthCookieFromUser(user User, c *gin.Context) {
 		Domain:   "tim-jira.netlify.app",
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
-		HttpOnly: true,
+		HttpOnly: false,
 	})
 }
 func DeleteAuthCookie(c *gin.Context) {
@@ -31,5 +38,5 @@ func DeleteAuthCookie(c *gin.Context) {
 		HttpOnly: true,
 	}
 
-	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, "tim-jira.netlify.app", true, true)
+	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, environments.GetConfig().ClientDomain, true, false)
 }
