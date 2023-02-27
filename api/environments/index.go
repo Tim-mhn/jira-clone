@@ -31,6 +31,7 @@ type Config struct {
 	Port         string
 	Environment  string
 	ClientDomain string `mapstructure:"client_domain"`
+	ClientURL    string `mapstructure:"client_url"`
 }
 
 func LoadVariables() {
@@ -67,6 +68,7 @@ func loadFromEnvironment() {
 	viper.BindEnv("port")
 	viper.BindEnv("environment")
 	viper.BindEnv("client_domain")
+	viper.BindEnv("client_url")
 
 	err := viper.Unmarshal(&_config)
 
@@ -150,6 +152,10 @@ func configIsValid(config Config) (bool, []string) {
 
 		if structs.HasZero(config.ClientDomain) {
 			invalidFields = append(invalidFields, "ClientDomain")
+		}
+
+		if structs.HasZero(config.ClientURL) {
+			invalidFields = append(invalidFields, "ClientURL")
 		}
 
 	}
