@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, SkipSelf } from '@angular/core';
 import { objectKeys } from '@tim-mhn/common/objects';
 import { Observable } from 'rxjs';
 import { buildSingleTaskEndpoint, PROJECTS_API_ENDPOINT } from './endpoints';
@@ -12,14 +12,12 @@ import { DashboardCoreProvidersModule } from '../core.providers.module';
   providedIn: DashboardCoreProvidersModule,
 })
 export class GetTasksAPI {
-  constructor(private http: HttpClient) {}
+  constructor(@SkipSelf() private http: HttpClient) {}
 
   getTasksGroupedBySprints(projectId: string, filters?: BoardFilters) {
     const params = buildQueryParams(filters);
     const endpoint = `${PROJECTS_API_ENDPOINT}/${projectId}/tasks`;
-    return this.http.get<TasksGroupedBySprintsDTO>(endpoint, {
-      params,
-    });
+    return this.http.get<TasksGroupedBySprintsDTO>(endpoint, { params });
   }
 
   getSingleTask(ids: {
