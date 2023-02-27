@@ -1,0 +1,22 @@
+<p timDropdownTrigger [timDropdownMenuTriggerFor]="notificationsMenu">
+  notifications-indicator works!
+</p>
+
+<tim-dropdown-menu #notificationsMenu>
+  <tim-dropdown-header>Notifications</tim-dropdown-header>
+
+  <tim-dropdown-item
+    *ngFor="let notif of notifications$ | async"
+    (click)="navigateToTaskPage(notif)"
+  >
+    <div class="text-xs flex-wrap whitespace-normal line-clamp-2">
+      <span class="font-medium">{{ notif.author.name }}</span
+      >&nbsp;added a comment on task&nbsp;<span class="font-medium">{{
+        notif.taskId
+      }}</span
+      >: "
+      <span class="italic">{{ notif.comment }}</span>
+      "
+    </div>
+  </tim-dropdown-item>
+</tim-dropdown-menu>

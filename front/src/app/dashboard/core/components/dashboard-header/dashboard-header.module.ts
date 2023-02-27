@@ -5,6 +5,7 @@ import { TimUIDividerModule } from '@tim-mhn/ng-ui/divider';
 import { DashboardHeaderComponent } from './dashboard-header.component';
 import { MemberComponentsModule } from '../../../../shared/components/member/member-components.module';
 import { SearchModule } from '../../../features/search/search.module';
+import { NotificationsModule } from '../../../features/notifications/notifications.module';
 
 @NgModule({
   declarations: [DashboardHeaderComponent],
@@ -14,6 +15,7 @@ import { SearchModule } from '../../../features/search/search.module';
     TimUIDividerModule,
     MemberComponentsModule,
     SearchModule,
+    NotificationsModule,
   ],
   exports: [DashboardHeaderComponent],
 })

@@ -22,7 +22,7 @@ func SetAuthCookieFromUser(user User, c *gin.Context) {
 		Value:    url.QueryEscape(ss),
 		MaxAge:   365 * 24 * 60 * 60,
 		Path:     "/",
-		Domain:   "netlify.app",
+		Domain:   "",
 		SameSite: http.SameSiteNoneMode,
 		Secure:   true,
 		HttpOnly: false,
@@ -37,5 +37,5 @@ func DeleteAuthCookie(c *gin.Context) {
 		HttpOnly: true,
 	}
 
-	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, "netlify.app", true, false)
+	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, "", true, false)
 }

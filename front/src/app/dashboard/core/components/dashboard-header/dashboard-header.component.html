@@ -7,6 +7,9 @@
   <div class="flex flex-grow"></div>
   <div class="flex flex-grow justify-end gap-4 items-center">
     <jira-global-search-bar></jira-global-search-bar>
+
+    <jira-notifications-indicator></jira-notifications-indicator>
+
     <jira-member-icon
       [member]="loggedUser$ | async"
       size="md"

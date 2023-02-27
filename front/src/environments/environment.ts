@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'figma-api/',
+  notificationsUrl: 'notifications-api/',
 };
 
 /*
