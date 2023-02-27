@@ -31,7 +31,7 @@ func main() {
 	if environments.IsProduction() {
 		config := cors.DefaultConfig()
 
-		config.AllowOrigins = []string{"https://app.tim-jira.live"}
+		config.AllowOrigins = []string{"https://tim-jira.live"}
 		config.AllowCredentials = true
 		router.Use(cors.New(config))
 	}
