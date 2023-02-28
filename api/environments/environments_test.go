@@ -7,10 +7,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// todo: fix these tests
+
 func TestConfigIsValid(t *testing.T) {
 
 	t.Run("it should return false is config is missing fields", func(t *testing.T) {
-		c := Config{}
+		var c Config
 
 		isValid, _ := configIsValid(c)
 
@@ -44,6 +46,8 @@ func TestConfigIsValid(t *testing.T) {
 					Name:  "cccccc",
 				},
 			},
+			ClientDomain: ".tim-jira.live",
+			ClientURL:    "https://tim-jira.live",
 		}
 
 		_, invalidFields := configIsValid(c)
@@ -69,7 +73,7 @@ func TestConfigIsValid(t *testing.T) {
 
 		_, invalidFields := configIsValid(c)
 
-		expectedInvalidFields := []string{"Host", "Mailjet.Sender.Name", "Database.URL"}
+		expectedInvalidFields := []string{"Host", "Mailjet.Sender.Name", "Database.URL", "ClientDomain", "ClientURL"}
 		equalArrays := assert.ObjectsAreEqualValues(expectedInvalidFields, invalidFields)
 
 		assert.True(t, equalArrays, fmt.Sprintf(`expected %q. Got %q`, expectedInvalidFields, invalidFields))

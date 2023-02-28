@@ -25,11 +25,13 @@ type DatabaseConfig struct {
 }
 
 type Config struct {
-	Database    DatabaseConfig
-	Mailjet     MailjetConfig
-	Host        string
-	Port        string
-	Environment string
+	Database     DatabaseConfig
+	Mailjet      MailjetConfig
+	Host         string
+	Port         string
+	Environment  string
+	ClientDomain string `mapstructure:"client_domain"`
+	ClientURL    string `mapstructure:"client_url"`
 }
 
 func LoadVariables() {
@@ -65,6 +67,8 @@ func loadFromEnvironment() {
 	viper.BindEnv("host")
 	viper.BindEnv("port")
 	viper.BindEnv("environment")
+	viper.BindEnv("client_domain")
+	viper.BindEnv("client_url")
 
 	err := viper.Unmarshal(&_config)
 
@@ -144,6 +148,14 @@ func configIsValid(config Config) (bool, []string) {
 				invalidFields = append(invalidFields, "Database.URL")
 			}
 
+		}
+
+		if config.ClientDomain == "" {
+			invalidFields = append(invalidFields, "ClientDomain")
+		}
+
+		if config.ClientURL == "" {
+			invalidFields = append(invalidFields, "ClientURL")
 		}
 
 	}
