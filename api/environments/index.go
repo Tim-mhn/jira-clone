@@ -150,11 +150,11 @@ func configIsValid(config Config) (bool, []string) {
 
 		}
 
-		if structs.HasZero(config.ClientDomain) {
+		if config.ClientDomain == "" {
 			invalidFields = append(invalidFields, "ClientDomain")
 		}
 
-		if structs.HasZero(config.ClientURL) {
+		if config.ClientURL == "" {
 			invalidFields = append(invalidFields, "ClientURL")
 		}
 
