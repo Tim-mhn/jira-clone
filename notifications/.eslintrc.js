@@ -5,7 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'unused-imports'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
@@ -17,9 +17,31 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
-    '@typescript-eslint/interface-name-prefix': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
+    'import/prefer-default-export': 'off',
+    'no-console': 'off',
+    'class-methods-use-this': 'off',
+    'no-useless-constructor': 'off',
+    'no-use-before-define': 'off',
+    'no-empty-function': 'off',
+    'unused-imports/no-unused-imports': 'error',
+
+    'lines-between-class-members': 'off',
+    'no-unused-expressions': [
+      'error',
+      {
+        allowTernary: true,
+      },
+    ],
+    'no-underscore-dangle': 'off',
+    'dot-notation': 'off',
+    'no-return-assign': 'off',
+    'no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_+',
+        ignoreRestSiblings: true,
+      },
+    ],
   },
 };

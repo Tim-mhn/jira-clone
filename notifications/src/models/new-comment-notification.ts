@@ -1,12 +1,15 @@
+import { ProjectIdName, TaskId } from './ids';
+
+export type CommentNotificationId = string;
+
+type CommentAuthor = {
+  name: string;
+  id: string;
+};
 export type NewCommentNotification = {
-  taskId: string;
-  project: {
-    id: string;
-    name: string;
-  };
+  taskId: TaskId;
+  project: ProjectIdName;
   comment: string;
-  author: {
-    name: string;
-    id: string;
-  };
+  author: CommentAuthor;
+  id: CommentNotificationId;
 };
