@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { domainToASCII } from 'url';
 import { AppService } from './app.service';
 import { FollowTaskDTO } from './dtos/follow-task.dto';
 import { NewCommentDTO } from './dtos/new-comment.dto';
@@ -30,6 +29,7 @@ export class AppController {
 
   @Post('/follow')
   followTask(@Body() followTaskDTO: FollowTaskDTO) {
+    console.log('FOLLOW CALLED with ', followTaskDTO);
     this.followersRepo.markUserAsFollowerOfTask(
       followTaskDTO.userId,
       followTaskDTO.taskId,
@@ -38,6 +38,8 @@ export class AppController {
 
   @Post('/comment')
   createNewCommentNotification(@Body() newCommentDTO: NewCommentDTO) {
+    console.log('COMMENT CALLED with ', newCommentDTO);
+
     this.repo.createNewCommentNotification(newCommentDTO);
   }
 

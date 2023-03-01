@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/modules/auth"
+	"github.com/tim-mhn/figma-clone/modules/notifications"
 	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
@@ -77,6 +78,16 @@ func (tc *TasksController) CreateNewTask(c *gin.Context) {
 		return
 	}
 
+	currentUser, _ := auth.GetUserFromRequestContext(c)
+	err := notifications.FollowTask(notifications.FollowTaskDTO{
+		UserID: currentUser.Id,
+		TaskID: *newTask.Id,
+	})
+
+	if err != nil {
+		c.IndentedJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 	c.IndentedJSON(http.StatusCreated, newTask.Id)
 
 }

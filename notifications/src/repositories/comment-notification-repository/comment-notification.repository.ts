@@ -7,30 +7,10 @@ import {
 import { NewCommentNotificationPersistence } from '../../persistence/new-comment-notification.persistence';
 import { TaskFollowersRepository } from '../task-followers-repository/task-followers.repository';
 
-const dummyCommentNotif: NewCommentNotification = {
-  author: {
-    id: 'aceace',
-    name: 'Bob',
-  },
-  comment: 'comment',
-  project: {
-    id: '75a4ca83-2f38-47c5-96f0-20838d93a368',
-    name: 'project',
-  },
-  taskId: '1',
-  id: 'ceacaeceaceac',
-};
-
-const _TimFollowerID = '9b027c7e-33b7-4ceb-a3b7-99bcc2f7cb89';
-
 @Injectable({ scope: Scope.DEFAULT })
 export class CommentNotificationRepository {
-  private ALL_NEW_COMMENT_NOTIFICATIONS: NewCommentNotificationPersistence[] = [
-    {
-      ...dummyCommentNotif,
-      readBy: new Set<TaskFollowerId>(),
-    },
-  ];
+  private ALL_NEW_COMMENT_NOTIFICATIONS: NewCommentNotificationPersistence[] =
+    [];
 
   constructor(private followersRepo: TaskFollowersRepository) {}
 
@@ -47,9 +27,14 @@ export class CommentNotificationRepository {
     });
   }
 
-  createNewCommentNotification(newCommentNotification: NewCommentNotification) {
+  createNewCommentNotification(
+    newCommentNotification: Omit<NewCommentNotification, 'id'>,
+  ) {
     const noReads = new Set<TaskFollowerId>();
+
+    const id = this._generateId();
     this.ALL_NEW_COMMENT_NOTIFICATIONS.push({
+      id,
       ...newCommentNotification,
       readBy: noReads,
     });
@@ -64,5 +49,9 @@ export class CommentNotificationRepository {
       (n) => n.id === notificationId,
     );
     notification.readBy.add(followerId);
+  }
+
+  private _generateId() {
+    return (Math.random() + 1).toString(36).substring(15);
   }
 }

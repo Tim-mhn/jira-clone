@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/modules/auth"
+	"github.com/tim-mhn/figma-clone/modules/notifications"
 	tasks_controllers "github.com/tim-mhn/figma-clone/modules/tasks/controllers"
 	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 	http_utils "github.com/tim-mhn/figma-clone/utils/http"
@@ -45,6 +46,15 @@ func (controller TaskCommentsController) postComment(c *gin.Context) {
 		buildAndReturnAPIErrorResponse(c, err)
 		return
 	}
+
+	notifications.CreateCommentNotification(notifications.NewCommentNotificationDTO{
+		TaskID:  taskID,
+		Comment: createCommentDTO.Text,
+		Author: notifications.CommentAuthor{
+			Name: currentUser.Name,
+			ID:   currentUser.Id,
+		},
+	})
 
 	c.IndentedJSON(http.StatusOK, nil)
 

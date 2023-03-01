@@ -3,7 +3,6 @@ import { TaskFollowerId, TaskId } from '../../models';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class TaskFollowersRepository {
-  constructor() {}
   private TASK_FOLLOWERS = new Map<TaskId, Set<TaskFollowerId>>();
 
   getTaskFollowersIds(taskId: TaskId): TaskFollowerId[] {
