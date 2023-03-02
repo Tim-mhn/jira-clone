@@ -1,4 +1,4 @@
-import { CommentNotificationId, TaskFollowerId } from '../models';
+import { CommentNotificationId, TaskFollowerId } from '../../domain/models';
 
 export type NotificationReadDTO = {
   notificationId: CommentNotificationId;

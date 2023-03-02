@@ -1,18 +1,5 @@
 import { readFile, writeFile } from 'fs';
 
-const FILENAME = './src/persistence/new-comment-notifications.json';
-
-export async function openFile() {
-  try {
-    const data = await readJSONFile<string[]>(FILENAME);
-    data.push('c');
-    await writeJSONFile(FILENAME, data);
-    console.log(data);
-  } catch (err) {
-    console.error(err);
-  }
-}
-
 export async function readJSONFile<T>(filename: string): Promise<T> {
   console.log('reading file: ', filename);
   return new Promise((res, reject) => {

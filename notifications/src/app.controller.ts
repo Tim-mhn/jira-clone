@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
-import { FollowTaskDTO } from './dtos/follow-task.dto';
-import { NewCommentDTO } from './dtos/new-comment.dto';
-import { NotificationReadDTO } from './dtos/notification-read.dto';
-import { NewCommentNotification } from './models/new-comment-notification';
-import { CommentNotificationRepository } from './repositories/comment-notification-repository/comment-notification.repository';
-import { TaskFollowersRepository } from './repositories/task-followers-repository/task-followers.repository';
+import { FollowTaskDTO } from './infrastructure/dtos/follow-task.dto';
+import { NewCommentDTO } from './infrastructure/dtos/new-comment.dto';
+import { NotificationReadDTO } from './infrastructure/dtos/notification-read.dto';
+import { NewCommentNotification } from './domain/models/new-comment-notification';
+import { CommentNotificationRepository } from './infrastructure/repositories/comment-notification-repository/comment-notification.repository';
+import { TaskFollowersRepository } from './infrastructure/repositories/task-followers-repository/task-followers.repository';
 
 @Controller()
 export class AppController {
@@ -23,7 +23,7 @@ export class AppController {
   @Get('/notifications')
   getNewCommentNotifications(
     @Query('userId') userId: string,
-  ): NewCommentNotification[] {
+  ): Promise<NewCommentNotification[]> {
     return this.repo.getNewCommentNotifications(userId);
   }
 

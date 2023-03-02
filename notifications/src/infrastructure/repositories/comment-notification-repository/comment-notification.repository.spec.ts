@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
-import { NewCommentNotification } from '../../models';
+import { NewCommentNotification } from '../../../domain/models';
 import { NewCommentNotificationPersistence } from '../../persistence/new-comment-notification.persistence';
+import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { TaskFollowersRepository } from '../task-followers-repository/task-followers.repository';
-import {
-  CommentNotificationRepository,
-  FileIO,
-} from './comment-notification.repository';
+import { CommentNotificationRepository } from './comment-notification.repository';
 
 describe('CommentNotificationRepository', () => {
   let repo: CommentNotificationRepository;
@@ -30,16 +28,15 @@ describe('CommentNotificationRepository', () => {
   });
 
   describe('getNewCommentNotifications', () => {
-    const mockFileIO: FileIO<NewCommentNotificationPersistence[]> = {
-      readFile: async (_filename: string) => await [],
-      writeFile: async (
-        _filename: string,
-        _data: NewCommentNotificationPersistence[],
-      ) => new Promise<void>((res) => res()),
-    };
+    const mockStorage: PersistenceStorage<NewCommentNotificationPersistence[]> =
+      {
+        get: async () => await [],
+        set: async (_data: NewCommentNotificationPersistence[]) =>
+          new Promise<void>((res) => res()),
+      };
 
     beforeEach(() => {
-      repo['fileIO'] = mockFileIO;
+      repo['storage'] = mockStorage;
     });
 
     const TASK_ID = 'task-id';
@@ -59,7 +56,7 @@ describe('CommentNotificationRepository', () => {
     beforeEach(() => {
       jest
         .spyOn(followersRepo, 'getTasksFollowedByUser')
-        .mockImplementation(() => tasksFollowed);
+        .mockImplementation(async () => tasksFollowed);
     });
 
     it('should return the comment notification initially (no reads)', async () => {
@@ -68,11 +65,11 @@ describe('CommentNotificationRepository', () => {
       const persistenceData: NewCommentNotificationPersistence[] = [
         {
           ...DUMMY_COMMENT_NOTIF,
-          readBy: new Set(),
+          readBy: [],
         },
       ];
       jest
-        .spyOn(mockFileIO, 'readFile')
+        .spyOn(mockStorage, 'get')
         .mockImplementation(async () => await persistenceData);
       const notifs = await repo.getNewCommentNotifications(FOLLOWER_ID);
       const notifTasksIds = notifs?.map((n) => n.taskId);
@@ -81,8 +78,7 @@ describe('CommentNotificationRepository', () => {
     });
 
     it('should not return a comment notification after it has been read', async () => {
-      const readBy = new Set<string>();
-      readBy.add(FOLLOWER_ID);
+      const readBy = [FOLLOWER_ID];
       const persistenceData: NewCommentNotificationPersistence[] = [
         {
           ...DUMMY_COMMENT_NOTIF,
@@ -91,7 +87,7 @@ describe('CommentNotificationRepository', () => {
         },
       ];
       jest
-        .spyOn(mockFileIO, 'readFile')
+        .spyOn(mockStorage, 'get')
         .mockImplementation(async () => await persistenceData);
 
       const notifs = await repo.getNewCommentNotifications(FOLLOWER_ID);

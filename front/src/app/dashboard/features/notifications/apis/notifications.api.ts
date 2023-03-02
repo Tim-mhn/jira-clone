@@ -11,7 +11,8 @@ export class NotificationsAPI {
   constructor(private http: HttpClient) {}
 
   private endpoint = `${environment.notificationsUrl}notifications`;
-  public getNewCommentNotifications() {
-    return this.http.get<NewCommentNotification[]>(this.endpoint);
+  public getNewCommentNotifications(currentUserId: string) {
+    const endpoint = `${this.endpoint}?userId=${currentUserId}`;
+    return this.http.get<NewCommentNotification[]>(endpoint);
   }
 }

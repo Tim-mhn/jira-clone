@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { ProjectIdName } from '../../../../core/models';
 import { buildTaskPageRoute } from '../../../browse/utils/build-browse-page-routes.util';
-import { NotificationsAPI } from '../../apis/notifications.api';
+import { NotificationsController } from '../../controllers/notifications.controller';
 import { NewCommentNotification } from '../../models/new-comment-notification';
 
 @Component({
@@ -11,12 +11,15 @@ import { NewCommentNotification } from '../../models/new-comment-notification';
   templateUrl: './notifications-indicator.component.html',
 })
 export class NotificationsIndicatorComponent implements OnInit {
-  constructor(private api: NotificationsAPI, private router: Router) {}
+  constructor(
+    private controller: NotificationsController,
+    private router: Router
+  ) {}
 
   notifications$: Observable<NewCommentNotification[]>;
 
   ngOnInit(): void {
-    this.notifications$ = this.api.getNewCommentNotifications();
+    this.notifications$ = this.controller.getNewNotificationsForCurrentUser();
   }
 
   navigateToTaskPage(notification: NewCommentNotification) {
