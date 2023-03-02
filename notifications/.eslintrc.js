@@ -24,7 +24,15 @@ module.exports = {
     'no-use-before-define': 'off',
     'no-empty-function': 'off',
     'unused-imports/no-unused-imports': 'error',
-
+    'unused-imports/no-unused-vars': [
+      'error',
+      {
+        vars: 'all',
+        varsIgnorePattern: '^_',
+        args: 'after-used',
+        argsIgnorePattern: '^_',
+      },
+    ],
     'lines-between-class-members': 'off',
     'no-unused-expressions': [
       'error',
