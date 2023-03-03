@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Post, Request } from '@nestjs/common';
-import { AppService } from './app.service';
 import { FollowTaskDTO } from './infrastructure/dtos/follow-task.dto';
 import { NewCommentDTO } from './infrastructure/dtos/new-comment.dto';
 import { NotificationReadDTO } from './infrastructure/dtos/notification-read.dto';
@@ -11,14 +10,13 @@ import { AuthenticatedRequest } from './auth';
 @Controller()
 export class AppController {
   constructor(
-    private readonly appService: AppService,
     private repo: CommentNotificationRepository,
     private followersRepo: TaskFollowersRepository,
   ) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getRoot(): string {
+    return 'Notifications API';
   }
 
   @Get('/notifications')
