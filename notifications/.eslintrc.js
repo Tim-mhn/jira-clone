@@ -5,11 +5,24 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin', 'unused-imports'],
+  settings: {
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts'],
+    },
+    'import/resolver': {
+      typescript: {},
+      node: {
+        extensions: ['.js', '.ts'],
+      },
+    },
+  },
+  plugins: ['@typescript-eslint/eslint-plugin', 'import', 'unused-imports'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    'plugin:import/typescript',
   ],
+
   root: true,
   env: {
     node: true,
@@ -23,16 +36,10 @@ module.exports = {
     'no-useless-constructor': 'off',
     'no-use-before-define': 'off',
     'no-empty-function': 'off',
+    'no-unused-vars': 'off',
+
     'unused-imports/no-unused-imports': 'error',
-    'unused-imports/no-unused-vars': [
-      'error',
-      {
-        vars: 'all',
-        varsIgnorePattern: '^_',
-        args: 'after-used',
-        argsIgnorePattern: '^_',
-      },
-    ],
+    // 'unused-imports/no-unused-vars': 'off',
     'lines-between-class-members': 'off',
     'no-unused-expressions': [
       'error',
@@ -43,13 +50,5 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'dot-notation': 'off',
     'no-return-assign': 'off',
-    'no-unused-vars': [
-      'error',
-      {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_+',
-        ignoreRestSiblings: true,
-      },
-    ],
   },
 };

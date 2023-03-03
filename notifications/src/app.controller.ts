@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request } from '@nestjs/common';
 import { AppService } from './app.service';
 import { FollowTaskDTO } from './infrastructure/dtos/follow-task.dto';
 import { NewCommentDTO } from './infrastructure/dtos/new-comment.dto';
@@ -6,6 +6,7 @@ import { NotificationReadDTO } from './infrastructure/dtos/notification-read.dto
 import { NewCommentNotification } from './domain/models/new-comment-notification';
 import { CommentNotificationRepository } from './infrastructure/repositories/comment-notification-repository/comment-notification.repository';
 import { TaskFollowersRepository } from './infrastructure/repositories/task-followers-repository/task-followers.repository';
+import { AuthenticatedRequest } from './auth';
 
 @Controller()
 export class AppController {
@@ -22,8 +23,11 @@ export class AppController {
 
   @Get('/notifications')
   getNewCommentNotifications(
-    @Query('userId') userId: string,
+    @Request() req: AuthenticatedRequest,
   ): Promise<NewCommentNotification[]> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    console.log('User = ', req.user);
+    const userId = req.user.Id;
     return this.repo.getNewCommentNotifications(userId);
   }
 
