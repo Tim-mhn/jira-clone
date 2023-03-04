@@ -1,8 +1,11 @@
 package notifications
 
+import "net/http"
+
 type FollowTaskDTO struct {
 	UserID string `json:"userId"`
 	TaskID string `json:"taskId"`
+	Cookie *http.Cookie
 }
 
 type CommentAuthor struct {

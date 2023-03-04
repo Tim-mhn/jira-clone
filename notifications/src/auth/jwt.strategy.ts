@@ -18,6 +18,7 @@ export const cookieExtractor = (req: any) => {
     });
 
     const jwt = authCookie?.split('=')?.[1];
+    console.log('jwt = ', jwt);
     return jwt;
   } catch (err) {
     console.error(`[JwtStrategy] Error in cookieExtractor: ${err}`);
@@ -35,9 +36,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async validate(payload: JWTPayload) {
-    console.log('validate called with: ', payload);
+    console.log('validate with ', payload);
     return { userId: payload.data.Id, username: payload.data.Name };
   }
 }

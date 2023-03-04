@@ -79,10 +79,11 @@ func (tc *TasksController) CreateNewTask(c *gin.Context) {
 	}
 
 	currentUser, _ := auth.GetUserFromRequestContext(c)
+
 	err := notifications.FollowTask(notifications.FollowTaskDTO{
 		UserID: currentUser.Id,
 		TaskID: *newTask.Id,
-	})
+	}, c)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
