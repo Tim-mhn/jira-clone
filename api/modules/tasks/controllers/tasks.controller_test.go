@@ -126,7 +126,7 @@ func setupTestDataAndBuildRequest() (*http.Request, tasks_models.TaskFilters) {
 		TaskStatuses: taskStatusList,
 		TaskTypes:    taskTypes,
 	}
-	request := http_utils.BuildRequest("GET",
+	request := http_utils.BuildRequest(http_utils.GET,
 		fmt.Sprintf(`/projects/%s/tasks?assigneeId[]=%s&assigneeId[]=%s&status[]=%d&status[]=%d&status[]=%d&type[]=%d&type[]=%d&type[]=%d&type[]=%d`,
 			projectID,
 			assigneeIds[0], assigneeIds[1],

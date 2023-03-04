@@ -9,8 +9,6 @@ export class NotificationsController {
   constructor(private api: NotificationsAPI) {}
 
   public getNewNotificationsForCurrentUser() {
-    return this.api.getNewCommentNotifications(
-      '9b027c7e-33b7-4ceb-a3b7-99bcc2f7cb89'
-    );
+    return this.api.getNewCommentNotifications();
   }
 }

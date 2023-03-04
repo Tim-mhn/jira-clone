@@ -80,10 +80,12 @@ func (tc *TasksController) CreateNewTask(c *gin.Context) {
 
 	currentUser, _ := auth.GetUserFromRequestContext(c)
 
+	authCookie := findAuthCookie(c)
+
 	err := notifications.FollowTask(notifications.FollowTaskDTO{
 		UserID: currentUser.Id,
 		TaskID: *newTask.Id,
-	}, c)
+	}, authCookie)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
@@ -179,5 +181,14 @@ func (tc *TasksController) MoveTask(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, nil)
+
+}
+
+func findAuthCookie(c *gin.Context) *http.Cookie {
+	authCookie, _ := arrays.Find(c.Request.Cookies(), func(c *http.Cookie) bool {
+		return c.Name == auth.AUTH_COOKIE_NAME
+	})
+
+	return authCookie
 
 }

@@ -9,16 +9,6 @@ func ReturnJsonAndAbort(c *gin.Context, code int, data interface{}) {
 	c.Abort()
 }
 
-type HTTPMethod int
-
-const (
-	POST HTTPMethod = iota
-	GET
-	PUT
-	DELETE
-	PATCH
-)
-
 func SetupMockRouterAndRegisterEndpoint(method HTTPMethod, endpoint string, handler gin.HandlerFunc) *gin.Engine {
 	router := gin.Default()
 	registerHandlerFn := getRegisterHandlerFn(method)

@@ -3,30 +3,30 @@ package http_utils
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
-func BuildRequest(method string, url string, body map[string]interface{}) *http.Request {
-	m, b := body, new(bytes.Buffer)
-	json.NewEncoder(b).Encode(m)
-	req, _ := http.NewRequest(method, url, b)
+func BuildRequest(method HTTPMethod, url string, body interface{}) *http.Request {
+	buffer := EncodeJSON(body)
 
+	methodString := httpMethodToString(method)
+
+	req, err := http.NewRequest(methodString, url, buffer)
+	if err != nil {
+		fmt.Printf("[BuildRequest]: Error %e", err)
+	}
+	req.Header.Add("Content-Type", "application/json")
 	return req
 }
 
-func PostJSON(url string, body interface{}) (*http.Response, error) {
-	buffer, _ := BufferJSON(body)
-
-	return http.Post(url, "application/json", buffer)
+func EncodeJSON(body interface{}) *bytes.Buffer {
+	m, buffer := body, new(bytes.Buffer)
+	json.NewEncoder(buffer).Encode(m)
+	return buffer
 }
 
-func BufferJSON(body interface{}) (*bytes.Buffer, error) {
-	jsonBody, err := json.Marshal(body)
-
-	if err != nil {
-		return new(bytes.Buffer), err
-	}
-
-	return bytes.NewBuffer(jsonBody), nil
-
+func BuildAndExecuteRequest(method HTTPMethod, url string, body interface{}) (*http.Response, error) {
+	req := BuildRequest(method, url, body)
+	return http.DefaultClient.Do(req)
 }

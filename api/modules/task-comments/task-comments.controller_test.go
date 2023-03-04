@@ -210,7 +210,7 @@ func TestControllerEditComment(t *testing.T) {
 		mockRepo := new(mockCommentsRepository)
 		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
 
-		request := http_utils.BuildRequest("PATCH", "/comments/ ", VALID_POST_EDIT_COMMENT_BODY())
+		request := http_utils.BuildRequest(http_utils.PATCH, "/comments/ ", VALID_POST_EDIT_COMMENT_BODY())
 
 		router.ServeHTTP(responseRecorder, request)
 
@@ -225,7 +225,7 @@ func TestControllerEditComment(t *testing.T) {
 		mockRepo := new(mockCommentsRepository)
 		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
 
-		request := http_utils.BuildRequest("PATCH", "/comments/ ", map[string]interface{}{"text": ""})
+		request := http_utils.BuildRequest(http_utils.PATCH, "/comments/ ", map[string]interface{}{"text": ""})
 
 		router.ServeHTTP(responseRecorder, request)
 
@@ -238,11 +238,11 @@ func TestControllerEditComment(t *testing.T) {
 }
 
 func buildPostCommentRequest(body map[string]interface{}) *http.Request {
-	return http_utils.BuildRequest("POST", "/comments", body)
+	return http_utils.BuildRequest(http_utils.POST, "/comments", body)
 }
 
 func buildGetCommentsRequest(taskID string) *http.Request {
-	return http_utils.BuildRequest("GET", fmt.Sprintf("/%s/comments", taskID), nil)
+	return http_utils.BuildRequest(http_utils.GET, fmt.Sprintf("/%s/comments", taskID), nil)
 }
 
 func VALID_POST_EDIT_COMMENT_BODY() map[string]interface{} {
