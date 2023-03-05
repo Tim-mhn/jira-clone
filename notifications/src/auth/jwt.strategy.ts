@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { EnvironmentVariablesService } from '../environment/environment-variables.service';
+import { AuthenticatedRequestUser } from './authenticated-request';
 import { JWTPayload } from './jwt-payload';
 
 const AUTHORIZATION_COOKIE_NAME = 'Authorization';
@@ -36,8 +37,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JWTPayload) {
+  async validate(payload: JWTPayload): Promise<AuthenticatedRequestUser> {
     console.log('validate with ', payload);
-    return { userId: payload.data.Id, username: payload.data.Name };
+    return { id: payload.data.Id, name: payload.data.Name };
   }
 }

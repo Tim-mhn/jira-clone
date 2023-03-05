@@ -1,5 +1,7 @@
-import { User } from './user';
-
+export type AuthenticatedRequestUser = {
+  id: string;
+  name: string;
+};
 export interface AuthenticatedRequest extends Request {
-  user: User;
+  user: AuthenticatedRequestUser;
 }

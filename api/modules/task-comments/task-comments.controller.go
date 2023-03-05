@@ -47,6 +47,7 @@ func (controller TaskCommentsController) postComment(c *gin.Context) {
 		return
 	}
 
+	authCookie := auth.GetAuthCookieFromContext(c)
 	notifications.CreateCommentNotification(notifications.NewCommentNotificationDTO{
 		TaskID:  taskID,
 		Comment: createCommentDTO.Text,
@@ -54,7 +55,7 @@ func (controller TaskCommentsController) postComment(c *gin.Context) {
 			Name: currentUser.Name,
 			ID:   currentUser.Id,
 		},
-	})
+	}, authCookie)
 
 	c.IndentedJSON(http.StatusOK, nil)
 

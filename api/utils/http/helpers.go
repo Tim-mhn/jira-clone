@@ -25,8 +25,3 @@ func EncodeJSON(body interface{}) *bytes.Buffer {
 	json.NewEncoder(buffer).Encode(m)
 	return buffer
 }
-
-func BuildAndExecuteRequest(method HTTPMethod, url string, body interface{}) (*http.Response, error) {
-	req := BuildRequest(method, url, body)
-	return http.DefaultClient.Do(req)
-}

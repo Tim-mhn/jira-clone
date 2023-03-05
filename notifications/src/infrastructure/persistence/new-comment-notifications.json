@@ -1,12 +1,1 @@
-[
-    {
-        "id": "",
-        "taskId": "2561ceaf-9336-4229-a50b-457206fd65d6",
-        "comment": "hey tim !<br>",
-        "author": {
-            "name": "Bob",
-            "id": "0a0cdb7e-02ff-4762-a581-2d8f58d30b49"
-        },
-        "readBy": []
-    }
-]
+[{"id":"","taskId":"2561ceaf-9336-4229-a50b-457206fd65d6","comment":"hey tim !<br>","author":{"name":"Bob","id":"0a0cdb7e-02ff-4762-a581-2d8f58d30b49"},"readBy":[]},{"id":"","taskId":"2eb1698d-e412-4c80-9530-8e308bf69260","comment":"ok","author":{"name":"Bob","id":"0a0cdb7e-02ff-4762-a581-2d8f58d30b49"},"readBy":[]},{"id":"","taskId":"2eb1698d-e412-4c80-9530-8e308bf69260","comment":"ok","author":{"name":"Bob","id":"0a0cdb7e-02ff-4762-a581-2d8f58d30b49"},"readBy":[]}]

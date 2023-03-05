@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/environments"
+	"github.com/tim-mhn/figma-clone/utils/arrays"
 )
 
 const AUTH_COOKIE_NAME = "Authorization"
@@ -25,4 +26,13 @@ func DeleteAuthCookie(c *gin.Context) {
 	}
 
 	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, environments.GetConfig().ClientDomain, true, true)
+}
+
+func GetAuthCookieFromContext(c *gin.Context) *http.Cookie {
+	authCookie, _ := arrays.Find(c.Request.Cookies(), func(c *http.Cookie) bool {
+		return c.Name == AUTH_COOKIE_NAME
+	})
+
+	return authCookie
+
 }

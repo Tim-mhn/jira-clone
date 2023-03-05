@@ -33,11 +33,17 @@ func FollowTask(dto FollowTaskDTO, authCookie *http.Cookie) error {
 	return nil
 }
 
-func CreateCommentNotification(dto NewCommentNotificationDTO) {
-	resp, err := http_utils.BuildAndExecuteRequest(http_utils.POST, _COMMENT_TASK_URL, dto)
+func CreateCommentNotification(dto NewCommentNotificationDTO, authCookie *http.Cookie) error {
+	req := http_utils.BuildRequest(http_utils.POST, _COMMENT_TASK_URL, dto)
+	req.AddCookie(authCookie)
 
-	if err == nil {
-		defer resp.Body.Close()
+	resp, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		return err
 	}
+	defer resp.Body.Close()
+
+	return nil
 
 }

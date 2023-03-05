@@ -80,7 +80,7 @@ func (tc *TasksController) CreateNewTask(c *gin.Context) {
 
 	currentUser, _ := auth.GetUserFromRequestContext(c)
 
-	authCookie := findAuthCookie(c)
+	authCookie := auth.GetAuthCookieFromContext(c)
 
 	err := notifications.FollowTask(notifications.FollowTaskDTO{
 		UserID: currentUser.Id,
@@ -181,14 +181,5 @@ func (tc *TasksController) MoveTask(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, nil)
-
-}
-
-func findAuthCookie(c *gin.Context) *http.Cookie {
-	authCookie, _ := arrays.Find(c.Request.Cookies(), func(c *http.Cookie) bool {
-		return c.Name == auth.AUTH_COOKIE_NAME
-	})
-
-	return authCookie
 
 }

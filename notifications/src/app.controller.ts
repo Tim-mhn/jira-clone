@@ -25,7 +25,7 @@ export class AppController {
   ): Promise<NewCommentNotification[]> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     console.log('User = ', req.user);
-    const userId = req.user.Id;
+    const userId = req.user.id;
     return this.repo.getNewCommentNotifications(userId);
   }
 
