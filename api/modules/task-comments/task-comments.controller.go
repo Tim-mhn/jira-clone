@@ -7,19 +7,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/modules/auth"
-	"github.com/tim-mhn/figma-clone/modules/notifications"
 	tasks_controllers "github.com/tim-mhn/figma-clone/modules/tasks/controllers"
 	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 	http_utils "github.com/tim-mhn/figma-clone/utils/http"
 )
 
 type TaskCommentsController struct {
-	repo TaskCommentsRepository
+	service ITaskCommentsService
 }
 
 func newTaskCommentsController(repo TaskCommentsRepository) *TaskCommentsController {
 	return &TaskCommentsController{
-		repo: repo,
+		service: NewTaskCommentsService(repo),
 	}
 }
 
@@ -40,22 +39,14 @@ func (controller TaskCommentsController) postComment(c *gin.Context) {
 		TaskID:   taskID,
 	}
 
-	err := controller.repo.createComment(createCommentInput)
+	authCookie := auth.GetAuthCookieFromContext(c)
+
+	err := controller.service.postComment(createCommentInput, currentUser, authCookie)
 
 	if err.HasError {
 		buildAndReturnAPIErrorResponse(c, err)
 		return
 	}
-
-	authCookie := auth.GetAuthCookieFromContext(c)
-	notifications.CreateCommentNotification(notifications.NewCommentNotificationDTO{
-		TaskID:  taskID,
-		Comment: createCommentDTO.Text,
-		Author: notifications.CommentAuthor{
-			Name: currentUser.Name,
-			ID:   currentUser.Id,
-		},
-	}, authCookie)
 
 	c.IndentedJSON(http.StatusOK, nil)
 
@@ -64,7 +55,7 @@ func (controller TaskCommentsController) postComment(c *gin.Context) {
 func (controller TaskCommentsController) getTaskComments(c *gin.Context) {
 	taskID := tasks_controllers.GetTaskIDParam(c)
 
-	comments, err := controller.repo.getTaskComments(taskID)
+	comments, err := controller.service.getTaskComments(taskID)
 
 	if err.HasError {
 		buildAndReturnAPIErrorResponse(c, err)
@@ -76,7 +67,7 @@ func (controller TaskCommentsController) getTaskComments(c *gin.Context) {
 func (controller TaskCommentsController) deleteComment(c *gin.Context) {
 	commentID := c.Param("commentID")
 
-	err := controller.repo.deleteComment(commentID)
+	err := controller.service.deleteComment(commentID)
 
 	if err.HasError {
 		buildAndReturnAPIErrorResponse(c, err)
@@ -106,7 +97,7 @@ func (controller TaskCommentsController) updateComment(c *gin.Context) {
 		Text:      dto.Text,
 		CommentID: commentID,
 	}
-	err := controller.repo.editCommentText(editComment)
+	err := controller.service.editCommentText(editComment)
 
 	if err.HasError {
 		buildAndReturnAPIErrorResponse(c, err)

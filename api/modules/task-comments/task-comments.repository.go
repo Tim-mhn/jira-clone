@@ -10,24 +10,17 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
 )
 
-type TaskCommentsRepository interface {
-	createComment(createComment CreateCommentInput) CommentsError
-	getTaskComments(taskID string) (TaskComments, CommentsError)
-	deleteComment(commentID string) CommentsError
-	editCommentText(editComment EditCommentInput) CommentsError
-}
-
-type sqlTaskCommentsRepository struct {
+type TaskCommentsRepository struct {
 	conn *sql.DB
 }
 
 func newSQLTaskCommentsRepository(conn *sql.DB) TaskCommentsRepository {
-	return sqlTaskCommentsRepository{
+	return TaskCommentsRepository{
 		conn: conn,
 	}
 }
 
-func (repo sqlTaskCommentsRepository) createComment(createComment CreateCommentInput) CommentsError {
+func (repo TaskCommentsRepository) createComment(createComment CreateCommentInput) CommentsError {
 
 	err := runInsertCommentQueryFn(createComment, repo.conn)
 
@@ -38,7 +31,7 @@ func (repo sqlTaskCommentsRepository) createComment(createComment CreateCommentI
 	return NO_COMMENTS_ERROR()
 }
 
-func (repo sqlTaskCommentsRepository) deleteComment(commentID string) CommentsError {
+func (repo TaskCommentsRepository) deleteComment(commentID string) CommentsError {
 
 	psql := database.GetPsqlQueryBuilder()
 	query := psql.Update("task_comment").Set("deleted", true).Where(sq.Eq{"id": commentID})
@@ -55,7 +48,7 @@ func (repo sqlTaskCommentsRepository) deleteComment(commentID string) CommentsEr
 	return NO_COMMENTS_ERROR()
 }
 
-func (repo sqlTaskCommentsRepository) getTaskComments(taskID string) (TaskComments, CommentsError) {
+func (repo TaskCommentsRepository) getTaskComments(taskID string) (TaskComments, CommentsError) {
 	rows, err := runGetCommentsSQLQueryFn(taskID, repo.conn)
 
 	if err != nil {
@@ -71,7 +64,7 @@ func (repo sqlTaskCommentsRepository) getTaskComments(taskID string) (TaskCommen
 	return comments, NO_COMMENTS_ERROR()
 }
 
-func (repo sqlTaskCommentsRepository) editCommentText(editComment EditCommentInput) CommentsError {
+func (repo TaskCommentsRepository) editCommentText(editComment EditCommentInput) CommentsError {
 
 	psql := database.GetPsqlQueryBuilder()
 	query := psql.Update("task_comment").Set("text", editComment.Text).Where(sq.Eq{"id": editComment.CommentID})
