@@ -10,22 +10,19 @@ import (
 
 const AUTH_COOKIE_NAME = "Authorization"
 
+const _COOKIE_MAX_AGE = 365 * 24 * 60 * 60
+const _HTTP_ONLY = true
+const _SECURE = true
+const _COOKIE_PATH = "/"
+
 func SetAuthCookieFromUser(user User, c *gin.Context) {
 	ss := CreateJWTSignedString(user)
-
-	c.SetCookie(AUTH_COOKIE_NAME, ss, 365*24*60*60, "/", environments.GetConfig().ClientDomain, true, true)
+	c.SetCookie(AUTH_COOKIE_NAME, ss, _COOKIE_MAX_AGE, _COOKIE_PATH, environments.GetConfig().ClientDomain, _SECURE, _HTTP_ONLY)
 
 }
 func DeleteAuthCookie(c *gin.Context) {
-	cookie := &http.Cookie{
-		Name:     AUTH_COOKIE_NAME,
-		Value:    "",
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-	}
-
-	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, environments.GetConfig().ClientDomain, true, true)
+	MAX_AGE := -1
+	c.SetCookie(AUTH_COOKIE_NAME, "", MAX_AGE, _COOKIE_PATH, environments.GetConfig().ClientDomain, _SECURE, _HTTP_ONLY)
 }
 
 func GetAuthCookieFromContext(c *gin.Context) *http.Cookie {
