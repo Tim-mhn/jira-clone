@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { logger } from './logger.middleware';
 import { createRequest, createResponse } from 'node-mocks-http';
 import { INestApplication } from '@nestjs/common';
-import EventEmitter from 'events';
+
 describe('logger Middleware:', () => {
   let app: INestApplication;
 
@@ -41,8 +41,6 @@ describe('logger Middleware:', () => {
 
     const response = createResponse();
 
-    // response.
-
     const nextFunction = () => null;
     response.sendStatus(statusCode);
     response.send({});
@@ -54,6 +52,22 @@ describe('logger Middleware:', () => {
     response.on('close', () => {
       expect(console.log).lastCalledWith(expect.stringContaining('500'));
     });
+  });
+
+  it('should log the request method ', () => {
+    const url = 'http://api/users/123';
+
+    const mockRequest = buildMockRequest(url);
+
+    const response = createResponse();
+
+    const nextFunction = () => null;
+
+    logger(mockRequest, response, nextFunction);
+
+    response.end();
+
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('GET'));
   });
 
   afterAll(() => app.close());
