@@ -11,4 +11,5 @@ export type NewCommentNotification = {
     name: string;
     id: string;
   };
+  id: string;
 };

@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export type AuthenticatedRequestUser = {
   id: string;
   name: string;

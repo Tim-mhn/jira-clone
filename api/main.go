@@ -13,10 +13,6 @@ import (
 
 func main() {
 
-	//todo:
-	// - clean up variables logic (try to use Viper for os variables)
-	// - meta variable with host + address
-	// - add proxy check
 	environments.LoadVariables()
 
 	if environments.IsProduction() {

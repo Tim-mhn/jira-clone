@@ -2,7 +2,7 @@ import { ProjectIdName, TaskId } from './ids';
 
 export type CommentNotificationId = string;
 
-type CommentAuthor = {
+export type CommentAuthor = {
   name: string;
   id: string;
 };

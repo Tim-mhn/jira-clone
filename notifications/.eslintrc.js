@@ -39,7 +39,7 @@ module.exports = {
     'no-unused-vars': 'off',
 
     'unused-imports/no-unused-imports': 'error',
-    // 'unused-imports/no-unused-vars': 'off',
+    'unused-imports/no-unused-vars': 'off',
     'lines-between-class-members': 'off',
     'no-unused-expressions': [
       'error',

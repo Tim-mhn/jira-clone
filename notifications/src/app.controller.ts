@@ -1,11 +1,22 @@
-import { Body, Controller, Get, Post, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Request,
+  Res,
+} from '@nestjs/common';
 import { FollowTaskDTO } from './infrastructure/dtos/follow-task.dto';
 import { NewCommentDTO } from './infrastructure/dtos/new-comment.dto';
-import { NotificationReadDTO } from './infrastructure/dtos/notification-read.dto';
+import { ReadNotificationDTO } from './infrastructure/dtos/read-notification.dto';
 import { NewCommentNotification } from './domain/models/new-comment-notification';
 import { CommentNotificationRepository } from './infrastructure/repositories/comment-notification-repository/comment-notification.repository';
 import { TaskFollowersRepository } from './infrastructure/repositories/task-followers-repository/task-followers.repository';
 import { AuthenticatedRequest } from './auth';
+import { Response } from 'express';
+import { NotificationNotFound } from './domain/errors/notification-not-found.error';
 
 @Controller()
 export class AppController {
@@ -23,8 +34,6 @@ export class AppController {
   getNewCommentNotifications(
     @Request() req: AuthenticatedRequest,
   ): Promise<NewCommentNotification[]> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    console.log('User = ', req.user);
     const userId = req.user.id;
     return this.repo.getNewCommentNotifications(userId);
   }
@@ -38,6 +47,7 @@ export class AppController {
     );
   }
 
+  //todo: add validation on new comment DTO since project seems to be missing
   @Post('/comment')
   createNewCommentNotification(@Body() newCommentDTO: NewCommentDTO) {
     console.log('COMMENT CALLED with ', newCommentDTO);
@@ -45,8 +55,37 @@ export class AppController {
     this.repo.createNewCommentNotification(newCommentDTO);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Post('/read')
-  userReadNotification(@Body() notificationReadDTO: NotificationReadDTO) {
-    this.repo.markNotificationAsReadByUser(notificationReadDTO);
+  async userReadNotification(
+    @Request() req: AuthenticatedRequest,
+    @Body() notificationReadDTO: ReadNotificationDTO,
+    @Res({ passthrough: true }) _response?: Response,
+  ) {
+    try {
+      const currentUserId = req.user.id;
+
+      const { notificationId } = notificationReadDTO;
+
+      await this.repo.markNotificationAsReadByUser({
+        followerId: currentUserId,
+        notificationId,
+      });
+    } catch (err) {
+      if (err instanceof NotificationNotFound) {
+        _response.status(HttpStatus.NOT_FOUND).send({
+          message: err.message,
+          error: 'NotificationNotFound',
+        });
+        return;
+      }
+
+      _response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error',
+        error: 'InternalServerError',
+      });
+
+      return {};
+    }
   }
 }

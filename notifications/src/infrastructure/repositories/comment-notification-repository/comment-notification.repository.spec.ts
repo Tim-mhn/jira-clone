@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
-import { NewCommentNotification } from '../../../domain/models';
+import { NotificationNotFound } from '../../../domain/errors/notification-not-found.error';
+import { CommentAuthor, NewCommentNotification } from '../../../domain/models';
 import { NewCommentNotificationPersistence } from '../../persistence/new-comment-notification.persistence';
 import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { TaskFollowersRepository } from '../task-followers-repository/task-followers.repository';
@@ -94,6 +95,81 @@ describe('CommentNotificationRepository', () => {
       const notifTasksIds = notifs?.map((n) => n.id);
 
       expect(notifTasksIds).not.toContain(NOTIF_ID);
+    });
+  });
+
+  describe('markNotificationAsReadByUser', () => {
+    let allNotifications: NewCommentNotificationPersistence[] = [];
+
+    const mockStorage: PersistenceStorage<NewCommentNotificationPersistence[]> =
+      {
+        get: async () => await allNotifications,
+        set: async (data: NewCommentNotificationPersistence[]) =>
+          new Promise<void>((res) => {
+            allNotifications = data;
+            res();
+          }),
+      };
+
+    const notifId = 'ceac848c4e84a9c';
+    const author: CommentAuthor = {
+      id: 'author-id',
+      name: 'author-name',
+    };
+
+    const taskId = 'task-id-xyz';
+
+    const notif: NewCommentNotificationPersistence = {
+      id: notifId,
+      author,
+      comment: 'comment',
+      project: null,
+      taskId,
+      readBy: [],
+    };
+
+    const followerId = 'follower-id';
+
+    beforeEach(() => {
+      allNotifications = [];
+      allNotifications.push(notif);
+      repo['storage'] = mockStorage;
+
+      const tasksFollowed = [taskId];
+
+      jest
+        .spyOn(followersRepo, 'getTasksFollowedByUser')
+        .mockImplementation(async () => tasksFollowed);
+    });
+
+    it('should not return a notification after it has been read', async () => {
+      const newNotificationsBeforeRead = await repo.getNewCommentNotifications(
+        followerId,
+      );
+
+      await repo.markNotificationAsReadByUser({
+        followerId,
+        notificationId: notifId,
+      });
+
+      const newNotifications = await repo.getNewCommentNotifications(
+        followerId,
+      );
+
+      expect(newNotificationsBeforeRead).toContain(notif);
+      expect(newNotifications).not.toContain(notif);
+    });
+
+    it('should throw a NotificationNotFound error if the notification does not exist', async () => {
+      const inexistentNotifId = 'not-existent';
+
+      const readFn = () =>
+        repo.markNotificationAsReadByUser({
+          followerId,
+          notificationId: inexistentNotifId,
+        });
+
+      await expect(readFn).rejects.toThrowError(NotificationNotFound);
     });
   });
 });

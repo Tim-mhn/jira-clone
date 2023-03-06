@@ -1,13 +1,12 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { TaskFollowerId } from '../../../domain/models';
-import {
-  CommentNotificationId,
-  NewCommentNotification,
-} from '../../../domain/models/new-comment-notification';
+import { NewCommentNotification } from '../../../domain/models/new-comment-notification';
 import { NewCommentNotificationPersistence } from '../../persistence/new-comment-notification.persistence';
 import { TaskFollowersRepository } from '../task-followers-repository/task-followers.repository';
 import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { JSONFileStorage } from '../../storage/json-file.storage';
+import { NotificationNotFound } from '../../../domain/errors/notification-not-found.error';
+import { ReadNotification } from '../../../domain/models/read-notification';
 
 const NOTIFICATIONS_FILENAME =
   './src/infrastructure/persistence/new-comment-notifications.json';
@@ -59,13 +58,10 @@ export class CommentNotificationRepository {
     await this._updateCommentNotifications(allNotifs);
   }
 
-  async markNotificationAsReadByUser(notificationAndFollowerIds: {
-    notificationId: CommentNotificationId;
-    followerId: TaskFollowerId;
-  }) {
-    const { followerId, notificationId } = notificationAndFollowerIds;
+  async markNotificationAsReadByUser(readNotification: ReadNotification) {
+    const { followerId, notificationId } = readNotification;
     const allNotifs = await this._getAllCommentNotifications();
-    const notification = allNotifs.find((n) => n.id === notificationId);
+    const notification = this._findNotificationById(allNotifs, notificationId);
 
     const newReads = Array.from(new Set([...notification.readBy, followerId]));
     notification.readBy = newReads;
@@ -74,7 +70,7 @@ export class CommentNotificationRepository {
   }
 
   private _generateId() {
-    return (Math.random() + 1).toString(36).substring(15);
+    return (Math.random() + 1).toString(36).substring(2);
   }
 
   private async _getAllCommentNotifications() {
@@ -85,5 +81,18 @@ export class CommentNotificationRepository {
     notifs: NewCommentNotificationPersistence[],
   ) {
     this.storage.set(notifs);
+  }
+
+  private _findNotificationById(
+    allNotifs: NewCommentNotificationPersistence[],
+    notificationId: string,
+  ) {
+    const notification = allNotifs.find((n) => n.id === notificationId);
+
+    if (!notification) {
+      throw new NotificationNotFound(notificationId);
+    }
+
+    return notification;
   }
 }

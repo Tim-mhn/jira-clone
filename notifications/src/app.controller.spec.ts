@@ -1,23 +1,65 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
+import { NotificationNotFound } from './domain/errors/notification-not-found.error';
+import { CommentNotificationRepository } from './infrastructure/repositories/comment-notification-repository/comment-notification.repository';
+import { TaskFollowersRepository } from './infrastructure/repositories/task-followers-repository/task-followers.repository';
+import { createMocks } from 'node-mocks-http';
+import { HttpStatus } from '@nestjs/common';
+import { ReadNotificationDTO } from './infrastructure/dtos';
+import { AuthenticatedRequest } from './auth';
 
 describe('AppController', () => {
-  // let appController: AppController;
-  // beforeEach(async () => {
-  //   const app: TestingModule = await Test.createTestingModule({
-  //     controllers: [AppController],
-  //     providers: [AppService],
-  //   }).compile();
-  //   appController = app.get<AppController>(AppController);
-  // });
-  // describe('root', () => {
-  //   it('should return "Hello World!"', () => {
-  //     expect(appController.getHello()).toBe('Hello World!');
-  //   });
-  // });
+  let controller: AppController;
 
-  it('', () => {
-    const v = true;
-    expect(v).toBeTruthy();
+  const mockRepo = {} as CommentNotificationRepository;
+  mockRepo.markNotificationAsReadByUser = () => new Promise((res) => res(null));
+
+  const mockFollowersRepo = {} as TaskFollowersRepository;
+  beforeEach(async () => {
+    const app: TestingModule = await Test.createTestingModule({
+      controllers: [AppController],
+      providers: [
+        {
+          provide: CommentNotificationRepository,
+          useValue: mockRepo,
+        },
+        {
+          provide: TaskFollowersRepository,
+          useValue: mockFollowersRepo,
+        },
+      ],
+    }).compile();
+    controller = app.get<AppController>(AppController);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+
+  describe('POST read', () => {
+    it('should return a NotFound error if the repo returns a NotificationNotFound error', async () => {
+      const notifId = 'notif-id';
+
+      const { req, res } = createMocks();
+
+      jest
+        .spyOn(mockRepo, 'markNotificationAsReadByUser')
+        .mockImplementationOnce(async () => {
+          throw new NotificationNotFound(notifId);
+        });
+
+      const dto = new ReadNotificationDTO();
+      dto.notificationId = notifId;
+
+      req.user = { id: 'user-id', name: 'user-name' };
+      await controller.userReadNotification(
+        req as any as AuthenticatedRequest,
+        dto,
+        res,
+      );
+
+      expect(res.statusCode).toEqual(HttpStatus.NOT_FOUND);
+    });
   });
 });
