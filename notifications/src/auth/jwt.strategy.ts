@@ -19,7 +19,6 @@ export const cookieExtractor = (req: any) => {
     });
 
     const jwt = authCookie?.split('=')?.[1];
-    console.log('jwt = ', jwt);
     return jwt;
   } catch (err) {
     console.error(`[JwtStrategy] Error in cookieExtractor: ${err}`);

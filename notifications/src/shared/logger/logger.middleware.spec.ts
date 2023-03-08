@@ -1,7 +1,7 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { logger } from './logger.middleware';
-import { createRequest, createResponse } from 'node-mocks-http';
+import { Body, createRequest, createResponse } from 'node-mocks-http';
 import { INestApplication } from '@nestjs/common';
 
 describe('logger Middleware:', () => {
@@ -70,12 +70,35 @@ describe('logger Middleware:', () => {
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining('GET'));
   });
 
+  it('should log the request payload (body)', () => {
+    const body = {
+      text: 'hello world',
+      authorId: '123-xyz',
+    };
+    const postRequest = buildMockRequest('http://api/comments', 'POST', body);
+    const response = createResponse();
+    const nextFunction = () => null;
+
+    logger(postRequest, response, nextFunction);
+    response.end();
+
+    const expectedBodyString = '{"text":"hello world","authorId":"123-xyz"}';
+
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining(expectedBodyString),
+    );
+  });
+
   afterAll(() => app.close());
 });
 
-function buildMockRequest(url: string) {
+function buildMockRequest(
+  url: string,
+  method: 'GET' | 'POST' = 'GET',
+  body?: Body,
+) {
   return createRequest({
-    method: 'GET',
+    method,
     url,
     params: {
       id: 42,
@@ -83,5 +106,6 @@ function buildMockRequest(url: string) {
     headers: {
       Origin: 'http://localhost:5050/',
     },
+    body,
   });
 }

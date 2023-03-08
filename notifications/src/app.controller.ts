@@ -50,8 +50,6 @@ export class AppController {
   //todo: add validation on new comment DTO since project seems to be missing
   @Post('/comment')
   createNewCommentNotification(@Body() newCommentDTO: NewCommentDTO) {
-    console.log('COMMENT CALLED with ', newCommentDTO);
-
     this.repo.createNewCommentNotification(newCommentDTO);
   }
 
