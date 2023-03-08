@@ -18,7 +18,7 @@ func TestCreateComment(t *testing.T) {
 			return nil
 		}
 
-		repo := new(TaskCommentsRepository)
+		repo := *new(SQLTaskCommentsRepository)
 
 		err := repo.createComment(CreateCommentInput{})
 		expectedResponse := NO_COMMENTS_ERROR()
@@ -33,7 +33,7 @@ func TestCreateComment(t *testing.T) {
 			}
 		}
 
-		repo := new(TaskCommentsRepository)
+		repo := *new(SQLTaskCommentsRepository)
 
 		err := repo.createComment(CreateCommentInput{})
 		expectedResponseCode := TaskNotFound
@@ -48,7 +48,7 @@ func TestCreateComment(t *testing.T) {
 			}
 		}
 
-		repo := new(TaskCommentsRepository)
+		repo := *new(SQLTaskCommentsRepository)
 
 		err := repo.createComment(CreateCommentInput{})
 		expectedResponseCode := AuthorNotFound

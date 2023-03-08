@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/modules/auth"
-	"github.com/tim-mhn/figma-clone/modules/notifications"
+	notifications_api "github.com/tim-mhn/figma-clone/modules/notifications"
 	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
@@ -82,7 +82,7 @@ func (tc *TasksController) CreateNewTask(c *gin.Context) {
 
 	authCookie := auth.GetAuthCookieFromContext(c)
 
-	err := notifications.FollowTask(notifications.FollowTaskDTO{
+	err := notifications_api.FollowTask(notifications_api.FollowTaskDTO{
 		UserID: currentUser.Id,
 		TaskID: *newTask.Id,
 	}, authCookie)

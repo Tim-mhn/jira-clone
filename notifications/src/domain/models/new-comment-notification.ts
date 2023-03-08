@@ -6,10 +6,10 @@ export type CommentAuthor = {
   name: string;
   id: string;
 };
-export type NewCommentNotification = {
+export interface NewCommentNotification {
   taskId: TaskId;
   project: ProjectIdName;
   comment: string;
   author: CommentAuthor;
   id: CommentNotificationId;
-};
+}

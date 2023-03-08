@@ -1,10 +1,12 @@
 package task_comments
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/tim-mhn/figma-clone/modules/auth"
-	"github.com/tim-mhn/figma-clone/modules/notifications"
+	notifications_api "github.com/tim-mhn/figma-clone/modules/notifications"
+	"github.com/tim-mhn/figma-clone/modules/project"
 )
 
 type ITaskCommentsService interface {
@@ -14,12 +16,14 @@ type ITaskCommentsService interface {
 	editCommentText(editComment EditCommentInput) CommentsError
 }
 type TaskCommentsService struct {
-	repo TaskCommentsRepository
+	repo           TaskCommentsRepository
+	projectQueries project.ProjectQueriesRepository
 }
 
-func NewTaskCommentsService(repo TaskCommentsRepository) TaskCommentsService {
+func NewTaskCommentsService(repo TaskCommentsRepository, projectQueries project.ProjectQueriesRepository) TaskCommentsService {
 	return TaskCommentsService{
-		repo: repo,
+		repo:           repo,
+		projectQueries: projectQueries,
 	}
 }
 
@@ -30,22 +34,37 @@ func (service TaskCommentsService) postComment(comment CreateCommentInput, autho
 		return err
 	}
 
-	dto := notifications.NewCommentNotificationDTO{
-		TaskID:  comment.TaskID,
-		Comment: comment.Text,
-		Author: notifications.CommentAuthor{
-			Name: author.Name,
-			ID:   author.Id,
-		},
-	}
-
-	notificationsError := notifications.CreateCommentNotification(dto, authCookie)
+	notificationsError := service.createNewCommentNotification(comment, author, authCookie)
 
 	if notificationsError != nil {
 		return buildCommentsError(OtherCommentError, notificationsError)
 	}
 
 	return NO_COMMENTS_ERROR()
+}
+
+func (s TaskCommentsService) createNewCommentNotification(comment CreateCommentInput, author auth.User, authCookie *http.Cookie) error {
+
+	if comment.ProjectID == "" {
+		return buildCommentsError(OtherCommentError, fmt.Errorf("missing project id to create comment notification"))
+	}
+
+	project, _ := s.projectQueries.GetProjectByID(comment.ProjectID)
+
+	dto := notifications_api.NewCommentNotificationDTO{
+		TaskID:  comment.TaskID,
+		Comment: comment.Text,
+		Author: notifications_api.CommentAuthor{
+			Name: author.Name,
+			ID:   author.Id,
+		},
+		Project: notifications_api.ProjectIdName{
+			Name: project.Name,
+			ID:   project.Id,
+		},
+	}
+
+	return notifications_api.CreateCommentNotification(dto, authCookie)
 }
 
 func (s TaskCommentsService) getTaskComments(taskID string) (TaskComments, CommentsError) {

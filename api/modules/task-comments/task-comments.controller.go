@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tim-mhn/figma-clone/modules/auth"
+	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_controllers "github.com/tim-mhn/figma-clone/modules/tasks/controllers"
 	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 	http_utils "github.com/tim-mhn/figma-clone/utils/http"
@@ -16,14 +17,15 @@ type TaskCommentsController struct {
 	service ITaskCommentsService
 }
 
-func newTaskCommentsController(repo TaskCommentsRepository) *TaskCommentsController {
+func newTaskCommentsController(repo TaskCommentsRepository, projectQueries project.ProjectQueriesRepository) *TaskCommentsController {
 	return &TaskCommentsController{
-		service: NewTaskCommentsService(repo),
+		service: NewTaskCommentsService(repo, projectQueries),
 	}
 }
 
 func (controller TaskCommentsController) postComment(c *gin.Context) {
 	taskID := tasks_controllers.GetTaskIDParam(c)
+	projectID := project.GetProjectIDParam(c)
 
 	currentUser := controller.getCurrentUser(c)
 	var createCommentDTO CreateCommentDTO
@@ -34,9 +36,10 @@ func (controller TaskCommentsController) postComment(c *gin.Context) {
 	}
 
 	createCommentInput := CreateCommentInput{
-		Text:     createCommentDTO.Text,
-		AuthorID: currentUser.Id,
-		TaskID:   taskID,
+		Text:      createCommentDTO.Text,
+		AuthorID:  currentUser.Id,
+		TaskID:    taskID,
+		ProjectID: projectID,
 	}
 
 	authCookie := auth.GetAuthCookieFromContext(c)
