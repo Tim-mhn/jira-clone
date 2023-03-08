@@ -96,6 +96,30 @@ describe('CommentNotificationRepository', () => {
 
       expect(notifTasksIds).not.toContain(NOTIF_ID);
     });
+
+    it('should not return a notification if the comment has been written by the user himself', async () => {
+      const userID = 'user-id-xyz-123';
+
+      const persistenceData: NewCommentNotificationPersistence[] = [
+        {
+          ...DUMMY_COMMENT_NOTIF,
+          author: {
+            id: userID,
+            name: 'user-name',
+          },
+          comment: 'other comment',
+          readBy: [],
+        },
+      ];
+      jest
+        .spyOn(mockStorage, 'get')
+        .mockImplementation(async () => await persistenceData);
+
+      const notifs = await repo.getNewCommentNotifications(userID);
+      const notifTasksIds = notifs?.map((n) => n.id);
+
+      expect(notifTasksIds.length).toEqual(0);
+    });
   });
 
   describe('markNotificationAsReadByUser', () => {

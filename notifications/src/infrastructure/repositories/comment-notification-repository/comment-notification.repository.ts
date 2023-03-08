@@ -29,13 +29,24 @@ export class CommentNotificationRepository {
     );
 
     const allNotifs = await this._getAllCommentNotifications();
-    return allNotifs.filter((notif) => {
-      const userFollowsTask = tasksFollowedByUser.includes(notif.taskId);
-      if (!userFollowsTask) return false;
+    return allNotifs.filter((notif) =>
+      this._isNewNotificationForUser(userId, notif, tasksFollowedByUser),
+    );
+  }
 
-      const userHasNotReadNotif = !notif.readBy.includes(userId);
-      return userHasNotReadNotif;
-    });
+  private _isNewNotificationForUser(
+    userId: TaskFollowerId,
+    notif: NewCommentNotificationPersistence,
+    tasksFollowedByUser: string[],
+  ) {
+    const isOwnComment = notif.author?.id === userId;
+    if (isOwnComment) return false;
+
+    const userFollowsTask = tasksFollowedByUser.includes(notif.taskId);
+    if (!userFollowsTask) return false;
+
+    const userHasNotReadNotif = !notif.readBy.includes(userId);
+    return userHasNotReadNotif;
   }
 
   async createNewCommentNotification(
