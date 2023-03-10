@@ -8,7 +8,7 @@ import { HttpStatus } from '@nestjs/common';
 import { ReadNotificationDTO } from './notifications/infrastructure/dtos';
 import { AuthenticatedRequest } from './auth';
 import { NotificationNotFound } from './notifications/domain';
-import { TaskAssignationNotificationRepositoryProvider } from './notifications/infrastructure/providers';
+import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
 
 describe('AppController', () => {
   let controller: AppController;
@@ -17,6 +17,9 @@ describe('AppController', () => {
   mockRepo.markNotificationAsReadByUser = () => new Promise((res) => res(null));
 
   const mockFollowersRepo = {} as TaskFollowersRepository;
+
+  const mockCreateAssignationNotif =
+    {} as CreateNewAssignationNotificationInteractor;
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
@@ -29,7 +32,10 @@ describe('AppController', () => {
           provide: TaskFollowersRepository,
           useValue: mockFollowersRepo,
         },
-        TaskAssignationNotificationRepositoryProvider,
+        {
+          provide: CreateNewAssignationNotificationInteractor,
+          useValue: mockCreateAssignationNotif,
+        },
       ],
     }).compile();
     controller = app.get<AppController>(AppController);
