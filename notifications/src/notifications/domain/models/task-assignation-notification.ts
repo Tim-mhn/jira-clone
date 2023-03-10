@@ -1,10 +1,19 @@
-import { NotificationId, ProjectIdName } from './ids';
+import { ProjectIdName } from './ids';
+import { Notification, NotificationType } from './notification';
 
 export interface TaskAssignationNotificationData {
   taskId: string;
   project: ProjectIdName;
   assigneeId: string;
 }
-export type TaskAssignationNotification = TaskAssignationNotificationData & {
-  id: NotificationId;
-};
+export class TaskAssignationNotification
+  implements
+    Notification<NotificationType.ASSIGNATION>,
+    TaskAssignationNotificationData
+{
+  taskId: string;
+  project: ProjectIdName;
+  assigneeId: string;
+  id: string;
+  type: NotificationType.ASSIGNATION;
+}

@@ -27,13 +27,14 @@ type TasksController struct {
 	notificationsAPI notifications_api.NotificationsAPI
 }
 
-func NewTasksController(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, service tasks_services.ITasksService, taskRepo *tasks_repositories.TaskQueriesRepository, tagsService tags.ITagsService, conn *sql.DB) *TasksController {
+func NewTasksController(um *auth.UserRepository, projectQueries project.ProjectQueriesRepository, service tasks_services.ITasksService, taskRepo *tasks_repositories.TaskQueriesRepository, tagsService tags.ITagsService, conn *sql.DB) *TasksController {
 
 	taskCommandsRepo := tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn)
+
 	return &TasksController{
 		taskQueries:      tasks_repositories.NewTaskQueriesRepository(um, conn),
 		sprintService:    service,
-		taskCommands:     *tasks_services.NewTaskCommandsService(taskCommandsRepo, tagsService),
+		taskCommands:     *tasks_services.NewTaskCommandsService(taskCommandsRepo, tagsService, projectQueries),
 		taskPositionRepo: tasks_repositories.NewTaskPositionRepository(conn),
 		notificationsAPI: notifications_api.NewNotificationsAPI(),
 	}
@@ -103,7 +104,19 @@ func (tc *TasksController) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	updateTaskError := tc.taskCommands.UpdateTask(taskID, updateTaskDTO)
+	authCookie := auth.GetAuthCookieFromContext(c)
+	currentUser, _ := auth.GetUserFromRequestContext(c)
+	projectID := project.GetProjectIDParam(c)
+
+	updateTaskInput := tasks_services.UpdateTaskInput{
+		TaskID:         taskID,
+		NewData:        updateTaskDTO,
+		UpdatingUserID: currentUser.Id,
+		ProjectID:      projectID,
+		AuthCookie:     authCookie,
+	}
+
+	updateTaskError := tc.taskCommands.UpdateTask(updateTaskInput)
 
 	if updateTaskError.HasError {
 		apiError := shared_errors.BuildAPIErrorFromDomainError(updateTaskError)

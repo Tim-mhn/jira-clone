@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	notifications_api "github.com/tim-mhn/figma-clone/modules/notifications"
+	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
@@ -60,9 +61,14 @@ func TestUpdateTask(t *testing.T) {
 
 		service, _, mockTagsService, _ := setupServiceAndMocks()
 
-		patchDTO := tasks_dtos.PatchTaskDTO{}
+		updateTask := UpdateTaskInput{
+			TaskID:         TASK_ID,
+			NewData:        tasks_dtos.PatchTaskDTO{},
+			UpdatingUserID: "user-id",
+			ProjectID:      "project-id",
+		}
 
-		service.UpdateTask(TASK_ID, patchDTO)
+		service.UpdateTask(updateTask)
 
 		mockTagsService.AssertNotCalled(t, "ExtractAndUpdateTagsOfTask", "ExtractAndUpdateTagsOfTask should not be called if title is empty")
 
@@ -76,7 +82,14 @@ func TestUpdateTask(t *testing.T) {
 			AssigneeId: primitives.CreateStringPointer(newAssigneeId),
 		}
 
-		service.UpdateTask(TASK_ID, patchDTO)
+		updateTask := UpdateTaskInput{
+			TaskID:         TASK_ID,
+			NewData:        patchDTO,
+			UpdatingUserID: "user-id",
+			ProjectID:      "project-id",
+		}
+
+		service.UpdateTask(updateTask)
 
 		mockNotificationsAPI.AssertCalled(t, "SendTaskAssignationNotification", "SendTaskAssignationNotification should not called when assigneeId is not empty")
 
@@ -87,9 +100,10 @@ func setupServiceAndMocks() (*TaskCommandsService, *MockTaskCommandsRepo, *MockT
 	mockTagsService := new(MockTagService)
 	mockRepo := new(MockTaskCommandsRepo)
 	mockNotifications := new(MockNotificationsAPI)
+	projectQueriesRepo := new(MockProjectQueries)
 	mockNotifications.On("SendTaskAssignationNotification").Return(nil)
 
-	service := NewTaskCommandsService(mockRepo, mockTagsService)
+	service := NewTaskCommandsService(mockRepo, mockTagsService, projectQueriesRepo)
 	service.notificationsAPI = mockNotifications
 	return service, mockRepo, mockTagsService, mockNotifications
 }
@@ -106,7 +120,7 @@ func (api *MockNotificationsAPI) CreateCommentNotification(dto notifications_api
 	api.Called()
 	return nil
 }
-func (api *MockNotificationsAPI) SendTaskAssignationNotification() error {
+func (api *MockNotificationsAPI) SendTaskAssignationNotification(dto notifications_api.AssignationNotificationDTO, authCookie *http.Cookie) error {
 	args := api.Mock.Called(mock.Anything)
 	err := args.Get(0)
 
@@ -164,4 +178,22 @@ func (repo *MockTaskCommandsRepo) UpdateTaskData(taskID string, patchDTO tasks_d
 
 func (repo *MockTaskCommandsRepo) DeleteTask(taskID string) (tasks_repositories.DeleteTaskResponse, error) {
 	return tasks_repositories.DeleteTaskResponse{}, nil
+}
+
+type MockProjectQueries struct {
+	mock.Mock
+}
+
+func (projectQueries MockProjectQueries) GetProjectByID(projectID string) (project.Project, error) {
+	return project.Project{}, nil
+}
+func (projectQueries MockProjectQueries) GetProjectMembers(projectID string) ([]project.ProjectMember, error) {
+	return []project.ProjectMember{}, nil
+}
+func (projectQueries MockProjectQueries) GetProjectsOfUser(userID string) ([]project.Project, error) {
+	return []project.Project{}, nil
+
+}
+func (projectQueries MockProjectQueries) MemberIsInProject(projectID string, memberID string) (bool, error) {
+	return true, nil
 }

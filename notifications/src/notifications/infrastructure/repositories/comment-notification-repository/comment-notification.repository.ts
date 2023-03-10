@@ -8,6 +8,8 @@ import { JSONFileStorage } from '../../storage/json-file.storage';
 import { NotificationNotFound } from '../../../domain/errors/notification-not-found.error';
 import { NotificationReadEvent } from '../../../domain/events/notification-read.event';
 import { randomString } from '../../../../shared/strings';
+import { NewCommentEvent } from '../../../domain/events/new-comment.event';
+import { NotificationType } from '../../../domain/models/notification';
 
 const NOTIFICATIONS_FILENAME =
   './src/notifications/infrastructure/persistence/new-comment-notifications.json';
@@ -30,9 +32,11 @@ export class CommentNotificationRepository {
     );
 
     const allNotifs = await this._getAllCommentNotifications();
-    return allNotifs.filter((notif) =>
-      this._isNewNotificationForUser(userId, notif, tasksFollowedByUser),
-    );
+    return allNotifs
+      .filter((notif) =>
+        this._isNewNotificationForUser(userId, notif, tasksFollowedByUser),
+      )
+      .map((n) => ({ ...n, type: NotificationType.COMMENT }));
   }
 
   private _isNewNotificationForUser(
@@ -50,9 +54,7 @@ export class CommentNotificationRepository {
     return userHasNotReadNotif;
   }
 
-  async createNewCommentNotification(
-    newCommentNotification: Omit<NewCommentNotification, 'id'>,
-  ) {
+  async createNewCommentNotification(newCommentNotification: NewCommentEvent) {
     const noReads = [];
 
     const id = this._generateId();
@@ -70,7 +72,9 @@ export class CommentNotificationRepository {
     await this._updateCommentNotifications(allNotifs);
   }
 
-  async markNotificationAsReadByUser(readNotification: NotificationReadEvent) {
+  async markNotificationAsReadByUser(
+    readNotification: Omit<NotificationReadEvent, 'notificationType'>,
+  ) {
     const { followerId, notificationId } = readNotification;
     const allNotifs = await this._getAllCommentNotifications();
     const notification = this._findNotificationById(allNotifs, notificationId);

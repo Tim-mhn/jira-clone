@@ -20,3 +20,9 @@ type NewCommentNotificationDTO struct {
 	Author  CommentAuthor `json:"author" binding:"required"`
 	Project ProjectIdName `json:"project" binding:"required"`
 }
+
+type AssignationNotificationDTO struct {
+	TaskID     string        `json:"taskId" binding:"required"`
+	AssigneeID string        `json:"assigneeId" binding:"required"`
+	Project    ProjectIdName `json:"project" binding:"required"`
+}

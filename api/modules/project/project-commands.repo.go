@@ -11,7 +11,7 @@ import (
 
 type ProjectCommandsRepository struct {
 	um      *auth.UserRepository
-	queries *ProjectQueriesRepository
+	queries ProjectQueriesRepository
 	conn    *sql.DB
 }
 

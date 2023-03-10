@@ -11,18 +11,24 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
 )
 
-type ProjectQueriesRepository struct {
+type ProjectQueriesRepository interface {
+	GetProjectByID(projectID string) (Project, error)
+	GetProjectMembers(projectID string) ([]ProjectMember, error)
+	GetProjectsOfUser(userID string) ([]Project, error)
+	MemberIsInProject(projectID string, memberID string) (bool, error)
+}
+type _SQLProjectQueriesRepository struct {
 	conn *sql.DB
 }
 
-func NewProjectQueriesRepository(conn *sql.DB) *ProjectQueriesRepository {
-	return &ProjectQueriesRepository{
+func NewProjectQueriesRepository(conn *sql.DB) ProjectQueriesRepository {
+	return &_SQLProjectQueriesRepository{
 		conn: conn,
 	}
 
 }
 
-func (pm *ProjectQueriesRepository) GetProjectByID(projectID string) (Project, error) {
+func (pm *_SQLProjectQueriesRepository) GetProjectByID(projectID string) (Project, error) {
 	var project Project
 
 	sql := getProjectsQueryBuilder().
@@ -52,7 +58,7 @@ func (pm *ProjectQueriesRepository) GetProjectByID(projectID string) (Project, e
 
 }
 
-func (repo *ProjectQueriesRepository) GetProjectMembers(projectID string) ([]ProjectMember, error) {
+func (repo *_SQLProjectQueriesRepository) GetProjectMembers(projectID string) ([]ProjectMember, error) {
 
 	builder := database.GetPsqlQueryBuilder()
 	query := builder.Select("user_id", `"user".name as username`, `"user".email as user_email`, "joined_on").
@@ -97,7 +103,7 @@ func (repo *ProjectQueriesRepository) GetProjectMembers(projectID string) ([]Pro
 
 }
 
-func (pm *ProjectQueriesRepository) GetProjectsOfUser(userID string) ([]Project, error) {
+func (pm *_SQLProjectQueriesRepository) GetProjectsOfUser(userID string) ([]Project, error) {
 
 	query := getProjectsQueryBuilder().
 		Where(sq.Eq{
@@ -126,7 +132,7 @@ func (pm *ProjectQueriesRepository) GetProjectsOfUser(userID string) ([]Project,
 
 }
 
-func (pm *ProjectQueriesRepository) MemberIsInProject(projectID string, memberID string) (bool, error) {
+func (pm *_SQLProjectQueriesRepository) MemberIsInProject(projectID string, memberID string) (bool, error) {
 
 	var resultsCount int
 	query := fmt.Sprintf(`SELECT COUNT(*) FROM "project_user" WHERE project_id='%s' AND user_id='%s' LIMIT 1`, projectID, memberID)

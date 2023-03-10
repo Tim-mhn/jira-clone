@@ -12,7 +12,7 @@ func RegisterEndpoints(singleTaskRoutes tasks.SingleTaskRoutes, conn *sql.DB) {
 	repo := newSQLTaskCommentsRepository(conn)
 
 	projectQueries := project.NewProjectQueriesRepository(conn)
-	controller := newTaskCommentsController(repo, *projectQueries)
+	controller := newTaskCommentsController(repo, projectQueries)
 
 	commentsRoutes := singleTaskRoutes.Group("/comments")
 

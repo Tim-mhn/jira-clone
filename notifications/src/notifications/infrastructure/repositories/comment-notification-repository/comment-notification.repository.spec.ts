@@ -2,6 +2,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationNotFound } from '../../../domain/errors/notification-not-found.error';
 import { CommentAuthor, NewCommentNotification } from '../../../domain/models';
+import { NotificationType } from '../../../domain/models/notification';
 import { NewCommentNotificationPersistence } from '../../persistence/new-comment-notification.persistence';
 import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { TaskFollowersRepository } from '../task-followers-repository/task-followers.repository';
@@ -48,6 +49,7 @@ describe('CommentNotificationRepository', () => {
       project: null,
       taskId: TASK_ID,
       id: NOTIF_ID,
+      type: NotificationType.COMMENT,
     };
 
     const FOLLOWER_ID = 'follower-id';
@@ -171,6 +173,8 @@ describe('CommentNotificationRepository', () => {
         followerId,
       );
 
+      const idsOfNotifsBeforeRead = newNotificationsBeforeRead.map((n) => n.id);
+
       await repo.markNotificationAsReadByUser({
         followerId,
         notificationId: notifId,
@@ -180,7 +184,7 @@ describe('CommentNotificationRepository', () => {
         followerId,
       );
 
-      expect(newNotificationsBeforeRead).toContain(notif);
+      expect(idsOfNotifsBeforeRead).toContain(notif.id);
       expect(newNotifications).not.toContain(notif);
     });
 

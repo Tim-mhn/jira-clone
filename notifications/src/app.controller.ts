@@ -21,7 +21,6 @@ import {
   NewCommentDTO,
   ReadNotificationDTO,
 } from './notifications/infrastructure/dtos';
-import { TaskAssignationNotificationRepositoryToken } from './notifications/infrastructure/providers';
 import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
 import { TaskAssignedEvent } from './notifications/domain';
 
@@ -30,7 +29,6 @@ export class AppController {
   constructor(
     private repo: CommentNotificationRepository,
     private followersRepo: TaskFollowersRepository,
-    @Inject(TaskAssignationNotificationRepositoryToken)
     private createAssignationNotificationInteractor: CreateNewAssignationNotificationInteractor,
   ) {}
 
@@ -39,6 +37,7 @@ export class AppController {
     return 'Notifications API';
   }
 
+  //todo: create GetNewNotifications usecase to get comment AND assignation notifications !
   @Get('/notifications')
   getNewCommentNotifications(
     @Request() req: AuthenticatedRequest,
