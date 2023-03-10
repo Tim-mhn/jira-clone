@@ -5,7 +5,7 @@ import { TaskFollowersPersistence } from '../../persistence/task-followers.persi
 import { JSONFileStorage } from '../../storage/json-file.storage';
 
 const FOLLOWERS_FILENAME =
-  './src/infrastructure/persistence/task-followers.json';
+  './src/notifications/infrastructure/persistence/task-followers.json';
 
 const FollowersJSONFileStorage: PersistenceStorage<TaskFollowersPersistence> =
   new JSONFileStorage(FOLLOWERS_FILENAME);

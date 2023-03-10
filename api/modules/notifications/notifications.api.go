@@ -7,13 +7,20 @@ import (
 	http_utils "github.com/tim-mhn/figma-clone/utils/http"
 )
 
-const _NOTIFICATIONS_BASE_URL = "http://localhost:3000"
+type NotificationsAPI interface {
+	FollowTask(dto FollowTaskDTO, authCookie *http.Cookie) error
+	CreateCommentNotification(dto NewCommentNotificationDTO, authCookie *http.Cookie) error
+	SendTaskAssignationNotification() error
+}
 
-var _FOLLOW_TASK_URL = fmt.Sprintf("%s/follow", _NOTIFICATIONS_BASE_URL)
+func NewNotificationsAPI() NotificationsAPI {
+	return *new(NotificationsAPIImpl)
+}
 
-var _COMMENT_TASK_URL = fmt.Sprintf("%s/comment", _NOTIFICATIONS_BASE_URL)
+type NotificationsAPIImpl struct {
+}
 
-func FollowTask(dto FollowTaskDTO, authCookie *http.Cookie) error {
+func (s NotificationsAPIImpl) FollowTask(dto FollowTaskDTO, authCookie *http.Cookie) error {
 
 	req := http_utils.BuildRequest(http_utils.POST, _FOLLOW_TASK_URL, dto)
 	req.AddCookie(authCookie)
@@ -33,7 +40,7 @@ func FollowTask(dto FollowTaskDTO, authCookie *http.Cookie) error {
 	return nil
 }
 
-func CreateCommentNotification(dto NewCommentNotificationDTO, authCookie *http.Cookie) error {
+func (s NotificationsAPIImpl) CreateCommentNotification(dto NewCommentNotificationDTO, authCookie *http.Cookie) error {
 	req := http_utils.BuildRequest(http_utils.POST, _COMMENT_TASK_URL, dto)
 	req.AddCookie(authCookie)
 
@@ -46,4 +53,8 @@ func CreateCommentNotification(dto NewCommentNotificationDTO, authCookie *http.C
 
 	return nil
 
+}
+
+func (s NotificationsAPIImpl) SendTaskAssignationNotification() error {
+	return nil
 }

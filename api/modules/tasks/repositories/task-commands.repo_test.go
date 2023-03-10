@@ -8,7 +8,7 @@ import (
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
 )
 
-func TestUpdateTask(t *testing.T) {
+func TestUpdateTaskData(t *testing.T) {
 	t.Run("it should use the 'assignee_id' field in the SQL Query", func(t *testing.T) {
 		db, mock, _ := sqlmock.New()
 
@@ -25,7 +25,7 @@ func TestUpdateTask(t *testing.T) {
 
 		mock.ExpectExec("UPDATE task SET assignee_id").WillReturnResult(sqlmock.NewResult(1, 1))
 
-		repo.UpdateTask(taskID, dto)
+		repo.UpdateTaskData(taskID, dto)
 
 		assert.Nil(t, mock.ExpectationsWereMet(), "SQL Query did not use correct assignee_id field")
 	})

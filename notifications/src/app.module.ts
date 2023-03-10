@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { CommentNotificationRepository } from './infrastructure/repositories/comment-notification-repository/comment-notification.repository';
-import { TaskFollowersRepository } from './infrastructure/repositories/task-followers-repository/task-followers.repository';
+import { CommentNotificationRepository } from './notifications/infrastructure/repositories/comment-notification-repository/comment-notification.repository';
+import { TaskFollowersRepository } from './notifications/infrastructure/repositories/task-followers-repository/task-followers.repository';
 import { AuthModule, GlobalAuthGuardProvider } from './auth';
 import { ConfigModule } from '@nestjs/config';
+import { TaskAssignationNotificationRepositoryProvider } from './notifications/infrastructure/providers';
+import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { ConfigModule } from '@nestjs/config';
     GlobalAuthGuardProvider,
     CommentNotificationRepository,
     TaskFollowersRepository,
+    TaskAssignationNotificationRepositoryProvider,
+    CreateNewAssignationNotificationInteractor,
   ],
 })
 export class AppModule {}

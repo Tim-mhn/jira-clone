@@ -16,14 +16,16 @@ type ITaskCommentsService interface {
 	editCommentText(editComment EditCommentInput) CommentsError
 }
 type TaskCommentsService struct {
-	repo           TaskCommentsRepository
-	projectQueries project.ProjectQueriesRepository
+	repo             TaskCommentsRepository
+	projectQueries   project.ProjectQueriesRepository
+	notificationsAPI notifications_api.NotificationsAPI
 }
 
 func NewTaskCommentsService(repo TaskCommentsRepository, projectQueries project.ProjectQueriesRepository) TaskCommentsService {
 	return TaskCommentsService{
-		repo:           repo,
-		projectQueries: projectQueries,
+		repo:             repo,
+		projectQueries:   projectQueries,
+		notificationsAPI: notifications_api.NewNotificationsAPI(),
 	}
 }
 
@@ -64,7 +66,7 @@ func (s TaskCommentsService) createNewCommentNotification(comment CreateCommentI
 		},
 	}
 
-	return notifications_api.CreateCommentNotification(dto, authCookie)
+	return s.notificationsAPI.CreateCommentNotification(dto, authCookie)
 }
 
 func (s TaskCommentsService) getTaskComments(taskID string) (TaskComments, CommentsError) {

@@ -6,10 +6,11 @@ import { TaskFollowersRepository } from '../task-followers-repository/task-follo
 import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { JSONFileStorage } from '../../storage/json-file.storage';
 import { NotificationNotFound } from '../../../domain/errors/notification-not-found.error';
-import { ReadNotification } from '../../../domain/models/read-notification';
+import { NotificationReadEvent } from '../../../domain/events/notification-read.event';
+import { randomString } from '../../../../shared/strings';
 
 const NOTIFICATIONS_FILENAME =
-  './src/infrastructure/persistence/new-comment-notifications.json';
+  './src/notifications/infrastructure/persistence/new-comment-notifications.json';
 
 const NotificationsJSONFileStorage: PersistenceStorage<
   NewCommentNotificationPersistence[]
@@ -69,7 +70,7 @@ export class CommentNotificationRepository {
     await this._updateCommentNotifications(allNotifs);
   }
 
-  async markNotificationAsReadByUser(readNotification: ReadNotification) {
+  async markNotificationAsReadByUser(readNotification: NotificationReadEvent) {
     const { followerId, notificationId } = readNotification;
     const allNotifs = await this._getAllCommentNotifications();
     const notification = this._findNotificationById(allNotifs, notificationId);
@@ -81,7 +82,7 @@ export class CommentNotificationRepository {
   }
 
   private _generateId() {
-    return (Math.random() + 1).toString(36).substring(2);
+    return randomString();
   }
 
   private async _getAllCommentNotifications() {

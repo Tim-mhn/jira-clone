@@ -1,6 +1,7 @@
 package tasks_services
 
 import (
+	notifications_api "github.com/tim-mhn/figma-clone/modules/notifications"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
 	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
@@ -13,6 +14,7 @@ type CreateTaskInput struct {
 	ProjectID, SprintID, Title, Description, AssigneeID string
 }
 
+// todo: reuse this type instead of the DTO
 type UpdateTaskInput struct {
 	Status      *int
 	AssigneeId  *string
@@ -24,8 +26,9 @@ type UpdateTaskInput struct {
 }
 
 type TaskCommandsService struct {
-	repo        tasks_repositories.TaskCommandsRepository
-	tagsService tags.ITagsService
+	repo             tasks_repositories.TaskCommandsRepository
+	tagsService      tags.ITagsService
+	notificationsAPI notifications_api.NotificationsAPI
 }
 
 func NewTaskCommandsService(repo tasks_repositories.TaskCommandsRepository, tagsService tags.ITagsService) *TaskCommandsService {
@@ -55,12 +58,14 @@ func (service TaskCommandsService) CreateTask(input CreateTaskInput) (tasks_mode
 
 }
 
-func (service TaskCommandsService) UpdateTaskAndTags(taskID string, patchDTO tasks_dtos.PatchTaskDTO) tasks_errors.TaskError {
-	err := service.repo.UpdateTask(taskID, patchDTO)
+func (service TaskCommandsService) UpdateTask(taskID string, patchDTO tasks_dtos.PatchTaskDTO) tasks_errors.TaskError {
+	err := service.repo.UpdateTaskData(taskID, patchDTO)
 
 	if err == nil {
 		err = service.updateTaskTagsIfTitleChanged(taskID, patchDTO)
 	}
+
+	service.sendNewAssigneeNotificationIfChanged(taskID, patchDTO)
 
 	if err != nil {
 		return tasks_errors.BuildTaskError(tasks_errors.OtherTaskError, err)
@@ -76,4 +81,15 @@ func (service TaskCommandsService) updateTaskTagsIfTitleChanged(taskID string, p
 	}
 
 	return nil
+}
+
+func (service TaskCommandsService) sendNewAssigneeNotificationIfChanged(taskID string, patchDTO tasks_dtos.PatchTaskDTO) {
+	if patchDTO.AssigneeId != nil {
+		service.notificationsAPI.SendTaskAssignationNotification()
+	}
+}
+
+func (service TaskCommandsService) DeleteTask(taskID string) (tasks_repositories.DeleteTaskResponse, error) {
+
+	return service.repo.DeleteTask(taskID)
 }

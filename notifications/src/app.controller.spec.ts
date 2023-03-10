@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
-import { NotificationNotFound } from './domain/errors/notification-not-found.error';
-import { CommentNotificationRepository } from './infrastructure/repositories/comment-notification-repository/comment-notification.repository';
-import { TaskFollowersRepository } from './infrastructure/repositories/task-followers-repository/task-followers.repository';
+import { CommentNotificationRepository } from './notifications/infrastructure/repositories/comment-notification-repository/comment-notification.repository';
+import { TaskFollowersRepository } from './notifications/infrastructure/repositories/task-followers-repository/task-followers.repository';
 import { createMocks } from 'node-mocks-http';
 import { HttpStatus } from '@nestjs/common';
-import { ReadNotificationDTO } from './infrastructure/dtos';
+import { ReadNotificationDTO } from './notifications/infrastructure/dtos';
 import { AuthenticatedRequest } from './auth';
+import { NotificationNotFound } from './notifications/domain';
+import { TaskAssignationNotificationRepositoryProvider } from './notifications/infrastructure/providers';
 
 describe('AppController', () => {
   let controller: AppController;
@@ -28,6 +29,7 @@ describe('AppController', () => {
           provide: TaskFollowersRepository,
           useValue: mockFollowersRepo,
         },
+        TaskAssignationNotificationRepositoryProvider,
       ],
     }).compile();
     controller = app.get<AppController>(AppController);

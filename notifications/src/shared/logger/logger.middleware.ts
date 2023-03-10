@@ -5,8 +5,9 @@ export function logger(req: Request, res: Response, next: NextFunction) {
 
   const method = req.method;
   const methodAndUrl = `${method} ${req.url}`;
-  const stringifiedBody = JSON.stringify(req.body);
 
+  //todo: check why req.body is undefined
+  const stringifiedBody = JSON.stringify(req.body);
   console.log(`[REQUEST] - ${now} LOG - ${methodAndUrl} - ${stringifiedBody}`);
 
   res.on('close', () => {

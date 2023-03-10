@@ -20,22 +20,22 @@ import (
 )
 
 type TasksController struct {
-	taskQueries       *tasks_repositories.TaskQueriesRepository
-	taskCommands      *tasks_repositories.SQLTaskCommandsRepository
-	sprintService     tasks_services.ITasksService
-	taskPositionRepo  *tasks_repositories.TaskPositionRepository
-	createTaskService tasks_services.TaskCommandsService
+	taskQueries      *tasks_repositories.TaskQueriesRepository
+	sprintService    tasks_services.ITasksService
+	taskPositionRepo *tasks_repositories.TaskPositionRepository
+	taskCommands     tasks_services.TaskCommandsService
+	notificationsAPI notifications_api.NotificationsAPI
 }
 
 func NewTasksController(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, service tasks_services.ITasksService, taskRepo *tasks_repositories.TaskQueriesRepository, tagsService tags.ITagsService, conn *sql.DB) *TasksController {
 
-	taskCommands := tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn)
+	taskCommandsRepo := tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn)
 	return &TasksController{
-		taskQueries:       tasks_repositories.NewTaskQueriesRepository(um, conn),
-		taskCommands:      tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn),
-		sprintService:     service,
-		createTaskService: *tasks_services.NewTaskCommandsService(taskCommands, tagsService),
-		taskPositionRepo:  tasks_repositories.NewTaskPositionRepository(conn),
+		taskQueries:      tasks_repositories.NewTaskQueriesRepository(um, conn),
+		sprintService:    service,
+		taskCommands:     *tasks_services.NewTaskCommandsService(taskCommandsRepo, tagsService),
+		taskPositionRepo: tasks_repositories.NewTaskPositionRepository(conn),
+		notificationsAPI: notifications_api.NewNotificationsAPI(),
 	}
 }
 
@@ -70,7 +70,7 @@ func (tc *TasksController) CreateNewTask(c *gin.Context) {
 	}
 
 	// todo: improve error handling and return API Error
-	newTask, newTaskErr := tc.createTaskService.CreateTask(createTaskInput)
+	newTask, newTaskErr := tc.taskCommands.CreateTask(createTaskInput)
 
 	if newTaskErr.HasError {
 		apiError := shared_errors.BuildAPIErrorFromDomainError(newTaskErr)
@@ -82,7 +82,7 @@ func (tc *TasksController) CreateNewTask(c *gin.Context) {
 
 	authCookie := auth.GetAuthCookieFromContext(c)
 
-	err := notifications_api.FollowTask(notifications_api.FollowTaskDTO{
+	err := tc.notificationsAPI.FollowTask(notifications_api.FollowTaskDTO{
 		UserID: currentUser.Id,
 		TaskID: *newTask.Id,
 	}, authCookie)
@@ -103,7 +103,7 @@ func (tc *TasksController) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	updateTaskError := tc.createTaskService.UpdateTaskAndTags(taskID, updateTaskDTO)
+	updateTaskError := tc.taskCommands.UpdateTask(taskID, updateTaskDTO)
 
 	if updateTaskError.HasError {
 		apiError := shared_errors.BuildAPIErrorFromDomainError(updateTaskError)

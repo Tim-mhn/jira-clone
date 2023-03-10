@@ -1,6 +1,4 @@
-import { ProjectIdName, TaskId } from './ids';
-
-export type CommentNotificationId = string;
+import { NotificationId, ProjectIdName, TaskId } from './ids';
 
 export type CommentAuthor = {
   name: string;
@@ -11,5 +9,5 @@ export interface NewCommentNotification {
   project: ProjectIdName;
   comment: string;
   author: CommentAuthor;
-  id: CommentNotificationId;
+  id: NotificationId;
 }

@@ -4,25 +4,34 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Post,
   Request,
   Res,
 } from '@nestjs/common';
-import { FollowTaskDTO } from './infrastructure/dtos/follow-task.dto';
-import { NewCommentDTO } from './infrastructure/dtos/new-comment.dto';
-import { ReadNotificationDTO } from './infrastructure/dtos/read-notification.dto';
-import { NewCommentNotification } from './domain/models/new-comment-notification';
-import { CommentNotificationRepository } from './infrastructure/repositories/comment-notification-repository/comment-notification.repository';
-import { TaskFollowersRepository } from './infrastructure/repositories/task-followers-repository/task-followers.repository';
+import { NewCommentNotification } from './notifications/domain/models/new-comment-notification';
+import { CommentNotificationRepository } from './notifications/infrastructure/repositories/comment-notification-repository/comment-notification.repository';
+import { TaskFollowersRepository } from './notifications/infrastructure/repositories/task-followers-repository/task-followers.repository';
 import { AuthenticatedRequest } from './auth';
 import { Response } from 'express';
-import { NotificationNotFound } from './domain/errors/notification-not-found.error';
+import { NotificationNotFound } from './notifications/domain/errors/notification-not-found.error';
+import {
+  AssignationNotificationDTO,
+  FollowTaskDTO,
+  NewCommentDTO,
+  ReadNotificationDTO,
+} from './notifications/infrastructure/dtos';
+import { TaskAssignationNotificationRepositoryToken } from './notifications/infrastructure/providers';
+import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
+import { TaskAssignedEvent } from './notifications/domain';
 
 @Controller()
 export class AppController {
   constructor(
     private repo: CommentNotificationRepository,
     private followersRepo: TaskFollowersRepository,
+    @Inject(TaskAssignationNotificationRepositoryToken)
+    private createAssignationNotificationInteractor: CreateNewAssignationNotificationInteractor,
   ) {}
 
   @Get()
@@ -47,10 +56,26 @@ export class AppController {
     );
   }
 
-  //todo: add validation on new comment DTO since project seems to be missing
   @Post('/comment')
   createNewCommentNotification(@Body() newCommentDTO: NewCommentDTO) {
     this.repo.createNewCommentNotification(newCommentDTO);
+  }
+
+  @Post('/assignation')
+  createNewAssignationNotification(
+    @Body() dto: AssignationNotificationDTO,
+    @Request() authRequest: AuthenticatedRequest,
+  ) {
+    const userId = authRequest?.user?.id;
+
+    const taskAssignedEvent: TaskAssignedEvent = {
+      assignerId: userId,
+      ...dto,
+    };
+
+    return this.createAssignationNotificationInteractor.handle(
+      taskAssignedEvent,
+    );
   }
 
   @HttpCode(HttpStatus.OK)
