@@ -8,7 +8,6 @@ import {
   Request,
   Res,
 } from '@nestjs/common';
-import { NewCommentNotification } from './notifications/domain/models/new-comment-notification';
 import { CommentNotificationRepository } from './notifications/infrastructure/repositories/comment-notification-repository/comment-notification.repository';
 import { TaskFollowersRepository } from './notifications/infrastructure/repositories/task-followers-repository/task-followers.repository';
 import { AuthenticatedRequest } from './auth';
@@ -22,6 +21,8 @@ import {
 } from './notifications/infrastructure/dtos';
 import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
 import { TaskAssignedEvent } from './notifications/domain';
+import { GetNewNotificationsInteractor } from './notifications/application/use-cases/get-new-notifications/get-new-notifications.interactor';
+import { AllNotifications } from './notifications/domain/models/all-notifications';
 
 @Controller()
 export class AppController {
@@ -29,6 +30,7 @@ export class AppController {
     private repo: CommentNotificationRepository,
     private followersRepo: TaskFollowersRepository,
     private createAssignationNotificationInteractor: CreateNewAssignationNotificationInteractor,
+    private getNewNotificationsInteractor: GetNewNotificationsInteractor,
   ) {}
 
   @Get()
@@ -36,13 +38,12 @@ export class AppController {
     return 'Notifications API';
   }
 
-  //todo: create GetNewNotifications usecase to get comment AND assignation notifications !
   @Get('/notifications')
   getNewCommentNotifications(
     @Request() req: AuthenticatedRequest,
-  ): Promise<NewCommentNotification[]> {
+  ): Promise<AllNotifications> {
     const userId = req.user.id;
-    return this.repo.getNewCommentNotifications(userId);
+    return this.getNewNotificationsInteractor.getNewNotifications(userId);
   }
 
   @Post('/follow')

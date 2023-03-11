@@ -1,6 +1,10 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { randomString } from '../../../../shared/strings';
-import { TaskAssignationNotificationData } from '../../../domain/models/task-assignation-notification';
+import { NotificationType } from '../../../domain/models/notification';
+import {
+  TaskAssignationNotification,
+  TaskAssignationNotificationData,
+} from '../../../domain/models/task-assignation-notification';
 import { TaskAssignationNotificationRepository } from '../../../domain/repositories/assignation-notification.repository';
 import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { TaskAssignationNotificationPersistence } from '../../persistence/task-assignation-notification.persistence';
@@ -17,6 +21,14 @@ const NotificationsJSONFileStorage: PersistenceStorage<
 export class JSONTaskAssignationNotificationRepository
   implements TaskAssignationNotificationRepository
 {
+  async getNewNotifications(
+    userId: string,
+  ): Promise<TaskAssignationNotification[]> {
+    const allNotifs = await this.storage.get();
+    return allNotifs
+      ?.filter((n) => n.assigneeId === userId && !n.read)
+      .map((n) => ({ ...n, type: NotificationType.ASSIGNATION }));
+  }
   private storage = NotificationsJSONFileStorage;
 
   async create(data: Omit<TaskAssignationNotificationData, 'id'>) {
