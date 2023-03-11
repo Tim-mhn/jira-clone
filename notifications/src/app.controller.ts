@@ -12,7 +12,6 @@ import { CommentNotificationRepository } from './notifications/infrastructure/re
 import { TaskFollowersRepository } from './notifications/infrastructure/repositories/task-followers-repository/task-followers.repository';
 import { AuthenticatedRequest } from './auth';
 import { Response } from 'express';
-import { NotificationNotFound } from './notifications/domain/errors/notification-not-found.error';
 import {
   AssignationNotificationDTO,
   FollowTaskDTO,
@@ -20,9 +19,14 @@ import {
   ReadNotificationDTO,
 } from './notifications/infrastructure/dtos';
 import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
-import { TaskAssignedEvent } from './notifications/domain';
+import {
+  NotificationNotFound,
+  NotificationReadEvent,
+  TaskAssignedEvent,
+} from './notifications/domain';
 import { GetNewNotificationsInteractor } from './notifications/application/use-cases/get-new-notifications/get-new-notifications.interactor';
 import { AllNotifications } from './notifications/domain/models/all-notifications';
+import { ReadNotificationInteractor } from './notifications/application/use-cases/read-notification/read-notification.interactor';
 
 @Controller()
 export class AppController {
@@ -31,6 +35,7 @@ export class AppController {
     private followersRepo: TaskFollowersRepository,
     private createAssignationNotificationInteractor: CreateNewAssignationNotificationInteractor,
     private getNewNotificationsInteractor: GetNewNotificationsInteractor,
+    private readNotificationInteractor: ReadNotificationInteractor,
   ) {}
 
   @Get()
@@ -87,12 +92,13 @@ export class AppController {
     try {
       const currentUserId = req.user.id;
 
-      const { notificationId } = notificationReadDTO;
-
-      await this.repo.markNotificationAsReadByUser({
+      const notificationReadEvent: NotificationReadEvent = {
         followerId: currentUserId,
-        notificationId,
-      });
+        notificationId: notificationReadDTO.notificationId,
+        notificationType: notificationReadDTO.type,
+      };
+
+      this.readNotificationInteractor.readNotification(notificationReadEvent);
     } catch (err) {
       if (err instanceof NotificationNotFound) {
         _response.status(HttpStatus.NOT_FOUND).send({

@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TaskAssignationNotificationRepositoryProvider } from './notifications/infrastructure/providers';
 import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
 import { GetNewNotificationsInteractor } from './notifications/application/use-cases/get-new-notifications/get-new-notifications.interactor';
+import { ReadNotificationInteractor } from './notifications/application/use-cases/read-notification/read-notification.interactor';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { GetNewNotificationsInteractor } from './notifications/application/use-c
     TaskAssignationNotificationRepositoryProvider,
     CreateNewAssignationNotificationInteractor,
     GetNewNotificationsInteractor,
+    ReadNotificationInteractor,
   ],
 })
 export class AppModule {}

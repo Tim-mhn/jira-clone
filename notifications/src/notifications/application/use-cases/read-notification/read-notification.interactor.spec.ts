@@ -17,6 +17,7 @@ describe('ReadNotificationService', () => {
   const mockTaskAssignationRepo: TaskAssignationNotificationRepository = {
     markNotificationAsRead: jest.fn(),
     create: jest.fn(),
+    getNewNotifications: jest.fn(),
   } as TaskAssignationNotificationRepository;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

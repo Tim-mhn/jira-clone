@@ -3,18 +3,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { CommentNotificationRepository } from './notifications/infrastructure/repositories/comment-notification-repository/comment-notification.repository';
 import { TaskFollowersRepository } from './notifications/infrastructure/repositories/task-followers-repository/task-followers.repository';
+import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
+import { ReadNotificationInteractor } from './notifications/application/use-cases/read-notification/read-notification.interactor';
+import { NotificationNotFound } from './notifications/domain';
 import { createMocks } from 'node-mocks-http';
-import { HttpStatus } from '@nestjs/common';
 import { ReadNotificationDTO } from './notifications/infrastructure/dtos';
 import { AuthenticatedRequest } from './auth';
-import { NotificationNotFound } from './notifications/domain';
-import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
+import { HttpStatus } from '@nestjs/common';
+import { GetNewNotificationsInteractor } from './notifications/application/use-cases/get-new-notifications/get-new-notifications.interactor';
 
 describe('AppController', () => {
   let controller: AppController;
-
   const mockRepo = {} as CommentNotificationRepository;
-  mockRepo.markNotificationAsReadByUser = () => new Promise((res) => res(null));
+  mockRepo.markNotificationAsReadByUser = jest.fn();
+
+  const mockReadNotifUsecase: ReadNotificationInteractor = {
+    readNotification: jest.fn(),
+  } as any as ReadNotificationInteractor;
 
   const mockFollowersRepo = {} as TaskFollowersRepository;
 
@@ -36,6 +41,14 @@ describe('AppController', () => {
           provide: CreateNewAssignationNotificationInteractor,
           useValue: mockCreateAssignationNotif,
         },
+        {
+          provide: ReadNotificationInteractor,
+          useValue: mockReadNotifUsecase,
+        },
+        {
+          provide: GetNewNotificationsInteractor,
+          useValue: {},
+        },
       ],
     }).compile();
     controller = app.get<AppController>(AppController);
@@ -52,7 +65,7 @@ describe('AppController', () => {
       const { req, res } = createMocks();
 
       jest
-        .spyOn(mockRepo, 'markNotificationAsReadByUser')
+        .spyOn(mockReadNotifUsecase, 'readNotification')
         .mockImplementationOnce(async () => {
           throw new NotificationNotFound(notifId);
         });
