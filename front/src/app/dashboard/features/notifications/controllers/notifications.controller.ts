@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { ProjectIdName } from '../../../core/models';
 import { buildTaskPageRoute } from '../../browse/utils/build-browse-page-routes.util';
 import { NotificationsAPI } from '../apis/notifications.api';
-import { NewCommentNotification } from '../models/new-comment-notification';
+import { Notification, NotificationType } from '../models';
 import { NotificationsProvidersModule } from '../notifications-providers.module';
 
 @Injectable({
@@ -16,14 +16,16 @@ export class NotificationsController {
     return this.api.getNewCommentNotifications();
   }
 
-  public goToTaskPageAndMarkNotificationAsRead(
-    notification: NewCommentNotification
+  public goToTaskPageAndMarkNotificationAsRead<T extends NotificationType>(
+    notification: Notification<T>
   ) {
     this.api.readNotification({ notificationId: notification.id }).subscribe();
     this._goToTaskPage(notification);
   }
 
-  private _goToTaskPage(notification: NewCommentNotification) {
+  private _goToTaskPage<T extends NotificationType>(
+    notification: Notification<T>
+  ) {
     const projectIdName: ProjectIdName = {
       Id: notification.project.id,
       Name: notification.project.name,

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../../environments/environment';
 import { ReadNotificationDTO } from '../dtos/read-notification.dto';
-import { NewCommentNotification } from '../models/new-comment-notification';
+import { NewNotifications } from '../models';
 import { NotificationsProvidersModule } from '../notifications-providers.module';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class NotificationsAPI {
   private readEndpoint = `${environment.notificationsUrl}read`;
   public getNewCommentNotifications() {
     const endpoint = `${this.endpoint}`;
-    return this.http.get<NewCommentNotification[]>(endpoint);
+    return this.http.get<NewNotifications>(endpoint);
   }
 
   public readNotification(dto: ReadNotificationDTO) {

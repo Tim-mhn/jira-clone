@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { NotificationsController } from '../../controllers/notifications.controller';
-import { NewCommentNotification } from '../../models/new-comment-notification';
+import { NewNotifications, Notification, NotificationType } from '../../models';
 
 @Component({
   selector: 'jira-notifications-indicator',
@@ -10,13 +10,17 @@ import { NewCommentNotification } from '../../models/new-comment-notification';
 export class NotificationsIndicatorComponent implements OnInit {
   constructor(private controller: NotificationsController) {}
 
-  notifications$: Observable<NewCommentNotification[]>;
+  notifications$: Observable<NewNotifications>;
+
+  CommentNotification = NotificationType.COMMENT;
 
   ngOnInit(): void {
-    this.notifications$ = this.controller.getNewNotificationsForCurrentUser();
+    this.notifications$ = this.controller
+      .getNewNotificationsForCurrentUser()
+      .pipe(tap(console.log));
   }
 
-  navigateToTaskPage(notification: NewCommentNotification) {
+  navigateToTaskPage(notification: Notification<any>) {
     this.controller.goToTaskPageAndMarkNotificationAsRead(notification);
   }
 }

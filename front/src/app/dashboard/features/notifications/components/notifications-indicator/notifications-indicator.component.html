@@ -9,14 +9,34 @@
     *ngFor="let notif of notifications$ | async"
     (click)="navigateToTaskPage(notif)"
   >
-    <div class="text-xs flex-wrap whitespace-normal line-clamp-2">
-      <span class="font-medium">{{ notif.author.name }}</span
-      >&nbsp;added a comment on task&nbsp;<span class="font-medium">{{
-        notif.taskId
-      }}</span
-      >: "
-      <span class="italic">{{ notif.comment }}</span>
+    <ng-container
+      *ngTemplateOutlet="
+        notif.type === CommentNotification
+          ? commentNotification
+          : taskAssignedNotification;
+        context: { $implicit: notif }
       "
-    </div>
+    ></ng-container>
+
+    <!-- {{ notif | json }} -->
   </tim-dropdown-item>
 </tim-dropdown-menu>
+
+<ng-template #commentNotification let-notif>
+  <div class="text-xs flex-wrap whitespace-normal line-clamp-2">
+    <span class="font-medium">{{ notif?.author.name }}</span
+    >&nbsp;added a comment on task&nbsp;<span class="font-medium">{{
+      notif?.taskId
+    }}</span
+    >: "
+    <span class="italic">{{ notif.comment }}</span>
+    "
+  </div>
+</ng-template>
+
+<ng-template #taskAssignedNotification let-notif>
+  <div class="text-xs flex-wrap whitespace-normal">
+    You have been assigned to task {{ notif?.taskId }} by
+    {{ notif?.assignerId }}
+  </div>
+</ng-template>

@@ -48,7 +48,6 @@ export class AppController {
 
   @Post('/follow')
   followTask(@Body() followTaskDTO: FollowTaskDTO) {
-    console.log('FOLLOW CALLED with ', followTaskDTO);
     this.followersRepo.markUserAsFollowerOfTask(
       followTaskDTO.userId,
       followTaskDTO.taskId,
@@ -60,6 +59,7 @@ export class AppController {
     this.repo.createNewCommentNotification(newCommentDTO);
   }
 
+  // todo: - cancel previous assignation notifications of that task
   @Post('/assignation')
   createNewAssignationNotification(
     @Body() dto: AssignationNotificationDTO,
