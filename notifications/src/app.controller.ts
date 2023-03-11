@@ -98,7 +98,9 @@ export class AppController {
         notificationType: notificationReadDTO.type,
       };
 
-      this.readNotificationInteractor.readNotification(notificationReadEvent);
+      await this.readNotificationInteractor.readNotification(
+        notificationReadEvent,
+      );
     } catch (err) {
       if (err instanceof NotificationNotFound) {
         _response.status(HttpStatus.NOT_FOUND).send({
