@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ValueProvider } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -15,6 +14,7 @@ describe('CreateNewAssignationNotificationInteractor', () => {
   const mockRepo: TaskAssignationNotificationRepository = {
     create: async (_data: Omit<TaskAssignationNotificationData, 'id'>) => null,
     markNotificationAsRead: async (_notificationId: string) => null,
+    getNewNotifications: async (_userId: string) => null,
   };
 
   const provider: ValueProvider = {

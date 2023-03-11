@@ -36,9 +36,27 @@ module.exports = {
     'no-useless-constructor': 'off',
     'no-use-before-define': 'off',
     'no-empty-function': 'off',
-    'no-unused-vars': 'off',
-
     'unused-imports/no-unused-imports': 'error',
+    'unused-imports/no-unused-vars': [
+      'warn',
+      {
+        vars: 'all',
+        varsIgnorePattern: '^_',
+        args: 'after-used',
+        argsIgnorePattern: '^_',
+      },
+    ],
+    'no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_+',
+        ignoreRestSiblings: true,
+      },
+    ],
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
+
     'unused-imports/no-unused-vars': 'off',
     'lines-between-class-members': 'off',
     'no-unused-expressions': [
