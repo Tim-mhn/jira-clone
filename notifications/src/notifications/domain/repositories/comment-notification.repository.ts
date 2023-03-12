@@ -5,7 +5,6 @@ import {
   TaskFollowerId,
 } from '../models';
 
-// todo: finish CommentNotificationRepository
 export type NewCommentNotificationsInput = NewCommentEvent & {
   followersIds: string[];
 };

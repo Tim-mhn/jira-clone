@@ -6,4 +6,5 @@ export type TaskAssignationNotificationPersistence = {
   project: ProjectIdName;
   assigneeId: string;
   read: boolean;
+  dismissed: boolean;
 };

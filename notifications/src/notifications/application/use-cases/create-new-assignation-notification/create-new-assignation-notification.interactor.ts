@@ -11,9 +11,16 @@ export class CreateNewAssignationNotificationInteractor {
   ) {}
 
   async handle(taskAssigned: TaskAssignedEvent) {
+    await this._dismissOtherAssignationNotificationsFromTask(
+      taskAssigned.taskId,
+    );
     const userHasSelfAssignedTask =
       taskAssigned.assigneeId === taskAssigned.assignerId;
     if (userHasSelfAssignedTask) return;
     return this.repo.create(taskAssigned);
+  }
+
+  private async _dismissOtherAssignationNotificationsFromTask(taskId: string) {
+    this.repo.dismissNotificationsFromTask(taskId);
   }
 }

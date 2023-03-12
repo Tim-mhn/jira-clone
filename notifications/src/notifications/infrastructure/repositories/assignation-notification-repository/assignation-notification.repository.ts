@@ -26,7 +26,7 @@ export class JSONTaskAssignationNotificationRepository
   ): Promise<TaskAssignationNotification[]> {
     const allNotifs = await this.storage.get();
     return allNotifs
-      ?.filter((n) => n.assigneeId === userId && !n.read)
+      ?.filter((n) => n.assigneeId === userId && !n.read && !n.dismissed)
       .map((n) => ({ ...n, type: NotificationType.ASSIGNATION }));
   }
   private storage = NotificationsJSONFileStorage;
@@ -38,6 +38,7 @@ export class JSONTaskAssignationNotificationRepository
       ...data,
       id,
       read: false,
+      dismissed: false,
     };
     const allNotifsWithNew = [...allNotifs, notif];
     this.storage.set(allNotifsWithNew);
@@ -48,5 +49,11 @@ export class JSONTaskAssignationNotificationRepository
     const notif = allNotifs?.find((n) => n.id === notificationId);
     if (notif) notif.read = true;
     this.storage.set(allNotifs);
+  }
+
+  async dismissNotificationsFromTask(taskId: string): Promise<void> {
+    const allNotifs = await this.storage.get();
+    const taskNotifs = allNotifs?.filter((n) => n.taskId === taskId);
+    taskNotifs.forEach((notif) => (notif.dismissed = true));
   }
 }

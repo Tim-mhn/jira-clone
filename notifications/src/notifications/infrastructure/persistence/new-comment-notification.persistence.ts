@@ -1,6 +1,6 @@
 import { NewCommentNotification } from '../../domain/models';
 
-export type NewCommentNotificationPersistence = Omit<
+export type CommentNotificationPersistence = Omit<
   NewCommentNotification,
   'type'
 > & {

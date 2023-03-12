@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { TaskFollowerId } from '../../../domain/models';
 import { NewCommentNotification } from '../../../domain/models/new-comment-notification';
-import { NewCommentNotificationPersistence } from '../../persistence/new-comment-notification.persistence';
+import { CommentNotificationPersistence } from '../../persistence/new-comment-notification.persistence';
 import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { JSONFileStorage } from '../../storage/json-file.storage';
 import { NotificationNotFound } from '../../../domain/errors/notification-not-found.error';
@@ -16,7 +16,7 @@ const NOTIFICATIONS_FILENAME =
   './src/notifications/infrastructure/persistence/new-comment-notifications.json';
 
 const NotificationsJSONFileStorage: PersistenceStorage<
-  NewCommentNotificationPersistence[]
+  CommentNotificationPersistence[]
 > = new JSONFileStorage(NOTIFICATIONS_FILENAME);
 
 @Injectable({ scope: Scope.DEFAULT })
@@ -46,8 +46,8 @@ export class JSONCommentNotificationRepository
 
     const currentNotifications = await this._getAllCommentNotifications();
 
-    const newNotifications: NewCommentNotificationPersistence[] =
-      followersIds.map((followerId) => ({
+    const newNotifications: CommentNotificationPersistence[] = followersIds.map(
+      (followerId) => ({
         author,
         comment,
         project,
@@ -55,7 +55,9 @@ export class JSONCommentNotificationRepository
         followerId,
         id: this._generateId(),
         read: false,
-      }));
+        dismissed: false,
+      }),
+    );
 
     const allNotifications = [...currentNotifications, ...newNotifications];
 
@@ -80,13 +82,13 @@ export class JSONCommentNotificationRepository
   }
 
   private async _updateCommentNotifications(
-    notifs: NewCommentNotificationPersistence[],
+    notifs: CommentNotificationPersistence[],
   ) {
     this.storage.set(notifs);
   }
 
   private _findNotificationById(
-    allNotifs: NewCommentNotificationPersistence[],
+    allNotifs: CommentNotificationPersistence[],
     notificationId: string,
   ) {
     const notification = allNotifs.find((n) => n.id === notificationId);

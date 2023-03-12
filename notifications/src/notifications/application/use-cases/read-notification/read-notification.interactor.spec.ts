@@ -17,6 +17,7 @@ describe('ReadNotificationService', () => {
     readNotification: jest.fn(),
     create: jest.fn(),
     getNewNotifications: jest.fn(),
+    dismissNotificationsFromTask: jest.fn(),
   } as TaskAssignationNotificationRepository;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

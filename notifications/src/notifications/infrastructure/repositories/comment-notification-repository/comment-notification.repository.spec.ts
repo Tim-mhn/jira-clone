@@ -4,7 +4,7 @@ import { NotificationNotFound } from '../../../domain/errors/notification-not-fo
 import { CommentAuthor, NewCommentNotification } from '../../../domain/models';
 import { NotificationType } from '../../../domain/models/notification';
 import { NewCommentNotificationsInput } from '../../../domain/repositories/comment-notification.repository';
-import { NewCommentNotificationPersistence } from '../../persistence/new-comment-notification.persistence';
+import { CommentNotificationPersistence } from '../../persistence/new-comment-notification.persistence';
 import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { TaskFollowersRepository } from '../task-followers-repository/task-followers.repository';
 import { JSONCommentNotificationRepository } from './comment-notification.repository';
@@ -12,16 +12,11 @@ import { JSONCommentNotificationRepository } from './comment-notification.reposi
 describe('CommentNotificationRepository', () => {
   let repo: JSONCommentNotificationRepository;
 
-  let followersRepo: TaskFollowersRepository;
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [JSONCommentNotificationRepository, TaskFollowersRepository],
     }).compile();
 
-    followersRepo = module.get<TaskFollowersRepository>(
-      TaskFollowersRepository,
-    );
     repo = module.get<JSONCommentNotificationRepository>(
       JSONCommentNotificationRepository,
     );
@@ -31,12 +26,11 @@ describe('CommentNotificationRepository', () => {
   });
 
   describe('getNewCommentNotifications', () => {
-    const mockStorage: PersistenceStorage<NewCommentNotificationPersistence[]> =
-      {
-        get: async () => await [],
-        set: async (_data: NewCommentNotificationPersistence[]) =>
-          new Promise<void>((res) => res()),
-      };
+    const mockStorage: PersistenceStorage<CommentNotificationPersistence[]> = {
+      get: async () => await [],
+      set: async (_data: CommentNotificationPersistence[]) =>
+        new Promise<void>((res) => res()),
+    };
 
     beforeEach(() => {
       repo['storage'] = mockStorage;
@@ -57,12 +51,6 @@ describe('CommentNotificationRepository', () => {
 
     const tasksFollowed = [TASK_ID];
 
-    beforeEach(() => {
-      jest
-        .spyOn(followersRepo, 'getTasksFollowedByUser')
-        .mockImplementation(async () => tasksFollowed);
-    });
-
     it('should return the comment notification initially (not read)', async () => {
       const input: NewCommentNotificationsInput = {
         ...DUMMY_COMMENT_NOTIF,
@@ -71,7 +59,7 @@ describe('CommentNotificationRepository', () => {
 
       repo.createNewCommentNotifications(input);
 
-      const persistenceData: NewCommentNotificationPersistence[] = [
+      const persistenceData: CommentNotificationPersistence[] = [
         {
           ...DUMMY_COMMENT_NOTIF,
           read: false,
@@ -88,7 +76,7 @@ describe('CommentNotificationRepository', () => {
     });
 
     it('should not return a comment notification after it has been read', async () => {
-      const persistenceData: NewCommentNotificationPersistence[] = [
+      const persistenceData: CommentNotificationPersistence[] = [
         {
           ...DUMMY_COMMENT_NOTIF,
           comment: 'other comment',
@@ -108,17 +96,16 @@ describe('CommentNotificationRepository', () => {
   });
 
   describe('readNotification', () => {
-    let allNotifications: NewCommentNotificationPersistence[] = [];
+    let allNotifications: CommentNotificationPersistence[] = [];
 
-    const mockStorage: PersistenceStorage<NewCommentNotificationPersistence[]> =
-      {
-        get: async () => await allNotifications,
-        set: async (data: NewCommentNotificationPersistence[]) =>
-          new Promise<void>((res) => {
-            allNotifications = data;
-            res();
-          }),
-      };
+    const mockStorage: PersistenceStorage<CommentNotificationPersistence[]> = {
+      get: async () => await allNotifications,
+      set: async (data: CommentNotificationPersistence[]) =>
+        new Promise<void>((res) => {
+          allNotifications = data;
+          res();
+        }),
+    };
 
     const notifId = 'ceac848c4e84a9c';
     const author: CommentAuthor = {
@@ -130,7 +117,7 @@ describe('CommentNotificationRepository', () => {
 
     const followerId = 'follower-id';
 
-    const notif: NewCommentNotificationPersistence = {
+    const notif: CommentNotificationPersistence = {
       id: notifId,
       author,
       comment: 'comment',
@@ -144,12 +131,6 @@ describe('CommentNotificationRepository', () => {
       allNotifications = [];
       allNotifications.push(notif);
       repo['storage'] = mockStorage;
-
-      const tasksFollowed = [taskId];
-
-      jest
-        .spyOn(followersRepo, 'getTasksFollowedByUser')
-        .mockImplementation(async () => tasksFollowed);
     });
 
     it('should not return a notification after it has been read', async () => {
@@ -180,18 +161,17 @@ describe('CommentNotificationRepository', () => {
 
   describe('createNewCommentNotifications', () => {
     beforeEach(() => {
-      let allNotifications: NewCommentNotificationPersistence[] = [];
+      let allNotifications: CommentNotificationPersistence[] = [];
 
-      const mockStorage: PersistenceStorage<
-        NewCommentNotificationPersistence[]
-      > = {
-        get: async () => await allNotifications,
-        set: async (data: NewCommentNotificationPersistence[]) =>
-          new Promise<void>((res) => {
-            allNotifications = data;
-            res();
-          }),
-      };
+      const mockStorage: PersistenceStorage<CommentNotificationPersistence[]> =
+        {
+          get: async () => await allNotifications,
+          set: async (data: CommentNotificationPersistence[]) =>
+            new Promise<void>((res) => {
+              allNotifications = data;
+              res();
+            }),
+        };
 
       repo['storage'] = mockStorage;
     });

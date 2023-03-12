@@ -15,6 +15,7 @@ describe('CreateNewAssignationNotificationInteractor', () => {
     create: async (_data: Omit<TaskAssignationNotificationData, 'id'>) => null,
     readNotification: async (_notificationId: string) => null,
     getNewNotifications: async (_userId: string) => null,
+    dismissNotificationsFromTask: jest.fn(),
   };
 
   const provider: ValueProvider = {

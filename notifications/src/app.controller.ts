@@ -84,7 +84,6 @@ export class AppController {
     );
   }
 
-  //todo: update read logic to be shared by all types of notifications
   @HttpCode(HttpStatus.OK)
   @Post('/read')
   async userReadNotification(
