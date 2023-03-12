@@ -1,8 +1,9 @@
-import { NewCommentNotification, TaskFollowerId } from '../../domain/models';
+import { NewCommentNotification } from '../../domain/models';
 
 export type NewCommentNotificationPersistence = Omit<
   NewCommentNotification,
   'type'
 > & {
-  readBy: TaskFollowerId[];
+  read: boolean;
+  followerId: string;
 };

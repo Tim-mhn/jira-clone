@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
-import { CommentNotificationRepository } from './notifications/infrastructure/repositories/comment-notification-repository/comment-notification.repository';
 import { TaskFollowersRepository } from './notifications/infrastructure/repositories/task-followers-repository/task-followers.repository';
 import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
 import { ReadNotificationInteractor } from './notifications/application/use-cases/read-notification/read-notification.interactor';
@@ -11,6 +10,8 @@ import { ReadNotificationDTO } from './notifications/infrastructure/dtos';
 import { AuthenticatedRequest } from './auth';
 import { HttpStatus } from '@nestjs/common';
 import { GetNewNotificationsInteractor } from './notifications/application/use-cases/get-new-notifications/get-new-notifications.interactor';
+import { CommentNotificationRepository } from './notifications/domain/repositories/comment-notification.repository';
+import { CommentNotificationRepositoryToken } from './notifications/infrastructure/providers/comment-notification-repository.provider';
 
 describe('AppController', () => {
   let controller: AppController;
@@ -30,7 +31,7 @@ describe('AppController', () => {
       controllers: [AppController],
       providers: [
         {
-          provide: CommentNotificationRepository,
+          provide: CommentNotificationRepositoryToken,
           useValue: mockRepo,
         },
         {

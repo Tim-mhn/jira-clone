@@ -8,7 +8,6 @@ import {
   Request,
   Res,
 } from '@nestjs/common';
-import { CommentNotificationRepository } from './notifications/infrastructure/repositories/comment-notification-repository/comment-notification.repository';
 import { TaskFollowersRepository } from './notifications/infrastructure/repositories/task-followers-repository/task-followers.repository';
 import { AuthenticatedRequest } from './auth';
 import { Response } from 'express';
@@ -27,15 +26,16 @@ import {
 import { GetNewNotificationsInteractor } from './notifications/application/use-cases/get-new-notifications/get-new-notifications.interactor';
 import { AllNotifications } from './notifications/domain/models/all-notifications';
 import { ReadNotificationInteractor } from './notifications/application/use-cases/read-notification/read-notification.interactor';
+import { CreateCommentNotificationsInteractor } from './notifications/application/use-cases/create-comment-notifications/create-comment-notifications.interactor';
 
 @Controller()
 export class AppController {
   constructor(
-    private repo: CommentNotificationRepository,
     private followersRepo: TaskFollowersRepository,
     private createAssignationNotificationInteractor: CreateNewAssignationNotificationInteractor,
     private getNewNotificationsInteractor: GetNewNotificationsInteractor,
     private readNotificationInteractor: ReadNotificationInteractor,
+    private createCommentNotificationsInteractor: CreateCommentNotificationsInteractor,
   ) {}
 
   @Get()
@@ -60,11 +60,13 @@ export class AppController {
   }
 
   @Post('/comment')
-  createNewCommentNotification(@Body() newCommentDTO: NewCommentDTO) {
-    this.repo.createNewCommentNotification(newCommentDTO);
+  createNewCommentNotifications(@Body() newCommentDTO: NewCommentDTO) {
+    this.createCommentNotificationsInteractor.createNotificationsForTaskFollowersExceptCommentAuthor(
+      newCommentDTO,
+    );
   }
 
-  // todo: - cancel previous assignation notifications of that task
+  // TODO: - cancel previous assignation notifications of that task
   @Post('/assignation')
   createNewAssignationNotification(
     @Body() dto: AssignationNotificationDTO,

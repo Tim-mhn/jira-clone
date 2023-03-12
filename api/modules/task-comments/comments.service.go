@@ -36,7 +36,7 @@ func (service TaskCommentsService) postComment(comment CreateCommentInput, autho
 		return err
 	}
 
-	notificationsError := service.createNewCommentNotification(comment, author, authCookie)
+	notificationsError := service.createNewCommentNotifications(comment, author, authCookie)
 
 	if notificationsError != nil {
 		return buildCommentsError(OtherCommentError, notificationsError)
@@ -45,7 +45,7 @@ func (service TaskCommentsService) postComment(comment CreateCommentInput, autho
 	return NO_COMMENTS_ERROR()
 }
 
-func (s TaskCommentsService) createNewCommentNotification(comment CreateCommentInput, author auth.User, authCookie *http.Cookie) error {
+func (s TaskCommentsService) createNewCommentNotifications(comment CreateCommentInput, author auth.User, authCookie *http.Cookie) error {
 
 	if comment.ProjectID == "" {
 		return buildCommentsError(OtherCommentError, fmt.Errorf("missing project id to create comment notification"))

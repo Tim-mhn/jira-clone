@@ -1,18 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationReadEvent } from '../../../domain';
+import { getMockCommentNotificationsRepository } from '../../../domain/mocks';
 import { NotificationType } from '../../../domain/models/notification';
 import { TaskAssignationNotificationRepository } from '../../../domain/repositories/assignation-notification.repository';
 import { TaskAssignationNotificationRepositoryToken } from '../../../infrastructure/providers';
-import { CommentNotificationRepository } from '../../../infrastructure/repositories/comment-notification-repository/comment-notification.repository';
+import { CommentNotificationRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
 import { ReadNotificationInteractor } from './read-notification.interactor';
 
 describe('ReadNotificationService', () => {
   let service: ReadNotificationInteractor;
 
-  const mockCommentNotifsRepo: CommentNotificationRepository = {
-    markNotificationAsReadByUser: jest.fn(),
-  } as any as CommentNotificationRepository;
+  const mockCommentNotifsRepo = getMockCommentNotificationsRepository();
 
   const mockTaskAssignationRepo: TaskAssignationNotificationRepository = {
     markNotificationAsRead: jest.fn(),
@@ -24,7 +23,7 @@ describe('ReadNotificationService', () => {
       providers: [
         ReadNotificationInteractor,
         {
-          provide: CommentNotificationRepository,
+          provide: CommentNotificationRepositoryToken,
           useValue: mockCommentNotifsRepo,
         },
         {

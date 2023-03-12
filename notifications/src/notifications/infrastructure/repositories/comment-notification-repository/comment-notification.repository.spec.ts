@@ -3,26 +3,27 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationNotFound } from '../../../domain/errors/notification-not-found.error';
 import { CommentAuthor, NewCommentNotification } from '../../../domain/models';
 import { NotificationType } from '../../../domain/models/notification';
+import { NewCommentNotificationsInput } from '../../../domain/repositories/comment-notification.repository';
 import { NewCommentNotificationPersistence } from '../../persistence/new-comment-notification.persistence';
 import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { TaskFollowersRepository } from '../task-followers-repository/task-followers.repository';
-import { CommentNotificationRepository } from './comment-notification.repository';
+import { JSONCommentNotificationRepository } from './comment-notification.repository';
 
 describe('CommentNotificationRepository', () => {
-  let repo: CommentNotificationRepository;
+  let repo: JSONCommentNotificationRepository;
 
   let followersRepo: TaskFollowersRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CommentNotificationRepository, TaskFollowersRepository],
+      providers: [JSONCommentNotificationRepository, TaskFollowersRepository],
     }).compile();
 
     followersRepo = module.get<TaskFollowersRepository>(
       TaskFollowersRepository,
     );
-    repo = module.get<CommentNotificationRepository>(
-      CommentNotificationRepository,
+    repo = module.get<JSONCommentNotificationRepository>(
+      JSONCommentNotificationRepository,
     );
   });
   it('should be defined', () => {
@@ -62,13 +63,19 @@ describe('CommentNotificationRepository', () => {
         .mockImplementation(async () => tasksFollowed);
     });
 
-    it('should return the comment notification initially (no reads)', async () => {
-      repo.createNewCommentNotification(DUMMY_COMMENT_NOTIF);
+    it('should return the comment notification initially (not read)', async () => {
+      const input: NewCommentNotificationsInput = {
+        ...DUMMY_COMMENT_NOTIF,
+        followersIds: [FOLLOWER_ID],
+      };
+
+      repo.createNewCommentNotifications(input);
 
       const persistenceData: NewCommentNotificationPersistence[] = [
         {
           ...DUMMY_COMMENT_NOTIF,
-          readBy: [],
+          read: false,
+          followerId: FOLLOWER_ID,
         },
       ];
       jest
@@ -81,12 +88,12 @@ describe('CommentNotificationRepository', () => {
     });
 
     it('should not return a comment notification after it has been read', async () => {
-      const readBy = [FOLLOWER_ID];
       const persistenceData: NewCommentNotificationPersistence[] = [
         {
           ...DUMMY_COMMENT_NOTIF,
           comment: 'other comment',
-          readBy,
+          read: true,
+          followerId: FOLLOWER_ID,
         },
       ];
       jest
@@ -97,30 +104,6 @@ describe('CommentNotificationRepository', () => {
       const notifTasksIds = notifs?.map((n) => n.id);
 
       expect(notifTasksIds).not.toContain(NOTIF_ID);
-    });
-
-    it('should not return a notification if the comment has been written by the user himself', async () => {
-      const userID = 'user-id-xyz-123';
-
-      const persistenceData: NewCommentNotificationPersistence[] = [
-        {
-          ...DUMMY_COMMENT_NOTIF,
-          author: {
-            id: userID,
-            name: 'user-name',
-          },
-          comment: 'other comment',
-          readBy: [],
-        },
-      ];
-      jest
-        .spyOn(mockStorage, 'get')
-        .mockImplementation(async () => await persistenceData);
-
-      const notifs = await repo.getNewCommentNotifications(userID);
-      const notifTasksIds = notifs?.map((n) => n.id);
-
-      expect(notifTasksIds.length).toEqual(0);
     });
   });
 
@@ -145,16 +128,17 @@ describe('CommentNotificationRepository', () => {
 
     const taskId = 'task-id-xyz';
 
+    const followerId = 'follower-id';
+
     const notif: NewCommentNotificationPersistence = {
       id: notifId,
       author,
       comment: 'comment',
       project: null,
       taskId,
-      readBy: [],
+      read: false,
+      followerId: followerId,
     };
-
-    const followerId = 'follower-id';
 
     beforeEach(() => {
       allNotifications = [];
@@ -198,6 +182,54 @@ describe('CommentNotificationRepository', () => {
         });
 
       await expect(readFn).rejects.toThrowError(NotificationNotFound);
+    });
+  });
+
+  describe('createNewCommentNotifications', () => {
+    beforeEach(() => {
+      let allNotifications: NewCommentNotificationPersistence[] = [];
+
+      const mockStorage: PersistenceStorage<
+        NewCommentNotificationPersistence[]
+      > = {
+        get: async () => await allNotifications,
+        set: async (data: NewCommentNotificationPersistence[]) =>
+          new Promise<void>((res) => {
+            allNotifications = data;
+            res();
+          }),
+      };
+
+      repo['storage'] = mockStorage;
+    });
+    it('should create as many new notifications as there are task followers', async () => {
+      const followersIds = ['user-a', 'user-b', 'user-c'];
+
+      const input: NewCommentNotificationsInput = {
+        author: {
+          id: 'author-id',
+          name: 'author-name',
+        },
+        comment: 'a special comment from this author ',
+        followersIds,
+        project: null,
+        taskId: 'task-id-12345',
+      };
+
+      const allPreviousNotifs = await repo['storage'].get();
+      await repo.createNewCommentNotifications(input);
+
+      const allNotifications = await repo['storage'].get();
+
+      const newNotificationsFollowersIds = (await repo['storage'].get())
+        .filter((n) => n.comment === input.comment)
+        .map((n) => n.followerId);
+
+      expect(allNotifications.length - allPreviousNotifs.length).toEqual(
+        followersIds.length,
+      );
+
+      expect(newNotificationsFollowersIds).toEqual(followersIds);
     });
   });
 });
