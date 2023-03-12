@@ -107,7 +107,7 @@ describe('CommentNotificationRepository', () => {
     });
   });
 
-  describe('markNotificationAsReadByUser', () => {
+  describe('readNotification', () => {
     let allNotifications: NewCommentNotificationPersistence[] = [];
 
     const mockStorage: PersistenceStorage<NewCommentNotificationPersistence[]> =
@@ -159,10 +159,7 @@ describe('CommentNotificationRepository', () => {
 
       const idsOfNotifsBeforeRead = newNotificationsBeforeRead.map((n) => n.id);
 
-      await repo.markNotificationAsReadByUser({
-        followerId,
-        notificationId: notifId,
-      });
+      await repo.readNotification(notifId);
 
       const newNotifications = await repo.getNewCommentNotifications(
         followerId,
@@ -175,11 +172,7 @@ describe('CommentNotificationRepository', () => {
     it('should throw a NotificationNotFound error if the notification does not exist', async () => {
       const inexistentNotifId = 'not-existent';
 
-      const readFn = () =>
-        repo.markNotificationAsReadByUser({
-          followerId,
-          notificationId: inexistentNotifId,
-        });
+      const readFn = () => repo.readNotification(inexistentNotifId);
 
       await expect(readFn).rejects.toThrowError(NotificationNotFound);
     });

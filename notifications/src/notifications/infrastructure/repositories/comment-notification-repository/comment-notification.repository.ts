@@ -5,7 +5,6 @@ import { NewCommentNotificationPersistence } from '../../persistence/new-comment
 import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { JSONFileStorage } from '../../storage/json-file.storage';
 import { NotificationNotFound } from '../../../domain/errors/notification-not-found.error';
-import { NotificationReadEvent } from '../../../domain/events/notification-read.event';
 import { randomString } from '../../../../shared/strings';
 import {
   CommentNotificationRepository,
@@ -63,10 +62,7 @@ export class JSONCommentNotificationRepository
     await this._updateCommentNotifications(allNotifications);
   }
 
-  async markNotificationAsReadByUser(
-    readNotification: Omit<NotificationReadEvent, 'notificationType'>,
-  ) {
-    const { notificationId } = readNotification;
+  async readNotification(notificationId: string) {
     const allNotifs = await this._getAllCommentNotifications();
     const notification = this._findNotificationById(allNotifs, notificationId);
 

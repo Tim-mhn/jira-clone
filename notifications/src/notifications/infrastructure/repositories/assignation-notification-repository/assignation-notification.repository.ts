@@ -43,7 +43,7 @@ export class JSONTaskAssignationNotificationRepository
     this.storage.set(allNotifsWithNew);
   }
 
-  async markNotificationAsRead(notificationId: string) {
+  async readNotification(notificationId: string) {
     const allNotifs = await this.storage.get();
     const notif = allNotifs?.find((n) => n.id === notificationId);
     if (notif) notif.read = true;

@@ -5,6 +5,6 @@ import {
 
 export interface TaskAssignationNotificationRepository {
   create(data: Omit<TaskAssignationNotificationData, 'id'>): Promise<void>;
-  markNotificationAsRead(notificationId: string): Promise<void>;
+  readNotification(notificationId: string): Promise<void>;
   getNewNotifications(userId: string): Promise<TaskAssignationNotification[]>;
 }

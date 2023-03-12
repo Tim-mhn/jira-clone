@@ -2,7 +2,7 @@ import { CommentNotificationRepository } from '../repositories/comment-notificat
 
 export function getMockCommentNotificationsRepository(): CommentNotificationRepository {
   const mockCommentNotifsRepo: CommentNotificationRepository = {
-    markNotificationAsReadByUser: jest.fn(),
+    readNotification: jest.fn(),
     getNewCommentNotifications: jest.fn(),
     createNewCommentNotifications: jest.fn(),
   } as any as CommentNotificationRepository;

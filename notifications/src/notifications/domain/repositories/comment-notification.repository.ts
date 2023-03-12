@@ -1,6 +1,9 @@
-import { NotificationReadEvent } from '../events';
 import { NewCommentEvent } from '../events/new-comment.event';
-import { NewCommentNotification, TaskFollowerId } from '../models';
+import {
+  NewCommentNotification,
+  NotificationId,
+  TaskFollowerId,
+} from '../models';
 
 // todo: finish CommentNotificationRepository
 export type NewCommentNotificationsInput = NewCommentEvent & {
@@ -13,7 +16,5 @@ export interface CommentNotificationRepository {
   createNewCommentNotifications(
     newCommentNotification: NewCommentNotificationsInput,
   ): Promise<void>;
-  markNotificationAsReadByUser(
-    readNotification: Omit<NotificationReadEvent, 'notificationType'>,
-  ): Promise<void>;
+  readNotification(notificationId: NotificationId): Promise<void>;
 }

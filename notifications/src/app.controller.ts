@@ -84,6 +84,7 @@ export class AppController {
     );
   }
 
+  //todo: update read logic to be shared by all types of notifications
   @HttpCode(HttpStatus.OK)
   @Post('/read')
   async userReadNotification(
@@ -92,10 +93,7 @@ export class AppController {
     @Res({ passthrough: true }) _response?: Response,
   ) {
     try {
-      const currentUserId = req.user.id;
-
       const notificationReadEvent: NotificationReadEvent = {
-        followerId: currentUserId,
         notificationId: notificationReadDTO.notificationId,
         notificationType: notificationReadDTO.type,
       };

@@ -13,7 +13,7 @@ describe('CreateNewAssignationNotificationInteractor', () => {
 
   const mockRepo: TaskAssignationNotificationRepository = {
     create: async (_data: Omit<TaskAssignationNotificationData, 'id'>) => null,
-    markNotificationAsRead: async (_notificationId: string) => null,
+    readNotification: async (_notificationId: string) => null,
     getNewNotifications: async (_userId: string) => null,
   };
 

@@ -16,15 +16,12 @@ export class ReadNotificationInteractor {
   ) {}
 
   async readNotification(readNotificationEvent: NotificationReadEvent) {
-    if (readNotificationEvent.notificationType === NotificationType.COMMENT) {
-      await this.commentNotificationsRepo.markNotificationAsReadByUser(
-        readNotificationEvent,
-      );
+    const { notificationId, notificationType } = readNotificationEvent;
+    if (notificationType === NotificationType.COMMENT) {
+      await this.commentNotificationsRepo.readNotification(notificationId);
       return;
     }
 
-    await this.assignationNotificationRepo.markNotificationAsRead(
-      readNotificationEvent.notificationId,
-    );
+    await this.assignationNotificationRepo.readNotification(notificationId);
   }
 }

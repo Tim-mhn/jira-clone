@@ -14,7 +14,7 @@ describe('ReadNotificationService', () => {
   const mockCommentNotifsRepo = getMockCommentNotificationsRepository();
 
   const mockTaskAssignationRepo: TaskAssignationNotificationRepository = {
-    markNotificationAsRead: jest.fn(),
+    readNotification: jest.fn(),
     create: jest.fn(),
     getNewNotifications: jest.fn(),
   } as TaskAssignationNotificationRepository;
@@ -45,36 +45,32 @@ describe('ReadNotificationService', () => {
   it('should call CommentNotificationRepository if the notification type is COMMENT', async () => {
     const notifId = 'xyz-123-notif';
     const notificationRead: NotificationReadEvent = {
-      followerId: 'acaeceac',
       notificationId: notifId,
       notificationType: NotificationType.COMMENT,
     };
 
     jest
-      .spyOn(mockCommentNotifsRepo, 'markNotificationAsReadByUser')
+      .spyOn(mockCommentNotifsRepo, 'readNotification')
       .mockImplementation(async () => await null);
 
     await service.readNotification(notificationRead);
 
-    expect(
-      mockCommentNotifsRepo.markNotificationAsReadByUser,
-    ).toHaveBeenCalled();
+    expect(mockCommentNotifsRepo.readNotification).toHaveBeenCalled();
   });
 
   it('should call TaskAssignationRepository if the notification type is ASSIGNATION', async () => {
     const notifId = 'xyz-123-notif';
     const notificationRead: NotificationReadEvent = {
-      followerId: 'acaeceac',
       notificationId: notifId,
       notificationType: NotificationType.ASSIGNATION,
     };
 
     jest
-      .spyOn(mockTaskAssignationRepo, 'markNotificationAsRead')
+      .spyOn(mockTaskAssignationRepo, 'readNotification')
       .mockImplementation(async () => await null);
 
     await service.readNotification(notificationRead);
 
-    expect(mockTaskAssignationRepo.markNotificationAsRead).toHaveBeenCalled();
+    expect(mockTaskAssignationRepo.readNotification).toHaveBeenCalled();
   });
 });
