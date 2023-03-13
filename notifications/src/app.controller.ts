@@ -66,7 +66,6 @@ export class AppController {
     );
   }
 
-  // TODO: - cancel previous assignation notifications of that task
   @Post('/assignation')
   createNewAssignationNotification(
     @Body() dto: AssignationNotificationDTO,
@@ -93,7 +92,7 @@ export class AppController {
   ) {
     try {
       const notificationReadEvent: NotificationReadEvent = {
-        notificationId: notificationReadDTO.notificationId,
+        notificationId: notificationReadDTO.id,
         notificationType: notificationReadDTO.type,
       };
 

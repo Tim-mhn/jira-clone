@@ -1,3 +1,6 @@
+import { NotificationType } from '../models';
+
 export type ReadNotificationDTO = {
-  notificationId: string;
+  id: string;
+  type: NotificationType;
 };

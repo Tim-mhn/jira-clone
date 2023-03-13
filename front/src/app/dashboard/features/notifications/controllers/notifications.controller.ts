@@ -19,7 +19,12 @@ export class NotificationsController {
   public goToTaskPageAndMarkNotificationAsRead<T extends NotificationType>(
     notification: Notification<T>
   ) {
-    this.api.readNotification({ notificationId: notification.id }).subscribe();
+    this.api
+      .readNotification({
+        id: notification.id,
+        type: notification.type,
+      })
+      .subscribe();
     this._goToTaskPage(notification);
   }
 

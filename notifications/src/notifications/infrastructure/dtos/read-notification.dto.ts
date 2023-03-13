@@ -4,7 +4,7 @@ import { NotificationType } from '../../domain/models/notification';
 
 export class ReadNotificationDTO {
   @IsNotEmpty()
-  notificationId: NotificationId;
+  id: NotificationId;
 
   @IsNotEmpty()
   type: NotificationType;
