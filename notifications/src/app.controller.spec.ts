@@ -77,7 +77,7 @@ describe('AppController', () => {
         });
 
       const dto = new ReadNotificationDTO();
-      dto.notificationId = notifId;
+      dto.id = notifId;
 
       req.user = { id: 'user-id', name: 'user-name' };
       await controller.userReadNotification(
