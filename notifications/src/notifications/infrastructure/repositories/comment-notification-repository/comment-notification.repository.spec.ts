@@ -7,18 +7,18 @@ import { NewCommentNotificationsInput } from '../../../domain/repositories/comme
 import { CommentNotificationPersistence } from '../../persistence/new-comment-notification.persistence';
 import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { TaskFollowersRepository } from '../task-followers-repository/task-followers.repository';
-import { JSONCommentNotificationRepository } from './comment-notification.repository';
+import { JSONCommentNotificationsRepository } from './comment-notification.repository';
 
-describe('CommentNotificationRepository', () => {
-  let repo: JSONCommentNotificationRepository;
+describe('CommentNotificationsRepository', () => {
+  let repo: JSONCommentNotificationsRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [JSONCommentNotificationRepository, TaskFollowersRepository],
+      providers: [JSONCommentNotificationsRepository, TaskFollowersRepository],
     }).compile();
 
-    repo = module.get<JSONCommentNotificationRepository>(
-      JSONCommentNotificationRepository,
+    repo = module.get<JSONCommentNotificationsRepository>(
+      JSONCommentNotificationsRepository,
     );
   });
   it('should be defined', () => {

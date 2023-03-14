@@ -8,7 +8,7 @@ import {
 export type NewCommentNotificationsInput = NewCommentEvent & {
   followersIds: string[];
 };
-export interface CommentNotificationRepository {
+export interface CommentNotificationsRepository {
   getNewCommentNotifications(
     userId: TaskFollowerId,
   ): Promise<NewCommentNotification[]>;

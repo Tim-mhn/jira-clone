@@ -1,10 +1,10 @@
 import { Provider } from '@nestjs/common';
-import { JSONCommentNotificationRepository } from '../repositories/comment-notification-repository/comment-notification.repository';
+import { DBCommentNotificationsRepositoryService } from '../repositories/comment-notifications-repository/comment-notifications-repository.service';
 
-export const CommentNotificationRepositoryToken =
-  'CommentNotificationRepositoryToken';
+export const CommentNotificationsRepositoryToken =
+  'CommentNotificationsRepositoryToken';
 
-export const CommentNotificationRepositoryProvider: Provider = {
-  provide: CommentNotificationRepositoryToken,
-  useClass: JSONCommentNotificationRepository,
+export const CommentNotificationsRepositoryProvider: Provider = {
+  provide: CommentNotificationsRepositoryToken,
+  useClass: DBCommentNotificationsRepositoryService,
 };

@@ -7,7 +7,7 @@ import { JSONFileStorage } from '../../storage/json-file.storage';
 import { NotificationNotFound } from '../../../domain/errors/notification-not-found.error';
 import { randomString } from '../../../../shared/strings';
 import {
-  CommentNotificationRepository,
+  CommentNotificationsRepository,
   NewCommentNotificationsInput,
 } from '../../../domain/repositories/comment-notification.repository';
 import { NotificationType } from '../../../domain/models/notification';
@@ -20,8 +20,8 @@ const NotificationsJSONFileStorage: PersistenceStorage<
 > = new JSONFileStorage(NOTIFICATIONS_FILENAME);
 
 @Injectable({ scope: Scope.DEFAULT })
-export class JSONCommentNotificationRepository
-  implements CommentNotificationRepository
+export class JSONCommentNotificationsRepository
+  implements CommentNotificationsRepository
 {
   private storage = NotificationsJSONFileStorage;
 

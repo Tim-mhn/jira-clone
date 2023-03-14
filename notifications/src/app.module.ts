@@ -7,7 +7,7 @@ import { TaskAssignationNotificationRepositoryProvider } from './notifications/i
 import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
 import { GetNewNotificationsInteractor } from './notifications/application/use-cases/get-new-notifications/get-new-notifications.interactor';
 import { ReadNotificationInteractor } from './notifications/application/use-cases/read-notification/read-notification.interactor';
-import { CommentNotificationRepositoryProvider } from './notifications/infrastructure/providers/comment-notification-repository.provider';
+import { CommentNotificationsRepositoryProvider } from './notifications/infrastructure/providers/comment-notification-repository.provider';
 import { CreateCommentNotificationsInteractor } from './notifications/application/use-cases/create-comment-notifications/create-comment-notifications.interactor';
 
 @Module({
@@ -20,7 +20,7 @@ import { CreateCommentNotificationsInteractor } from './notifications/applicatio
   controllers: [AppController],
   providers: [
     GlobalAuthGuardProvider,
-    CommentNotificationRepositoryProvider,
+    CommentNotificationsRepositoryProvider,
     TaskFollowersRepository,
     TaskAssignationNotificationRepositoryProvider,
     CreateNewAssignationNotificationInteractor,

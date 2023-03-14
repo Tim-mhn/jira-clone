@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TaskAssignationNotification {
+  id        String      @id @default(uuid())
+  taskId    String      @map("task_id")
+  project   TaskProject @relation(fields: [taskProjectUuid], references: [uuid])
+  read      Boolean     @default(false)
+  dismissed Boolean     @default(false)
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  taskProjectUuid String
+
+  @@map("task_assignation_notifications")
+}
+
+model CommentNotification {
+  id              String      @id @default(uuid())
+  comment         String
+  taskId          String
+  read            Boolean     @default(false)
+  project         TaskProject @relation(fields: [taskProjectUuid], references: [uuid])
+  author          Author      @relation(fields: [authorUuid], references: [uuid])
+  followerId      String      @map("user_following_id")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  authorUuid      String
+  taskProjectUuid String
+
+  @@map("comment_notifications")
+}
+
+model TaskFollowers {
+  id         Int    @id @default(autoincrement())
+  taskId     String @map("task_id")
+  followerId String @map("follower_id")
+
+  @@unique([taskId, followerId])
+  @@map("task_followers")
+}
+
+model TaskProject {
+  uuid                        String                        @id @default(uuid())
+  id                          String
+  name                        String
+  TaskAssignationNotification TaskAssignationNotification[]
+  CommentNotification         CommentNotification[]
+
+  @@map("projects")
+}
+
+model Author {
+  uuid                String                @id @default(uuid())
+  id                  String
+  name                String
+  CommentNotification CommentNotification[]
+
+  @@map("authors")
+}

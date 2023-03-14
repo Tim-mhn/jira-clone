@@ -5,7 +5,7 @@ import { getMockCommentNotificationsRepository } from '../../../domain/mocks';
 import { NotificationType } from '../../../domain/models/notification';
 import { TaskAssignationNotificationRepository } from '../../../domain/repositories/assignation-notification.repository';
 import { TaskAssignationNotificationRepositoryToken } from '../../../infrastructure/providers';
-import { CommentNotificationRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
+import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
 import { ReadNotificationInteractor } from './read-notification.interactor';
 
 describe('ReadNotificationService', () => {
@@ -24,7 +24,7 @@ describe('ReadNotificationService', () => {
       providers: [
         ReadNotificationInteractor,
         {
-          provide: CommentNotificationRepositoryToken,
+          provide: CommentNotificationsRepositoryToken,
           useValue: mockCommentNotifsRepo,
         },
         {
@@ -43,7 +43,7 @@ describe('ReadNotificationService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should call CommentNotificationRepository if the notification type is COMMENT', async () => {
+  it('should call CommentNotificationsRepository if the notification type is COMMENT', async () => {
     const notifId = 'xyz-123-notif';
     const notificationRead: NotificationReadEvent = {
       notificationId: notifId,

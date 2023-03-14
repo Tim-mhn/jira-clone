@@ -3,7 +3,7 @@ import { TaskAssignationNotificationData } from '../../../domain';
 import { getMockCommentNotificationsRepository } from '../../../domain/mocks';
 import { TaskAssignationNotificationRepository } from '../../../domain/repositories/assignation-notification.repository';
 import { TaskAssignationNotificationRepositoryToken } from '../../../infrastructure/providers';
-import { CommentNotificationRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
+import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
 import { GetNewNotificationsInteractor } from './get-new-notifications.interactor';
 
 describe('GetNewNotificationsInteractor', () => {
@@ -23,7 +23,7 @@ describe('GetNewNotificationsInteractor', () => {
       providers: [
         GetNewNotificationsInteractor,
         {
-          provide: CommentNotificationRepositoryToken,
+          provide: CommentNotificationsRepositoryToken,
           useValue: mockCommentNotifsRepo,
         },
         {

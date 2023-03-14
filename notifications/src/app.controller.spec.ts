@@ -10,13 +10,13 @@ import { ReadNotificationDTO } from './notifications/infrastructure/dtos';
 import { AuthenticatedRequest } from './auth';
 import { HttpStatus } from '@nestjs/common';
 import { GetNewNotificationsInteractor } from './notifications/application/use-cases/get-new-notifications/get-new-notifications.interactor';
-import { CommentNotificationRepository } from './notifications/domain/repositories/comment-notification.repository';
-import { CommentNotificationRepositoryToken } from './notifications/infrastructure/providers/comment-notification-repository.provider';
+import { CommentNotificationsRepository } from './notifications/domain/repositories/comment-notification.repository';
+import { CommentNotificationsRepositoryToken } from './notifications/infrastructure/providers/comment-notification-repository.provider';
 import { CreateCommentNotificationsInteractor } from './notifications/application/use-cases/create-comment-notifications/create-comment-notifications.interactor';
 
 describe('AppController', () => {
   let controller: AppController;
-  const mockRepo = {} as CommentNotificationRepository;
+  const mockRepo = {} as CommentNotificationsRepository;
   mockRepo.readNotification = jest.fn();
 
   const mockReadNotifUsecase: ReadNotificationInteractor = {
@@ -32,7 +32,7 @@ describe('AppController', () => {
       controllers: [AppController],
       providers: [
         {
-          provide: CommentNotificationRepositoryToken,
+          provide: CommentNotificationsRepositoryToken,
           useValue: mockRepo,
         },
         {
