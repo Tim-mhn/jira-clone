@@ -5,7 +5,7 @@ import {
   TaskAssignationNotification,
   TaskAssignationNotificationData,
 } from '../../../domain/models/task-assignation-notification';
-import { TaskAssignationNotificationRepository } from '../../../domain/repositories/assignation-notification.repository';
+import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
 import { PersistenceStorage } from '../../persistence/persistence.storage';
 import { TaskAssignationNotificationPersistence } from '../../persistence/task-assignation-notification.persistence';
 import { JSONFileStorage } from '../../storage/json-file.storage';
@@ -18,8 +18,8 @@ const NotificationsJSONFileStorage: PersistenceStorage<
 > = new JSONFileStorage(NOTIFICATIONS_FILENAME);
 
 @Injectable({ scope: Scope.DEFAULT })
-export class JSONTaskAssignationNotificationRepository
-  implements TaskAssignationNotificationRepository
+export class JSONTaskAssignationNotificationsRepository
+  implements TaskAssignationNotificationsRepository
 {
   async getNewNotifications(
     userId: string,

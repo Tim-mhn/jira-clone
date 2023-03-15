@@ -3,8 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationReadEvent } from '../../../domain';
 import { getMockCommentNotificationsRepository } from '../../../domain/mocks';
 import { NotificationType } from '../../../domain/models/notification';
-import { TaskAssignationNotificationRepository } from '../../../domain/repositories/assignation-notification.repository';
-import { TaskAssignationNotificationRepositoryToken } from '../../../infrastructure/providers';
+import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
+import { TaskAssignationNotificationsRepositoryToken } from '../../../infrastructure/providers';
 import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
 import { ReadNotificationInteractor } from './read-notification.interactor';
 
@@ -13,12 +13,12 @@ describe('ReadNotificationService', () => {
 
   const mockCommentNotifsRepo = getMockCommentNotificationsRepository();
 
-  const mockTaskAssignationRepo: TaskAssignationNotificationRepository = {
+  const mockTaskAssignationRepo: TaskAssignationNotificationsRepository = {
     readNotification: jest.fn(),
     create: jest.fn(),
     getNewNotifications: jest.fn(),
     dismissNotificationsFromTask: jest.fn(),
-  } as TaskAssignationNotificationRepository;
+  } as TaskAssignationNotificationsRepository;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -28,7 +28,7 @@ describe('ReadNotificationService', () => {
           useValue: mockCommentNotifsRepo,
         },
         {
-          provide: TaskAssignationNotificationRepositoryToken,
+          provide: TaskAssignationNotificationsRepositoryToken,
           useValue: mockTaskAssignationRepo,
         },
       ],

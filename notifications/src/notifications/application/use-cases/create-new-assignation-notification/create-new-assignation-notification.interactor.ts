@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { TaskAssignedEvent } from '../../../domain';
-import { TaskAssignationNotificationRepository } from '../../../domain/repositories/assignation-notification.repository';
-import { TaskAssignationNotificationRepositoryToken } from '../../../infrastructure/providers';
+import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
+import { TaskAssignationNotificationsRepositoryToken } from '../../../infrastructure/providers';
 
 @Injectable()
 export class CreateNewAssignationNotificationInteractor {
   constructor(
-    @Inject(TaskAssignationNotificationRepositoryToken)
-    private repo: TaskAssignationNotificationRepository,
+    @Inject(TaskAssignationNotificationsRepositoryToken)
+    private repo: TaskAssignationNotificationsRepository,
   ) {}
 
   async handle(taskAssigned: TaskAssignedEvent) {

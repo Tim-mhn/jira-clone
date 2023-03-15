@@ -1,16 +1,16 @@
 import { TaskAssignationNotificationPersistence } from '../../persistence/task-assignation-notification.persistence';
 import { AppLocalStorage } from '../../storage/local-storage';
-import { JSONTaskAssignationNotificationRepository } from './assignation-notification.repository';
+import { JSONTaskAssignationNotificationsRepository } from './assignation-notification.repository';
 
-describe('TaskAssignationNotificationRepository', () => {
-  let repo: JSONTaskAssignationNotificationRepository;
+describe('TaskAssignationNotificationsRepository', () => {
+  let repo: JSONTaskAssignationNotificationsRepository;
 
   const localStorage = new AppLocalStorage<
     TaskAssignationNotificationPersistence[]
   >();
 
   beforeEach(() => {
-    repo = new JSONTaskAssignationNotificationRepository();
+    repo = new JSONTaskAssignationNotificationsRepository();
     repo['storage'] = localStorage;
   });
 

@@ -1,6 +1,6 @@
-import { Author, CommentNotification, TaskProject } from '@prisma/client';
+import { NewCommentNotification } from '../../domain';
 
-export type CommentNotificationPersistence = CommentNotification & {
-  author: Author;
-  project: TaskProject;
-};
+export type CommentNotificationPersistence = Omit<
+  NewCommentNotification,
+  'type'
+>;

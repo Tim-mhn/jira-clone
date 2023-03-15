@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AllNotifications } from '../../../domain/models/all-notifications';
-import { TaskAssignationNotificationRepository } from '../../../domain/repositories/assignation-notification.repository';
+import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
 import { CommentNotificationsRepository } from '../../../domain/repositories/comment-notification.repository';
-import { TaskAssignationNotificationRepositoryToken } from '../../../infrastructure/providers';
+import { TaskAssignationNotificationsRepositoryToken } from '../../../infrastructure/providers';
 import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
 
 @Injectable()
@@ -10,8 +10,8 @@ export class GetNewNotificationsInteractor {
   constructor(
     @Inject(CommentNotificationsRepositoryToken)
     private commentNotificationsRepo: CommentNotificationsRepository,
-    @Inject(TaskAssignationNotificationRepositoryToken)
-    private assignationNotificationsRepo: TaskAssignationNotificationRepository,
+    @Inject(TaskAssignationNotificationsRepositoryToken)
+    private assignationNotificationsRepo: TaskAssignationNotificationsRepository,
   ) {}
 
   async getNewNotifications(userId: string): Promise<AllNotifications> {

@@ -1,10 +1,10 @@
 import { Provider } from '@nestjs/common';
-import { JSONTaskAssignationNotificationRepository } from '../repositories/assignation-notification-repository/assignation-notification.repository';
+import { JSONTaskAssignationNotificationsRepository } from '../repositories/assignation-notification-repository/assignation-notification.repository';
 
-export const TaskAssignationNotificationRepositoryToken =
-  'TaskAssignationNotificationRepositoryToken';
+export const TaskAssignationNotificationsRepositoryToken =
+  'TaskAssignationNotificationsRepositoryToken';
 
-export const TaskAssignationNotificationRepositoryProvider: Provider = {
-  provide: TaskAssignationNotificationRepositoryToken,
-  useClass: JSONTaskAssignationNotificationRepository,
+export const TaskAssignationNotificationsRepositoryProvider: Provider = {
+  provide: TaskAssignationNotificationsRepositoryToken,
+  useClass: JSONTaskAssignationNotificationsRepository,
 };

@@ -1,39 +1,59 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
 import { NewCommentNotification } from '../../../domain';
 import { NotificationType } from '../../../domain/models/notification';
 import {
   CommentNotificationsRepository,
   NewCommentNotificationsInput,
 } from '../../../domain/repositories/comment-notification.repository';
+import { prismaClient } from '../../database';
 import { CommentNotificationPersistence } from '../../persistence/comment-notification.persistence';
 
 @Injectable()
 export class DBCommentNotificationsRepository
   implements CommentNotificationsRepository
 {
-  prisma = new PrismaClient();
+  private prisma = prismaClient;
 
   async getNewCommentNotifications(
-    _userId: string,
+    userId: string,
   ): Promise<NewCommentNotification[]> {
-    const commentNotifications = await this.prisma.commentNotification.findMany(
-      {
-        where: {
-          author: {
-            id: _userId,
-          },
-        },
-        include: {
-          author: true,
-          project: true,
-        },
-      },
-    );
+    const commentNotifications = await this._getDBComments(userId);
 
     return commentNotifications.map((n) =>
       this._mapDBToDomainCommentNotification(n),
     );
+  }
+
+  private async _getDBComments(
+    userId: string,
+  ): Promise<CommentNotificationPersistence[]> {
+    return await this.prisma.commentNotification.findMany({
+      where: {
+        author: {
+          id: userId,
+        },
+      },
+
+      select: {
+        id: true,
+        comment: true,
+        taskId: true,
+        read: false,
+
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
   }
 
   private _mapDBToDomainCommentNotification(

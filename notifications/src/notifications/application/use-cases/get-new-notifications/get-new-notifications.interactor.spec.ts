@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskAssignationNotificationData } from '../../../domain';
 import { getMockCommentNotificationsRepository } from '../../../domain/mocks';
-import { TaskAssignationNotificationRepository } from '../../../domain/repositories/assignation-notification.repository';
-import { TaskAssignationNotificationRepositoryToken } from '../../../infrastructure/providers';
+import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
+import { TaskAssignationNotificationsRepositoryToken } from '../../../infrastructure/providers';
 import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
 import { GetNewNotificationsInteractor } from './get-new-notifications.interactor';
 
 describe('GetNewNotificationsInteractor', () => {
-  const mockAssignationNotifsRepo: TaskAssignationNotificationRepository = {
+  const mockAssignationNotifsRepo: TaskAssignationNotificationsRepository = {
     create: async (_data: Omit<TaskAssignationNotificationData, 'id'>) => null,
     readNotification: async (_notificationId: string) => null,
     getNewNotifications: async (_userId: string) => null,
@@ -27,7 +27,7 @@ describe('GetNewNotificationsInteractor', () => {
           useValue: mockCommentNotifsRepo,
         },
         {
-          provide: TaskAssignationNotificationRepositoryToken,
+          provide: TaskAssignationNotificationsRepositoryToken,
           useValue: mockAssignationNotifsRepo,
         },
       ],

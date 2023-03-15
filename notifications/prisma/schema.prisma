@@ -8,13 +8,13 @@ datasource db {
 }
 
 model TaskAssignationNotification {
-  id        String      @id @default(uuid())
-  taskId    String      @map("task_id")
-  project   TaskProject @relation(fields: [taskProjectUuid], references: [uuid])
-  read      Boolean     @default(false)
-  dismissed Boolean     @default(false)
-  createdAt DateTime    @default(now()) @map("created_at")
-
+  id              String      @id @default(uuid())
+  assigneeId      String      @map("assignee_id")
+  taskId          String      @map("task_id")
+  project         TaskProject @relation(fields: [taskProjectUuid], references: [uuid])
+  read            Boolean     @default(false)
+  dismissed       Boolean     @default(false)
+  createdAt       DateTime    @default(now()) @map("created_at")
   taskProjectUuid String
 
   @@map("task_assignation_notifications")

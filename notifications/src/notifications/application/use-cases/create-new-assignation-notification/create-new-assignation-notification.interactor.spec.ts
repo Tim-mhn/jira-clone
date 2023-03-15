@@ -4,14 +4,14 @@ import {
   TaskAssignationNotificationData,
   TaskAssignedEvent,
 } from '../../../domain';
-import { TaskAssignationNotificationRepository } from '../../../domain/repositories/assignation-notification.repository';
-import { TaskAssignationNotificationRepositoryToken } from '../../../infrastructure/providers';
+import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
+import { TaskAssignationNotificationsRepositoryToken } from '../../../infrastructure/providers';
 import { CreateNewAssignationNotificationInteractor } from './create-new-assignation-notification.interactor';
 
 describe('CreateNewAssignationNotificationInteractor', () => {
   let service: CreateNewAssignationNotificationInteractor;
 
-  const mockRepo: TaskAssignationNotificationRepository = {
+  const mockRepo: TaskAssignationNotificationsRepository = {
     create: async (_data: Omit<TaskAssignationNotificationData, 'id'>) => null,
     readNotification: async (_notificationId: string) => null,
     getNewNotifications: async (_userId: string) => null,
@@ -19,7 +19,7 @@ describe('CreateNewAssignationNotificationInteractor', () => {
   };
 
   const provider: ValueProvider = {
-    provide: TaskAssignationNotificationRepositoryToken,
+    provide: TaskAssignationNotificationsRepositoryToken,
     useValue: mockRepo,
   };
   beforeEach(async () => {
