@@ -6,10 +6,10 @@ import {
   CommentNotificationsRepository,
   NewCommentNotificationsInput,
 } from '../../../domain/repositories/comment-notification.repository';
-import { CommentNotificationPersistence2 } from '../../persistence/new-comment-notification.persistence';
+import { CommentNotificationPersistence } from '../../persistence/comment-notification.persistence';
 
 @Injectable()
-export class DBCommentNotificationsRepositoryService
+export class DBCommentNotificationsRepository
   implements CommentNotificationsRepository
 {
   prisma = new PrismaClient();
@@ -37,7 +37,7 @@ export class DBCommentNotificationsRepositoryService
   }
 
   private _mapDBToDomainCommentNotification(
-    persistenceObject: CommentNotificationPersistence2,
+    persistenceObject: CommentNotificationPersistence,
   ): NewCommentNotification {
     const {
       author: { id: authorId, name: authorName },
