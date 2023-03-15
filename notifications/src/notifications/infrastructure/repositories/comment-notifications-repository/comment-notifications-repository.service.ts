@@ -6,6 +6,7 @@ import {
   CommentNotificationsRepository,
   NewCommentNotificationsInput,
 } from '../../../domain/repositories/comment-notification.repository';
+import { CommentNotificationPersistence2 } from '../../persistence/new-comment-notification.persistence';
 
 @Injectable()
 export class DBCommentNotificationsRepositoryService
@@ -30,31 +31,37 @@ export class DBCommentNotificationsRepositoryService
       },
     );
 
-    return commentNotifications.map((n) => {
-      const {
-        author: { id: authorId, name: authorName },
-        comment,
-        project: { id: projectId, name: projectName },
-        id,
-        taskId,
-      } = n;
-      const commentNotif: NewCommentNotification = {
-        author: {
-          id: authorId,
-          name: authorName,
-        },
-        comment,
-        project: {
-          id: projectId,
-          name: projectName,
-        },
-        id,
-        taskId,
-        type: NotificationType.COMMENT,
-      };
+    return commentNotifications.map((n) =>
+      this._mapDBToDomainCommentNotification(n),
+    );
+  }
 
-      return commentNotif;
-    });
+  private _mapDBToDomainCommentNotification(
+    persistenceObject: CommentNotificationPersistence2,
+  ): NewCommentNotification {
+    const {
+      author: { id: authorId, name: authorName },
+      comment,
+      project: { id: projectId, name: projectName },
+      id,
+      taskId,
+    } = persistenceObject;
+    const commentNotif: NewCommentNotification = {
+      author: {
+        id: authorId,
+        name: authorName,
+      },
+      comment,
+      project: {
+        id: projectId,
+        name: projectName,
+      },
+      id,
+      taskId,
+      type: NotificationType.COMMENT,
+    };
+
+    return commentNotif;
   }
   async createNewCommentNotifications(
     newCommentNotification: NewCommentNotificationsInput,
@@ -80,7 +87,14 @@ export class DBCommentNotificationsRepositoryService
       throw err;
     }
   }
-  readNotification(_notificationId: string): Promise<void> {
-    throw new Error('Method not implemented.');
+  async readNotification(notificationId: string): Promise<void> {
+    await this.prisma.commentNotification.update({
+      where: {
+        id: notificationId,
+      },
+      data: {
+        read: true,
+      },
+    });
   }
 }
