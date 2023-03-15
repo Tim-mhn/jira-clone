@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { NewCommentNotification } from '../../../domain';
+import { NotificationType } from '../../../domain/models/notification';
 import {
   CommentNotificationsRepository,
   NewCommentNotificationsInput,
@@ -12,10 +13,48 @@ export class DBCommentNotificationsRepositoryService
 {
   prisma = new PrismaClient();
 
-  getNewCommentNotifications(
+  async getNewCommentNotifications(
     _userId: string,
   ): Promise<NewCommentNotification[]> {
-    throw new Error('');
+    const commentNotifications = await this.prisma.commentNotification.findMany(
+      {
+        where: {
+          author: {
+            id: _userId,
+          },
+        },
+        include: {
+          author: true,
+          project: true,
+        },
+      },
+    );
+
+    return commentNotifications.map((n) => {
+      const {
+        author: { id: authorId, name: authorName },
+        comment,
+        project: { id: projectId, name: projectName },
+        id,
+        taskId,
+      } = n;
+      const commentNotif: NewCommentNotification = {
+        author: {
+          id: authorId,
+          name: authorName,
+        },
+        comment,
+        project: {
+          id: projectId,
+          name: projectName,
+        },
+        id,
+        taskId,
+        type: NotificationType.COMMENT,
+      };
+
+      return commentNotif;
+    });
   }
   async createNewCommentNotifications(
     newCommentNotification: NewCommentNotificationsInput,
