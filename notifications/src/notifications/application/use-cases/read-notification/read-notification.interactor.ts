@@ -15,7 +15,7 @@ export class ReadNotificationInteractor {
     private assignationNotificationRepo: TaskAssignationNotificationsRepository,
   ) {}
 
-  async readNotification(readNotificationEvent: NotificationReadEvent) {
+  async handle(readNotificationEvent: NotificationReadEvent) {
     const { notificationId, notificationType } = readNotificationEvent;
     if (notificationType === NotificationType.COMMENT) {
       await this.commentNotificationsRepo.readNotification(notificationId);

@@ -20,7 +20,7 @@ describe('AppController', () => {
   mockRepo.readNotification = jest.fn();
 
   const mockReadNotifUsecase: ReadNotificationInteractor = {
-    readNotification: jest.fn(),
+    handle: jest.fn(),
   } as any as ReadNotificationInteractor;
 
   const mockFollowersRepo = {} as TaskFollowersRepository;
@@ -71,7 +71,7 @@ describe('AppController', () => {
       const { req, res } = createMocks();
 
       jest
-        .spyOn(mockReadNotifUsecase, 'readNotification')
+        .spyOn(mockReadNotifUsecase, 'handle')
         .mockImplementationOnce(async () => {
           throw new NotificationNotFound(notifId);
         });

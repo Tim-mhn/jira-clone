@@ -13,7 +13,7 @@ export class TaskAssignationNotification
 {
   taskId: string;
   project: ProjectIdName;
-  assigneeId: string;
+  assigneeId: string; // todo: do we need this ?
   id: string;
   type: NotificationType.ASSIGNATION;
 }

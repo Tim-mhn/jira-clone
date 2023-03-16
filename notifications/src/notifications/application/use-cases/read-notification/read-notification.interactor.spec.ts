@@ -54,7 +54,7 @@ describe('ReadNotificationService', () => {
       .spyOn(mockCommentNotifsRepo, 'readNotification')
       .mockImplementation(async () => await null);
 
-    await service.readNotification(notificationRead);
+    await service.handle(notificationRead);
 
     expect(mockCommentNotifsRepo.readNotification).toHaveBeenCalled();
   });
@@ -70,7 +70,7 @@ describe('ReadNotificationService', () => {
       .spyOn(mockTaskAssignationRepo, 'readNotification')
       .mockImplementation(async () => await null);
 
-    await service.readNotification(notificationRead);
+    await service.handle(notificationRead);
 
     expect(mockTaskAssignationRepo.readNotification).toHaveBeenCalled();
   });

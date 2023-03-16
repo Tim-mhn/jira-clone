@@ -7,6 +7,7 @@ import {
 } from '../../../domain/repositories/comment-notification.repository';
 import { prismaClient } from '../../database';
 import { CommentNotificationPersistence } from '../../persistence/comment-notification.persistence';
+import { SELECT_PROJECT_ID_NAME } from '../db-selectors';
 
 @Injectable()
 export class DBCommentNotificationsRepository
@@ -40,12 +41,7 @@ export class DBCommentNotificationsRepository
         taskId: true,
         read: false,
 
-        project: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+        project: SELECT_PROJECT_ID_NAME,
         author: {
           select: {
             id: true,
@@ -83,6 +79,7 @@ export class DBCommentNotificationsRepository
 
     return commentNotif;
   }
+
   async createNewCommentNotifications(
     newCommentNotification: NewCommentNotificationsInput,
   ): Promise<void> {
@@ -107,6 +104,7 @@ export class DBCommentNotificationsRepository
       throw err;
     }
   }
+
   async readNotification(notificationId: string): Promise<void> {
     await this.prisma.commentNotification.update({
       where: {

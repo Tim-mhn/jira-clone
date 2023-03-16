@@ -48,7 +48,9 @@ export class AppController {
     @Request() req: AuthenticatedRequest,
   ): Promise<AllNotifications> {
     const userId = req.user.id;
-    return this.getNewNotificationsInteractor.getNewNotifications(userId);
+    return this.getNewNotificationsInteractor.getUserNewCommentNotifications(
+      userId,
+    );
   }
 
   @Post('/follow')
@@ -96,9 +98,7 @@ export class AppController {
         notificationType: notificationReadDTO.type,
       };
 
-      await this.readNotificationInteractor.readNotification(
-        notificationReadEvent,
-      );
+      await this.readNotificationInteractor.handle(notificationReadEvent);
     } catch (err) {
       if (err instanceof NotificationNotFound) {
         _response.status(HttpStatus.NOT_FOUND).send({

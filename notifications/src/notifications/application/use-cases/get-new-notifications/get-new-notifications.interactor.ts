@@ -14,7 +14,9 @@ export class GetNewNotificationsInteractor {
     private assignationNotificationsRepo: TaskAssignationNotificationsRepository,
   ) {}
 
-  async getNewNotifications(userId: string): Promise<AllNotifications> {
+  async getUserNewCommentNotifications(
+    userId: string,
+  ): Promise<AllNotifications> {
     const newCommentNotifications =
       this.commentNotificationsRepo.getNewCommentNotifications(userId);
     const taskAssignedNotifications =
