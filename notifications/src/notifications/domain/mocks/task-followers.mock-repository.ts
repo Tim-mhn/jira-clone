@@ -1,4 +1,4 @@
-import { TaskFollowersRepository } from '../../infrastructure/repositories/task-followers-repository/task-followers.repository';
+import { TaskFollowersRepository } from '../../domain/repositories';
 
 export function getMockTaskFollowersRepository(): TaskFollowersRepository {
   const mock: TaskFollowersRepository = {

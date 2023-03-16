@@ -6,7 +6,7 @@ import {
 } from '../../../domain/mocks';
 import { NewCommentNotificationsInput } from '../../../domain/repositories/comment-notification.repository';
 import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
-import { TaskFollowersRepository } from '../../../infrastructure/repositories/task-followers-repository/task-followers.repository';
+import { TaskFollowersRepositoryToken } from '../../../infrastructure/providers/task-followers-repository.provider';
 import { CreateCommentNotificationsInteractor } from './create-comment-notifications.interactor';
 
 describe('CreateCommentNotificationsInteractor', () => {
@@ -23,7 +23,7 @@ describe('CreateCommentNotificationsInteractor', () => {
           useValue: mockCommentsNotifsRepo,
         },
         {
-          provide: TaskFollowersRepository,
+          provide: TaskFollowersRepositoryToken,
           useValue: mockTaskFollowersRepo,
         },
       ],
@@ -38,11 +38,10 @@ describe('CreateCommentNotificationsInteractor', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a notification for all followers except for the comment author', async () => {
-    const commentAuthorId = 'comment-author-id';
-    const followerIds = [commentAuthorId, 'follower-a', 'follower-b'];
-
+  describe('createNotificationsForTaskFollowersExceptCommentAuthor', () => {
     const taskId = 'task-id-xyz';
+    const commentAuthorId = 'comment-author-id';
+
     const newCommentEvent: NewCommentEvent = {
       author: {
         id: commentAuthorId,
@@ -53,22 +52,44 @@ describe('CreateCommentNotificationsInteractor', () => {
       taskId,
     };
 
-    jest
-      .spyOn(mockTaskFollowersRepo, 'getTaskFollowersIds')
-      .mockImplementation(async () => followerIds);
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
 
-    await service.createNotificationsForTaskFollowersExceptCommentAuthor(
-      newCommentEvent,
-    );
+    it('should create a notification for all followers except for the comment author', async () => {
+      const followerIds = [commentAuthorId, 'follower-a', 'follower-b'];
 
-    const allFollowersIdsExceptAuthor = ['follower-a', 'follower-b'];
-    const expectedInput: NewCommentNotificationsInput = {
-      ...newCommentEvent,
-      followersIds: allFollowersIdsExceptAuthor,
-    };
+      jest
+        .spyOn(mockTaskFollowersRepo, 'getTaskFollowersIds')
+        .mockImplementation(async () => followerIds);
 
-    expect(
-      mockCommentsNotifsRepo.createNewCommentNotifications,
-    ).toHaveBeenCalledWith(expectedInput);
+      await service.createNotificationsForTaskFollowersExceptCommentAuthor(
+        newCommentEvent,
+      );
+
+      const allFollowersIdsExceptAuthor = ['follower-a', 'follower-b'];
+      const expectedInput: NewCommentNotificationsInput = {
+        ...newCommentEvent,
+        followersIds: allFollowersIdsExceptAuthor,
+      };
+
+      expect(
+        mockCommentsNotifsRepo.createNewCommentNotifications,
+      ).toHaveBeenCalledWith(expectedInput);
+    });
+
+    it('should not call repo.createNewCommentNotifications if there are no followers for this task', async () => {
+      jest
+        .spyOn(mockTaskFollowersRepo, 'getTaskFollowersIds')
+        .mockImplementation(async () => []);
+
+      await service.createNotificationsForTaskFollowersExceptCommentAuthor(
+        newCommentEvent,
+      );
+
+      expect(
+        mockCommentsNotifsRepo.createNewCommentNotifications,
+      ).not.toBeCalled();
+    });
   });
 });

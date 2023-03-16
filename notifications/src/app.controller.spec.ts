@@ -13,6 +13,7 @@ import { GetNewNotificationsInteractor } from './notifications/application/use-c
 import { CommentNotificationsRepository } from './notifications/domain/repositories/comment-notification.repository';
 import { CommentNotificationsRepositoryToken } from './notifications/infrastructure/providers/comment-notification-repository.provider';
 import { CreateCommentNotificationsInteractor } from './notifications/application/use-cases/create-comment-notifications/create-comment-notifications.interactor';
+import { TaskFollowersRepositoryToken } from './notifications/infrastructure/providers/task-followers-repository.provider';
 
 describe('AppController', () => {
   let controller: AppController;
@@ -36,7 +37,7 @@ describe('AppController', () => {
           useValue: mockRepo,
         },
         {
-          provide: TaskFollowersRepository,
+          provide: TaskFollowersRepositoryToken,
           useValue: mockFollowersRepo,
         },
         {

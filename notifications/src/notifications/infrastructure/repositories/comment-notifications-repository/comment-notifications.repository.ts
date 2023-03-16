@@ -7,7 +7,7 @@ import {
 } from '../../../domain/repositories/comment-notification.repository';
 import { prismaClient } from '../../database';
 import { CommentNotificationPersistence } from '../../persistence/comment-notification.persistence';
-import { SELECT_PROJECT_ID_NAME } from '../db-selectors';
+import { SELECT_ID_NAME } from '../db-selectors';
 
 @Injectable()
 export class DBCommentNotificationsRepository
@@ -29,55 +29,47 @@ export class DBCommentNotificationsRepository
     userId: string,
   ): Promise<CommentNotificationPersistence[]> {
     return await this.prisma.commentNotification.findMany({
-      where: {
-        author: {
-          id: userId,
-        },
-      },
-
       select: {
-        id: true,
-        comment: true,
-        taskId: true,
-        read: false,
-
-        project: SELECT_PROJECT_ID_NAME,
-        author: {
+        data: {
           select: {
-            id: true,
-            name: true,
+            author: SELECT_ID_NAME,
+            project: SELECT_ID_NAME,
+            comment: true,
+            taskId: true,
           },
         },
+        id: true,
+      },
+
+      where: {
+        followerId: userId,
+        read: false,
       },
     });
   }
 
   private _mapDBToDomainCommentNotification(
-    persistenceObject: CommentNotificationPersistence,
+    dbNotif: CommentNotificationPersistence,
   ): NewCommentNotification {
     const {
-      author: { id: authorId, name: authorName },
-      comment,
-      project: { id: projectId, name: projectName },
+      id,
+      data: { comment, taskId, author, project },
+    } = dbNotif;
+
+    return {
       id,
       taskId,
-    } = persistenceObject;
-    const commentNotif: NewCommentNotification = {
+      comment,
       author: {
-        id: authorId,
-        name: authorName,
+        id: author.id,
+        name: author.name,
       },
-      comment,
       project: {
-        id: projectId,
-        name: projectName,
+        id: project.id,
+        name: project.name,
       },
-      id,
-      taskId,
       type: NotificationType.COMMENT,
     };
-
-    return commentNotif;
   }
 
   async createNewCommentNotifications(
@@ -86,16 +78,24 @@ export class DBCommentNotificationsRepository
     const { author, comment, project, taskId, followersIds } =
       newCommentNotification;
     try {
-      await this.prisma.commentNotification.create({
+      const commentNotificationsCreateData = followersIds.map((followerId) => ({
+        followerId,
+      }));
+
+      await this.prisma.commentNotificationData.create({
         data: {
           comment,
           taskId,
-          followerId: followersIds[0],
           author: {
             create: author,
           },
           project: {
             create: project,
+          },
+          commentNotifications: {
+            createMany: {
+              data: commentNotificationsCreateData,
+            },
           },
         },
       });

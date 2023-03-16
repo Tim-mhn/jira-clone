@@ -20,17 +20,30 @@ model TaskAssignationNotification {
   @@map("task_assignation_notifications")
 }
 
+model CommentNotificationData {
+  id                   String                @id @default(uuid())
+  comment              String
+  taskId               String
+  project              TaskProject           @relation(fields: [taskProjectUuid], references: [uuid])
+  author               Author                @relation(fields: [authorUuid], references: [uuid])
+  createdAt            DateTime              @default(now()) @map("created_at")
+  authorUuid           String
+  taskProjectUuid      String
+  commentNotifications CommentNotification[]
+
+  @@map("comment_notification_data")
+}
+
 model CommentNotification {
-  id              String      @id @default(uuid())
-  comment         String
-  taskId          String
-  read            Boolean     @default(false)
-  project         TaskProject @relation(fields: [taskProjectUuid], references: [uuid])
-  author          Author      @relation(fields: [authorUuid], references: [uuid])
-  followerId      String      @map("user_following_id")
-  createdAt       DateTime    @default(now()) @map("created_at")
-  authorUuid      String
-  taskProjectUuid String
+  id                        String                  @id @default(uuid())
+  data                      CommentNotificationData @relation(fields: [commentNotificationDataId], references: [id])
+  read                      Boolean                 @default(false)
+  followerId                String                  @map("user_following_id")
+  commentNotificationDataId String
+  TaskProject               TaskProject?            @relation(fields: [taskProjectUuid], references: [uuid])
+  taskProjectUuid           String?
+  Author                    Author?                 @relation(fields: [authorUuid], references: [uuid])
+  authorUuid                String?
 
   @@map("comment_notifications")
 }
@@ -50,15 +63,17 @@ model TaskProject {
   name                        String
   TaskAssignationNotification TaskAssignationNotification[]
   CommentNotification         CommentNotification[]
+  CommentNotificationData     CommentNotificationData[]
 
   @@map("projects")
 }
 
 model Author {
-  uuid                String                @id @default(uuid())
-  id                  String
-  name                String
-  CommentNotification CommentNotification[]
+  uuid                    String                    @id @default(uuid())
+  id                      String
+  name                    String
+  CommentNotification     CommentNotification[]
+  CommentNotificationData CommentNotificationData[]
 
   @@map("authors")
 }

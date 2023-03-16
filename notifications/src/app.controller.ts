@@ -4,11 +4,11 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Post,
   Request,
   Res,
 } from '@nestjs/common';
-import { TaskFollowersRepository } from './notifications/infrastructure/repositories/task-followers-repository/task-followers.repository';
 import { AuthenticatedRequest } from './auth';
 import { Response } from 'express';
 import {
@@ -27,10 +27,13 @@ import { GetNewNotificationsInteractor } from './notifications/application/use-c
 import { AllNotifications } from './notifications/domain/models/all-notifications';
 import { ReadNotificationInteractor } from './notifications/application/use-cases/read-notification/read-notification.interactor';
 import { CreateCommentNotificationsInteractor } from './notifications/application/use-cases/create-comment-notifications/create-comment-notifications.interactor';
+import { TaskFollowersRepositoryToken } from './notifications/infrastructure/providers/task-followers-repository.provider';
+import { TaskFollowersRepository } from './notifications/domain/repositories';
 
 @Controller()
 export class AppController {
   constructor(
+    @Inject(TaskFollowersRepositoryToken)
     private followersRepo: TaskFollowersRepository,
     private createAssignationNotificationInteractor: CreateNewAssignationNotificationInteractor,
     private getNewNotificationsInteractor: GetNewNotificationsInteractor,
