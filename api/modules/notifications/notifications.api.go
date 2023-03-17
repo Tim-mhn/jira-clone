@@ -22,7 +22,7 @@ type NotificationsAPIImpl struct {
 
 func (s NotificationsAPIImpl) FollowTask(dto FollowTaskDTO, authCookie *http.Cookie) error {
 
-	req := http_utils.BuildRequest(http_utils.POST, _FOLLOW_TASK_URL, dto)
+	req := http_utils.BuildRequest(http_utils.POST, _FOLLOW_TASK_URL(), dto)
 	req.AddCookie(authCookie)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -41,7 +41,7 @@ func (s NotificationsAPIImpl) FollowTask(dto FollowTaskDTO, authCookie *http.Coo
 }
 
 func (s NotificationsAPIImpl) CreateCommentNotification(dto NewCommentNotificationDTO, authCookie *http.Cookie) error {
-	req := http_utils.BuildRequest(http_utils.POST, _COMMENT_TASK_URL, dto)
+	req := http_utils.BuildRequest(http_utils.POST, _COMMENT_TASK_URL(), dto)
 	req.AddCookie(authCookie)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -56,7 +56,7 @@ func (s NotificationsAPIImpl) CreateCommentNotification(dto NewCommentNotificati
 }
 
 func (s NotificationsAPIImpl) SendTaskAssignationNotification(dto AssignationNotificationDTO, authCookie *http.Cookie) error {
-	req := http_utils.BuildRequest(http_utils.POST, _ASSIGNATION_URL, dto)
+	req := http_utils.BuildRequest(http_utils.POST, _ASSIGNATION_URL(), dto)
 	req.AddCookie(authCookie)
 
 	resp, err := http.DefaultClient.Do(req)

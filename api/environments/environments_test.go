@@ -52,7 +52,7 @@ func TestConfigIsValid(t *testing.T) {
 
 		_, invalidFields := configIsValid(c)
 
-		expectedInvalidFields := []string{"Host"}
+		expectedInvalidFields := []string{"Host", "NotificationsAPIURL"}
 		assert.EqualValues(t, expectedInvalidFields, invalidFields)
 	})
 
@@ -69,6 +69,7 @@ func TestConfigIsValid(t *testing.T) {
 					Email: "xxxxx",
 				},
 			},
+			NotificationsAPIURL: "https://notifications.api",
 		}
 
 		_, invalidFields := configIsValid(c)

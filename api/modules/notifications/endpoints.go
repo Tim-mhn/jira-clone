@@ -1,11 +1,23 @@
 package notifications_api
 
-import "fmt"
+import (
+	"fmt"
 
-const _NOTIFICATIONS_BASE_URL = "http://localhost:3000"
+	"github.com/tim-mhn/figma-clone/environments"
+)
 
-var _FOLLOW_TASK_URL = fmt.Sprintf("%s/follow", _NOTIFICATIONS_BASE_URL)
+func _NOTIFICATIONS_BASE_URL() string {
+	return environments.GetConfig().NotificationsAPIURL
+}
 
-var _COMMENT_TASK_URL = fmt.Sprintf("%s/comment", _NOTIFICATIONS_BASE_URL)
+func _FOLLOW_TASK_URL() string {
+	return fmt.Sprintf("%s/follow", _NOTIFICATIONS_BASE_URL())
+}
 
-var _ASSIGNATION_URL = fmt.Sprintf("%s/assignation", _NOTIFICATIONS_BASE_URL)
+func _COMMENT_TASK_URL() string {
+	return fmt.Sprintf("%s/comment", _NOTIFICATIONS_BASE_URL())
+}
+
+func _ASSIGNATION_URL() string {
+	return fmt.Sprintf("%s/assignation", _NOTIFICATIONS_BASE_URL())
+}
