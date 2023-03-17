@@ -13,10 +13,6 @@ import (
 
 func main() {
 
-	//todo:
-	// - clean up variables logic (try to use Viper for os variables)
-	// - meta variable with host + address
-	// - add proxy check
 	environments.LoadVariables()
 
 	if environments.IsProduction() {
@@ -31,7 +27,7 @@ func main() {
 	if environments.IsProduction() {
 		config := cors.DefaultConfig()
 
-		config.AllowOrigins = []string{environments.GetConfig().ClientURL}
+		config.AllowOrigins = []string{environments.GetConfig().ClientURL, environments.GetConfig().DevClientURL}
 		config.AllowCredentials = true
 		router.Use(cors.New(config))
 	}

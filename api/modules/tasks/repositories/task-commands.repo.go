@@ -15,15 +15,16 @@ import (
 
 type TaskCommandsRepository interface {
 	CreateTask(projectID string, sprintID string, title string, assigneeID string, points int, description string) (tasks_models.Task, error)
-	UpdateTask(taskID string, patchDTO tasks_dtos.PatchTaskDTO) error
+	UpdateTaskData(taskID string, patchDTO tasks_dtos.PatchTaskDTO) error
+	DeleteTask(taskID string) (DeleteTaskResponse, error)
 }
 type SQLTaskCommandsRepository struct {
 	um             *auth.UserRepository
-	projectQueries *project.ProjectQueriesRepository
+	projectQueries project.ProjectQueriesRepository
 	conn           *sql.DB
 }
 
-func NewSQLTaskCommandsRepository(um *auth.UserRepository, projectQueries *project.ProjectQueriesRepository, conn *sql.DB) *SQLTaskCommandsRepository {
+func NewSQLTaskCommandsRepository(um *auth.UserRepository, projectQueries project.ProjectQueriesRepository, conn *sql.DB) *SQLTaskCommandsRepository {
 	taskRepo := SQLTaskCommandsRepository{}
 	taskRepo.um = um
 	taskRepo.projectQueries = projectQueries
@@ -122,7 +123,7 @@ func (taskRepo *SQLTaskCommandsRepository) checkCanAssignTaskToMember(taskProjec
 	return nil
 }
 
-func (taskRepo *SQLTaskCommandsRepository) UpdateTask(taskID string, patchDTO tasks_dtos.PatchTaskDTO) error {
+func (taskRepo *SQLTaskCommandsRepository) UpdateTaskData(taskID string, patchDTO tasks_dtos.PatchTaskDTO) error {
 
 	ApiToDBFields := map[string]string{
 		"assigneeId":  "assignee_id",

@@ -16,28 +16,28 @@ import (
 	http_utils "github.com/tim-mhn/figma-clone/utils/http"
 )
 
-type mockCommentsRepository struct {
+type _MockCommentsService struct {
 	mock.Mock
 }
 
 /**
 ** MAKE SURE TO HAVE A POINTER RECEIVING THE METHOD, otherwise Called() / AssertCalled works unexpectedly
  */
-func (mockRepo *mockCommentsRepository) createComment(createComment CreateCommentInput) CommentsError {
-	args := mockRepo.Called()
+func (mockService *_MockCommentsService) postComment(postComment CreateCommentInput, author auth.User, authCookie *http.Cookie) CommentsError {
+	args := mockService.Called()
 	return args.Get(0).(CommentsError)
 }
 
-func (mockRepo *mockCommentsRepository) getTaskComments(taskID string) (TaskComments, CommentsError) {
-	args := mockRepo.Called(taskID)
+func (mockService *_MockCommentsService) getTaskComments(taskID string) (TaskComments, CommentsError) {
+	args := mockService.Called(taskID)
 	return args.Get(0).(TaskComments), args.Get(1).(CommentsError)
 }
 
-func (mockRepo *mockCommentsRepository) deleteComment(commentID string) CommentsError {
+func (mockService *_MockCommentsService) deleteComment(commentID string) CommentsError {
 	return NO_COMMENTS_ERROR()
 }
 
-func (mockRepo *mockCommentsRepository) editCommentText(editComment EditCommentInput) CommentsError {
+func (mockService *_MockCommentsService) editCommentText(editComment EditCommentInput) CommentsError {
 	return NO_COMMENTS_ERROR()
 }
 
@@ -86,10 +86,10 @@ func TestPostCommentHttpCodes(t *testing.T) {
 
 		t.Run(testData["name"].(string), func(t *testing.T) {
 
-			mockRepo := new(mockCommentsRepository)
-			router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+			mockService := new(_MockCommentsService)
+			router, responseRecorder := setupRouterAndReturnRecorder(mockService)
 
-			mockRepo.On("createComment").Return(testData["repoResponse"])
+			mockService.On("postComment").Return(testData["repoResponse"])
 
 			req := buildPostCommentRequest(testData["requestBody"].(map[string]interface{}))
 			router.ServeHTTP(responseRecorder, req)
@@ -110,10 +110,10 @@ func TestPostCommentHttpCodes(t *testing.T) {
 	}
 
 	t.Run("should return an instance of APIErrorResponse when the Request Body is invalid", func(t *testing.T) {
-		mockRepo := new(mockCommentsRepository)
-		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+		mockService := new(_MockCommentsService)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockService)
 
-		mockRepo.Mock.On("createComment").Return(buildCommentsError(TaskNotFound, fmt.Errorf("task not found")))
+		mockService.Mock.On("postComment").Return(buildCommentsError(TaskNotFound, fmt.Errorf("task not found")))
 
 		request := buildPostCommentRequest(INVALID_POST_EDIT_COMMENT_BODY())
 
@@ -130,11 +130,11 @@ func TestPostCommentHttpCodes(t *testing.T) {
 
 	})
 
-	t.Run("should return an instance of APIErrorResponse when the Repo returns an error", func(t *testing.T) {
-		mockRepo := new(mockCommentsRepository)
-		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+	t.Run("should return an instance of APIErrorResponse when the Service returns an error", func(t *testing.T) {
+		mockService := new(_MockCommentsService)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockService)
 
-		mockRepo.Mock.On("createComment").Return(buildCommentsError(TaskNotFound, fmt.Errorf("task not found")))
+		mockService.Mock.On("postComment").Return(buildCommentsError(TaskNotFound, fmt.Errorf("task not found")))
 
 		request := buildPostCommentRequest(VALID_POST_EDIT_COMMENT_BODY())
 
@@ -155,28 +155,28 @@ func TestPostCommentHttpCodes(t *testing.T) {
 
 func TestGetTaskComments(t *testing.T) {
 
-	t.Run("should call TaskCommentsRepository with route's taskID ", func(t *testing.T) {
-		mockRepo := new(mockCommentsRepository)
-		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+	t.Run("should call TaskCommentsServicesitory with route's taskID ", func(t *testing.T) {
+		mockService := new(_MockCommentsService)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockService)
 
 		taskID := "some-random-id"
 		request := buildGetCommentsRequest(taskID)
 
-		mockRepo.On("getTaskComments", taskID).Return([]TaskComment{}, NO_COMMENTS_ERROR())
+		mockService.On("getTaskComments", taskID).Return([]TaskComment{}, NO_COMMENTS_ERROR())
 		router.ServeHTTP(responseRecorder, request)
 
-		mockRepo.AssertCalled(t, "getTaskComments", taskID)
+		mockService.AssertCalled(t, "getTaskComments", taskID)
 
 	})
 
 	t.Run("should return 404 NOT FOUND if taskID is empty string ", func(t *testing.T) {
-		mockRepo := new(mockCommentsRepository)
-		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+		mockService := new(_MockCommentsService)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockService)
 
 		taskID := ""
 		request := buildGetCommentsRequest(taskID)
 
-		mockRepo.On("getTaskComments", taskID).Return([]TaskComment{}, NO_COMMENTS_ERROR())
+		mockService.On("getTaskComments", taskID).Return([]TaskComment{}, NO_COMMENTS_ERROR())
 		router.ServeHTTP(responseRecorder, request)
 
 		expectedCode := http.StatusNotFound
@@ -186,13 +186,13 @@ func TestGetTaskComments(t *testing.T) {
 	})
 
 	t.Run("should return BAD REQUEST if repo returns TaskNotFound ", func(t *testing.T) {
-		mockRepo := new(mockCommentsRepository)
-		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+		mockService := new(_MockCommentsService)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockService)
 
 		taskID := "task-id-does-not-exist"
 		request := buildGetCommentsRequest(taskID)
 
-		mockRepo.On("getTaskComments", taskID).Return([]TaskComment{}, TASK_NOT_FOUND_ERROR(nil))
+		mockService.On("getTaskComments", taskID).Return([]TaskComment{}, TASK_NOT_FOUND_ERROR(nil))
 		router.ServeHTTP(responseRecorder, request)
 
 		expectedCode := http.StatusBadRequest
@@ -207,10 +207,10 @@ func TestControllerEditComment(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	t.Run("should return an InvalidPayloadError if commentID is empty string in endpoint", func(t *testing.T) {
-		mockRepo := new(mockCommentsRepository)
-		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+		mockService := new(_MockCommentsService)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockService)
 
-		request := http_utils.BuildRequest("PATCH", "/comments/ ", VALID_POST_EDIT_COMMENT_BODY())
+		request := http_utils.BuildRequest(http_utils.PATCH, "/comments/ ", VALID_POST_EDIT_COMMENT_BODY())
 
 		router.ServeHTTP(responseRecorder, request)
 
@@ -222,10 +222,10 @@ func TestControllerEditComment(t *testing.T) {
 	})
 
 	t.Run("should return an InvalidPayloadError if text is an empty string in body", func(t *testing.T) {
-		mockRepo := new(mockCommentsRepository)
-		router, responseRecorder := setupRouterAndReturnRecorder(mockRepo)
+		mockService := new(_MockCommentsService)
+		router, responseRecorder := setupRouterAndReturnRecorder(mockService)
 
-		request := http_utils.BuildRequest("PATCH", "/comments/ ", map[string]interface{}{"text": ""})
+		request := http_utils.BuildRequest(http_utils.PATCH, "/comments/ ", map[string]interface{}{"text": ""})
 
 		router.ServeHTTP(responseRecorder, request)
 
@@ -238,11 +238,11 @@ func TestControllerEditComment(t *testing.T) {
 }
 
 func buildPostCommentRequest(body map[string]interface{}) *http.Request {
-	return http_utils.BuildRequest("POST", "/comments", body)
+	return http_utils.BuildRequest(http_utils.POST, "/comments", body)
 }
 
 func buildGetCommentsRequest(taskID string) *http.Request {
-	return http_utils.BuildRequest("GET", fmt.Sprintf("/%s/comments", taskID), nil)
+	return http_utils.BuildRequest(http_utils.GET, fmt.Sprintf("/%s/comments", taskID), nil)
 }
 
 func VALID_POST_EDIT_COMMENT_BODY() map[string]interface{} {
@@ -274,12 +274,12 @@ func typeOfResponseIsAPIResponse(responseBody map[string]interface{}) (string, e
 	return "", nil
 }
 
-func setupRouterAndReturnRecorder(mockRepo *mockCommentsRepository) (*gin.Engine, *httptest.ResponseRecorder) {
+func setupRouterAndReturnRecorder(mockService *_MockCommentsService) (*gin.Engine, *httptest.ResponseRecorder) {
 	responseRecorder := httptest.NewRecorder()
 
 	router := gin.Default()
 	controller := TaskCommentsController{
-		repo: mockRepo,
+		service: mockService,
 	}
 	router.POST("/comments", controller.postComment)
 	router.GET("/:taskID/comments", controller.getTaskComments)

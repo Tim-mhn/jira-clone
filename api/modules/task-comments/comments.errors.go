@@ -5,7 +5,7 @@ import shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 type CommentsErrorCode int
 
 const (
-	TaskNotFound = iota
+	TaskNotFound = iota + 1
 	AuthorNotFound
 	CommentNotFound
 	OtherCommentError

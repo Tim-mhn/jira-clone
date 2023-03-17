@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TaskAssignationNotification {
+  id              String      @id @default(uuid())
+  assigneeId      String      @map("assignee_id")
+  taskId          String      @map("task_id")
+  project         TaskProject @relation(fields: [taskProjectUuid], references: [uuid])
+  read            Boolean     @default(false)
+  dismissed       Boolean     @default(false)
+  createdAt       DateTime    @default(now()) @map("created_at")
+  taskProjectUuid String
+
+  @@map("task_assignation_notifications")
+}
+
+model CommentNotificationData {
+  id                   String                @id @default(uuid())
+  comment              String
+  taskId               String
+  project              TaskProject           @relation(fields: [taskProjectUuid], references: [uuid])
+  author               Author                @relation(fields: [authorUuid], references: [uuid])
+  createdAt            DateTime              @default(now()) @map("created_at")
+  authorUuid           String
+  taskProjectUuid      String
+  commentNotifications CommentNotification[]
+
+  @@map("comment_notification_data")
+}
+
+model CommentNotification {
+  id                        String                  @id @default(uuid())
+  data                      CommentNotificationData @relation(fields: [commentNotificationDataId], references: [id])
+  read                      Boolean                 @default(false)
+  followerId                String                  @map("user_following_id")
+  commentNotificationDataId String
+  TaskProject               TaskProject?            @relation(fields: [taskProjectUuid], references: [uuid])
+  taskProjectUuid           String?
+  Author                    Author?                 @relation(fields: [authorUuid], references: [uuid])
+  authorUuid                String?
+
+  @@map("comment_notifications")
+}
+
+model TaskFollowers {
+  id         Int    @id @default(autoincrement())
+  taskId     String @map("task_id")
+  followerId String @map("follower_id")
+
+  @@unique([taskId, followerId])
+  @@map("task_followers")
+}
+
+model TaskProject {
+  uuid                        String                        @id @default(uuid())
+  id                          String
+  name                        String
+  TaskAssignationNotification TaskAssignationNotification[]
+  CommentNotification         CommentNotification[]
+  CommentNotificationData     CommentNotificationData[]
+
+  @@map("projects")
+}
+
+model Author {
+  uuid                    String                    @id @default(uuid())
+  id                      String
+  name                    String
+  CommentNotification     CommentNotification[]
+  CommentNotificationData CommentNotificationData[]
+
+  @@map("authors")
+}

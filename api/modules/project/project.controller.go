@@ -10,10 +10,10 @@ import (
 
 type projectController struct {
 	projectCommands *ProjectCommandsRepository
-	projectQueries  *ProjectQueriesRepository
+	projectQueries  ProjectQueriesRepository
 }
 
-func NewProjectController(projectCommands *ProjectCommandsRepository, projectQueries *ProjectQueriesRepository) *projectController {
+func NewProjectController(projectCommands *ProjectCommandsRepository, projectQueries ProjectQueriesRepository) *projectController {
 	return &projectController{
 		projectCommands: projectCommands,
 		projectQueries:  projectQueries,
