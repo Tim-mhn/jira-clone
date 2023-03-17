@@ -32,6 +32,7 @@ type Config struct {
 	Environment         string
 	ClientDomain        string `mapstructure:"client_domain"`
 	ClientURL           string `mapstructure:"client_url"`
+	DevClientURL        string `mapstructure:"dev_client_url"`
 	NotificationsAPIURL string `mapstructure:"notifications_api_url"`
 }
 
@@ -71,6 +72,7 @@ func loadFromEnvironment() {
 	viper.BindEnv("client_domain")
 	viper.BindEnv("client_url")
 	viper.BindEnv("notifications_api_url")
+	viper.BindEnv("dev_client_url")
 
 	err := viper.Unmarshal(&_config)
 
@@ -162,7 +164,10 @@ func configIsValid(config Config) (bool, []string) {
 
 		if config.NotificationsAPIURL == "" {
 			invalidFields = append(invalidFields, "NotificationsAPIURL")
+		}
 
+		if config.DevClientURL == "" {
+			invalidFields = append(invalidFields, "DevClientURL")
 		}
 
 	}
