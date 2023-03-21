@@ -9,6 +9,7 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_controllers "github.com/tim-mhn/figma-clone/modules/tasks/controllers"
+	tasks_services "github.com/tim-mhn/figma-clone/modules/tasks/services"
 	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
 	http_utils "github.com/tim-mhn/figma-clone/utils/http"
 )
@@ -17,9 +18,9 @@ type TaskCommentsController struct {
 	service ITaskCommentsService
 }
 
-func newTaskCommentsController(repo TaskCommentsRepository, projectQueries project.ProjectQueriesRepository) *TaskCommentsController {
+func newTaskCommentsController(repo TaskCommentsRepository, projectQueries project.ProjectQueriesRepository, tasksQueries tasks_services.ITasksQueriesService) *TaskCommentsController {
 	return &TaskCommentsController{
-		service: NewTaskCommentsService(repo, projectQueries),
+		service: NewTaskCommentsService(repo, projectQueries, tasksQueries),
 	}
 }
 

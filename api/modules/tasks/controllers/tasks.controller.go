@@ -21,13 +21,13 @@ import (
 
 type TasksController struct {
 	taskQueries      *tasks_repositories.TaskQueriesRepository
-	sprintService    tasks_services.ITasksService
+	sprintService    tasks_services.ITasksQueriesService
 	taskPositionRepo *tasks_repositories.TaskPositionRepository
 	taskCommands     tasks_services.TaskCommandsService
 	notificationsAPI notifications_api.NotificationsAPI
 }
 
-func NewTasksController(um *auth.UserRepository, projectQueries project.ProjectQueriesRepository, service tasks_services.ITasksService, taskRepo *tasks_repositories.TaskQueriesRepository, tagsService tags.ITagsService, conn *sql.DB) *TasksController {
+func NewTasksController(um *auth.UserRepository, projectQueries project.ProjectQueriesRepository, service tasks_services.ITasksQueriesService, taskRepo *tasks_repositories.TaskQueriesRepository, tagsService tags.ITagsService, conn *sql.DB) *TasksController {
 
 	taskCommandsRepo := tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn)
 

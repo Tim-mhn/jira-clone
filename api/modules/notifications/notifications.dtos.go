@@ -14,11 +14,16 @@ type ProjectIdName struct {
 	Name string `json:"name" binding:"required"`
 	ID   string `json:"id" binding:"required"`
 }
+
+type CommentTaskDTO struct {
+	Id   string `json:"id" binding:"required"`
+	Name string `json:"name" binding:"required"`
+}
 type NewCommentNotificationDTO struct {
-	TaskID  string        `json:"taskId" binding:"required"`
-	Comment string        `json:"comment" binding:"required"`
-	Author  CommentAuthor `json:"author" binding:"required"`
-	Project ProjectIdName `json:"project" binding:"required"`
+	Task    CommentTaskDTO `json:"task" binding:"required"`
+	Comment string         `json:"comment" binding:"required"`
+	Author  CommentAuthor  `json:"author" binding:"required"`
+	Project ProjectIdName  `json:"project" binding:"required"`
 }
 
 type AssignationNotificationDTO struct {

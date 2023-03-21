@@ -1,4 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Prisma } from '@prisma/client';
+import { NotificationNotFound } from '../../../domain';
+import { Task } from '../../../domain/events/new-comment.event';
 import { NotificationType } from '../../../domain/models/notification';
 import { CommentNotificationPersistence } from '../../persistence/comment-notification.persistence';
 import { DBCommentNotificationsRepository } from './comment-notifications.repository';
@@ -20,7 +23,7 @@ describe('CommentNotificationsRepositoryService', () => {
     expect(repo).toBeDefined();
   });
 
-  describe('getNewCommentNotifications', () => {
+  describe('getCommentNotifications', () => {
     const dbNotif: CommentNotificationPersistence = {
       data: {
         id: 'comment-notification-data-id',
@@ -33,6 +36,7 @@ describe('CommentNotificationsRepositoryService', () => {
           id: 'project-id',
           name: 'project-name',
         },
+        taskName: 'task-name',
         taskId: 'task-id',
       },
 
@@ -48,7 +52,7 @@ describe('CommentNotificationsRepositoryService', () => {
     });
 
     it('it should return return the COMMENT type', async () => {
-      const commentNotifications = await repo.getNewCommentNotifications(
+      const commentNotifications = await repo.getCommentNotifications(
         'user-id',
       );
 
@@ -56,11 +60,44 @@ describe('CommentNotificationsRepositoryService', () => {
     });
 
     it('should return the notification id and not the notification-data id ', async () => {
-      const commentNotifications = await repo.getNewCommentNotifications(
+      const commentNotifications = await repo.getCommentNotifications(
         'user-id',
       );
 
       expect(commentNotifications[0].id).toEqual('notification-id');
+    });
+
+    it('should correctly map the task id and and name', async () => {
+      const commentNotifications = await repo.getCommentNotifications(
+        'user-id',
+      );
+
+      const expectedTask: Task = {
+        id: dbNotif.data.taskId,
+        name: dbNotif.data.taskName,
+      };
+      expect(commentNotifications[0].task).toEqual(expectedTask);
+    });
+  });
+
+  describe('readNotification', () => {
+    it('should throw a  NotificationNotFound error if prisma code is P2025', async () => {
+      jest
+        .spyOn((repo as any).prisma.commentNotification, 'update')
+        .mockImplementation(async () => {
+          throw new Prisma.PrismaClientKnownRequestError(
+            'An operation failed because it depends on one or more records that were required but not found.',
+            {
+              code: 'P2025',
+              clientVersion: '',
+            },
+          );
+        });
+
+      const readFn = () =>
+        repo.readNotification('if-of-notification-does-not-exist');
+
+      await expect(readFn()).rejects.toThrow(NotificationNotFound);
     });
   });
 });

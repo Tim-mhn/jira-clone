@@ -13,7 +13,7 @@ export class NotificationsAPI {
 
   private endpoint = `${environment.notificationsUrl}notifications`;
   private readEndpoint = `${environment.notificationsUrl}read`;
-  public getNewCommentNotifications() {
+  public getNewNotifications() {
     const endpoint = `${this.endpoint}`;
     return this.http.get<NewNotifications>(endpoint);
   }

@@ -24,6 +24,7 @@ model CommentNotificationData {
   id                   String                @id @default(uuid())
   comment              String
   taskId               String
+  taskName             String                @default("") @map("task_name")
   project              TaskProject           @relation(fields: [taskProjectUuid], references: [uuid])
   author               Author                @relation(fields: [authorUuid], references: [uuid])
   createdAt            DateTime              @default(now()) @map("created_at")

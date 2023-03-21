@@ -4,7 +4,7 @@ import {
   getMockCommentNotificationsRepository,
   getMockTaskFollowersRepository,
 } from '../../../domain/mocks';
-import { NewCommentNotificationsInput } from '../../../domain/repositories/comment-notification.repository';
+import { CommentNotificationsInput } from '../../../domain/repositories/comment-notification.repository';
 import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
 import { TaskFollowersRepositoryToken } from '../../../infrastructure/providers/task-followers-repository.provider';
 import { CreateCommentNotificationsInteractor } from './create-comment-notifications.interactor';
@@ -49,7 +49,10 @@ describe('CreateCommentNotificationsInteractor', () => {
       },
       comment: 'comment',
       project: null,
-      taskId,
+      task: {
+        id: taskId,
+        name: 'taskname',
+      },
     };
 
     afterEach(() => {
@@ -68,17 +71,18 @@ describe('CreateCommentNotificationsInteractor', () => {
       );
 
       const allFollowersIdsExceptAuthor = ['follower-a', 'follower-b'];
-      const expectedInput: NewCommentNotificationsInput = {
+
+      const expectedInput: CommentNotificationsInput = {
         ...newCommentEvent,
         followersIds: allFollowersIdsExceptAuthor,
       };
 
       expect(
-        mockCommentsNotifsRepo.createNewCommentNotifications,
+        mockCommentsNotifsRepo.createCommentNotifications,
       ).toHaveBeenCalledWith(expectedInput);
     });
 
-    it('should not call repo.createNewCommentNotifications if there are no followers for this task', async () => {
+    it('should not call repo.createCommentNotifications if there are no followers for this task', async () => {
       jest
         .spyOn(mockTaskFollowersRepo, 'getTaskFollowersIds')
         .mockImplementation(async () => []);
@@ -88,8 +92,18 @@ describe('CreateCommentNotificationsInteractor', () => {
       );
 
       expect(
-        mockCommentsNotifsRepo.createNewCommentNotifications,
+        mockCommentsNotifsRepo.createCommentNotifications,
       ).not.toBeCalled();
+    });
+
+    it('should call getTaskFollowersIds with the correct task id', async () => {
+      await service.createNotificationsForTaskFollowersExceptCommentAuthor(
+        newCommentEvent,
+      );
+
+      expect(mockTaskFollowersRepo.getTaskFollowersIds).toHaveBeenCalledWith(
+        taskId,
+      );
     });
   });
 });

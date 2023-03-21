@@ -11,28 +11,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
+	tasks_services "github.com/tim-mhn/figma-clone/modules/tasks/services"
 	http_utils "github.com/tim-mhn/figma-clone/utils/http"
 )
-
-type MockTasksService struct {
-	mock.Mock
-}
-
-func (mockService *MockTasksService) GetTasksGroupedBySprint(
-	projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error) {
-
-	args := mockService.Called(projectID, taskFilters)
-
-	var err error
-
-	if args.Get(1) == nil {
-		err = nil
-	} else {
-		err = args.Get(1).(error)
-	}
-
-	return args.Get(0).(tasks_dtos.SprintListWithTasksDTO), err
-}
 
 var (
 	projectID string = "id-of-project"
@@ -42,7 +23,7 @@ func TestGetTasksGroupedBySprintsOfProject(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 
-	mockService := new(MockTasksService)
+	mockService := new(tasks_services.MockTasksQueriesService)
 	controller := TasksController{
 		sprintService: mockService,
 	}

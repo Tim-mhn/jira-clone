@@ -1,19 +1,15 @@
 import { NewCommentEvent } from '../events/new-comment.event';
-import {
-  NewCommentNotification,
-  NotificationId,
-  TaskFollowerId,
-} from '../models';
+import { CommentNotification, NotificationId, TaskFollowerId } from '../models';
 
-export type NewCommentNotificationsInput = NewCommentEvent & {
+export type CommentNotificationsInput = NewCommentEvent & {
   followersIds: string[];
 };
 export interface CommentNotificationsRepository {
-  getNewCommentNotifications(
+  getCommentNotifications(
     userId: TaskFollowerId,
-  ): Promise<NewCommentNotification[]>;
-  createNewCommentNotifications(
-    newCommentNotification: NewCommentNotificationsInput,
+  ): Promise<CommentNotification[]>;
+  createCommentNotifications(
+    newCommentNotification: CommentNotificationsInput,
   ): Promise<void>;
   readNotification(notificationId: NotificationId): Promise<void>;
 }

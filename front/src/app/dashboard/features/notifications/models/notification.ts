@@ -11,9 +11,13 @@ export type NotificationProject = {
   name: string;
 };
 
+type NotificationTask = {
+  id: string;
+  name: string;
+};
 export interface Notification<T extends NotificationType> {
   id: NotificationId;
   type: T;
-  taskId: string;
+  task?: NotificationTask;
   project: NotificationProject;
 }

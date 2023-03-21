@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { NewCommentEvent } from '../../../domain/events/new-comment.event';
 import {
   CommentNotificationsRepository,
-  NewCommentNotificationsInput,
+  CommentNotificationsInput,
   TaskFollowersRepository,
 } from '../../../domain/repositories';
 import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
@@ -20,9 +20,9 @@ export class CreateCommentNotificationsInteractor {
   async createNotificationsForTaskFollowersExceptCommentAuthor(
     newCommentEvent: NewCommentEvent,
   ) {
-    const { author, comment, project, taskId } = newCommentEvent;
+    const { author, comment, project, task } = newCommentEvent;
     const followersIds = await this.taskFollowersRepo.getTaskFollowersIds(
-      taskId,
+      task.id,
     );
     const followersIdsExceptAuthor = followersIds.filter(
       (id) => id !== author.id,
@@ -31,14 +31,14 @@ export class CreateCommentNotificationsInteractor {
     const noFollowers = followersIdsExceptAuthor.length === 0;
     if (noFollowers) return;
 
-    const input: NewCommentNotificationsInput = {
+    const input: CommentNotificationsInput = {
       author,
       comment,
       project,
-      taskId,
+      task,
       followersIds: followersIdsExceptAuthor,
     };
 
-    await this.commentNotificationsRepo.createNewCommentNotifications(input);
+    await this.commentNotificationsRepo.createCommentNotifications(input);
   }
 }

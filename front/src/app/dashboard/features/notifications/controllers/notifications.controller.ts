@@ -13,7 +13,7 @@ export class NotificationsController {
   constructor(private api: NotificationsAPI, private router: Router) {}
 
   public getNewNotificationsForCurrentUser() {
-    return this.api.getNewCommentNotifications();
+    return this.api.getNewNotifications();
   }
 
   public goToTaskPageAndMarkNotificationAsRead<T extends NotificationType>(
@@ -36,7 +36,7 @@ export class NotificationsController {
       Name: notification.project.name,
     };
     const route = buildTaskPageRoute(
-      { Id: notification.taskId },
+      { Id: notification.task.id },
       projectIdName
     );
 

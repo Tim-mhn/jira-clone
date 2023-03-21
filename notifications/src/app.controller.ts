@@ -47,11 +47,11 @@ export class AppController {
   }
 
   @Get('/notifications')
-  getNewCommentNotifications(
+  getCommentNotifications(
     @Request() req: AuthenticatedRequest,
   ): Promise<AllNotifications> {
     const userId = req.user.id;
-    return this.getNewNotificationsInteractor.getUserNewCommentNotifications(
+    return this.getNewNotificationsInteractor.getUserCommentNotifications(
       userId,
     );
   }
@@ -65,7 +65,7 @@ export class AppController {
   }
 
   @Post('/comment')
-  createNewCommentNotifications(@Body() newCommentDTO: NewCommentDTO) {
+  createCommentNotifications(@Body() newCommentDTO: NewCommentDTO) {
     this.createCommentNotificationsInteractor.createNotificationsForTaskFollowersExceptCommentAuthor(
       newCommentDTO,
     );

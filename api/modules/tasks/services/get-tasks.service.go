@@ -1,37 +1,55 @@
 package tasks_services
 
 import (
+	"database/sql"
 	"log"
 	"sync"
 	"time"
 
+	"github.com/tim-mhn/figma-clone/modules/auth"
 	"github.com/tim-mhn/figma-clone/modules/sprints"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
+	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
 
 	"github.com/tim-mhn/figma-clone/utils/arrays"
 )
 
-type ITasksService interface {
+type ITasksQueriesService interface {
 	GetTasksGroupedBySprint(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error)
+	GetTaskById(taskID string) (tasks_models.Task, tasks_errors.TaskError)
 }
 
-type TasksService struct {
+type TasksQueriesService struct {
 	taskRepo         *tasks_repositories.TaskQueriesRepository
 	sprintRepo       sprints.SprintRepository
 	sprintPointsRepo *sprints.SprintPointsRepository
 }
 
-func NewTasksService(taskRepo *tasks_repositories.TaskQueriesRepository, sprintRepo sprints.SprintRepository, sprintPointsRepo *sprints.SprintPointsRepository) *TasksService {
-	return &TasksService{
+func NewTasksQueriesService(taskRepo *tasks_repositories.TaskQueriesRepository, sprintRepo sprints.SprintRepository, sprintPointsRepo *sprints.SprintPointsRepository) ITasksQueriesService {
+	return &TasksQueriesService{
 		taskRepo:         taskRepo,
 		sprintRepo:       sprintRepo,
 		sprintPointsRepo: sprintPointsRepo,
 	}
 }
 
-func (service *TasksService) GetTasksGroupedBySprint(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error) {
+func NewTasksQueriesServiceFromConn(conn *sql.DB) ITasksQueriesService {
+
+	userRepo := auth.NewUserRepository(conn)
+	taskRepo := tasks_repositories.NewTaskQueriesRepository(userRepo, conn)
+	sprintRepo := sprints.NewSprintRepository(conn)
+	sprintPointsRepo := sprints.NewSprintPointsRepository(conn)
+
+	return &TasksQueriesService{
+		taskRepo:         taskRepo,
+		sprintRepo:       sprintRepo,
+		sprintPointsRepo: sprintPointsRepo,
+	}
+}
+
+func (service *TasksQueriesService) GetTasksGroupedBySprint(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error) {
 	sprintList, err := service.sprintRepo.GetActiveSprintsOfProject(projectID)
 
 	if err != nil {
@@ -77,7 +95,17 @@ func (service *TasksService) GetTasksGroupedBySprint(projectID string, taskFilte
 	return sprintListWithTasks, nil
 }
 
-func (service TasksService) getSprintTasksAndPointsBreakdown(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.TaskWithSprint, sprints.SprintPointsBreakdown, error) {
+func (service *TasksQueriesService) GetTaskById(taskID string) (tasks_models.Task, tasks_errors.TaskError) {
+	taskWithSprint, err := service.taskRepo.GetTaskById(taskID)
+
+	if err.HasError {
+		return tasks_models.Task{}, err
+	}
+
+	return taskWithSprint.Task, tasks_errors.NoTaskError()
+}
+
+func (service TasksQueriesService) getSprintTasksAndPointsBreakdown(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.TaskWithSprint, sprints.SprintPointsBreakdown, error) {
 
 	var syncGroup sync.WaitGroup
 	tasksChan := make(chan []tasks_models.TaskWithSprint)

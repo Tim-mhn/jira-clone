@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { NewCommentNotification } from '../../../domain';
+import { Prisma } from '@prisma/client';
+import { CommentNotification, NotificationNotFound } from '../../../domain';
 import { NotificationType } from '../../../domain/models/notification';
 import {
   CommentNotificationsRepository,
-  NewCommentNotificationsInput,
+  CommentNotificationsInput,
 } from '../../../domain/repositories/comment-notification.repository';
 import { prismaClient } from '../../database';
 import { CommentNotificationPersistence } from '../../persistence/comment-notification.persistence';
@@ -15,9 +16,9 @@ export class DBCommentNotificationsRepository
 {
   private prisma = prismaClient;
 
-  async getNewCommentNotifications(
+  async getCommentNotifications(
     userId: string,
-  ): Promise<NewCommentNotification[]> {
+  ): Promise<CommentNotification[]> {
     const commentNotifications = await this._getDBComments(userId);
 
     return commentNotifications.map((n) =>
@@ -36,6 +37,7 @@ export class DBCommentNotificationsRepository
             project: SELECT_ID_NAME,
             comment: true,
             taskId: true,
+            taskName: true,
           },
         },
         id: true,
@@ -50,15 +52,18 @@ export class DBCommentNotificationsRepository
 
   private _mapDBToDomainCommentNotification(
     dbNotif: CommentNotificationPersistence,
-  ): NewCommentNotification {
+  ): CommentNotification {
     const {
       id,
-      data: { comment, taskId, author, project },
+      data: { comment, author, project, taskId, taskName },
     } = dbNotif;
 
     return {
       id,
-      taskId,
+      task: {
+        id: taskId,
+        name: taskName,
+      },
       comment,
       author: {
         id: author.id,
@@ -72,11 +77,16 @@ export class DBCommentNotificationsRepository
     };
   }
 
-  async createNewCommentNotifications(
-    newCommentNotification: NewCommentNotificationsInput,
+  async createCommentNotifications(
+    newCommentNotification: CommentNotificationsInput,
   ): Promise<void> {
-    const { author, comment, project, taskId, followersIds } =
-      newCommentNotification;
+    const {
+      author,
+      comment,
+      project,
+      task: { id: taskId, name: taskName },
+      followersIds,
+    } = newCommentNotification;
     try {
       const commentNotificationsCreateData = followersIds.map((followerId) => ({
         followerId,
@@ -86,6 +96,7 @@ export class DBCommentNotificationsRepository
         data: {
           comment,
           taskId,
+          taskName,
           author: {
             create: author,
           },
@@ -106,13 +117,30 @@ export class DBCommentNotificationsRepository
   }
 
   async readNotification(notificationId: string): Promise<void> {
-    await this.prisma.commentNotification.update({
-      where: {
-        id: notificationId,
-      },
-      data: {
-        read: true,
-      },
-    });
+    try {
+      await this.prisma.commentNotification.update({
+        where: {
+          id: notificationId,
+        },
+        data: {
+          read: true,
+        },
+      });
+    } catch (err) {
+      this._throwNotificationNotFoundOrOtherError(err, notificationId);
+    }
+  }
+
+  private _throwNotificationNotFoundOrOtherError(
+    err: Error,
+    notificationId: string,
+  ) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === 'P2025') {
+        throw new NotificationNotFound(notificationId);
+      }
+    }
+
+    throw err;
   }
 }
