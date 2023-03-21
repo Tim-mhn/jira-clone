@@ -43,7 +43,10 @@ describe('CreateNewAssignationNotificationInteractor', () => {
       assigneeId: 'some-id',
       project: null,
       assignerId: 'another-id',
-      taskId: 'task-id',
+      task: {
+        id: 'task-id',
+        name: 'task name',
+      },
     };
 
     jest.spyOn(mockRepo, 'create');
@@ -59,7 +62,10 @@ describe('CreateNewAssignationNotificationInteractor', () => {
       assigneeId: userId,
       project: null,
       assignerId: userId,
-      taskId: 'task-id',
+      task: {
+        id: 'task-id',
+        name: 'task name',
+      },
     };
 
     jest.spyOn(mockRepo, 'create');

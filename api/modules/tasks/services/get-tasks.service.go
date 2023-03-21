@@ -18,16 +18,16 @@ import (
 
 type ITasksQueriesService interface {
 	GetTasksGroupedBySprint(projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error)
-	GetTaskById(taskID string) (tasks_models.Task, tasks_errors.TaskError)
+	GetTaskByID(taskID string) (tasks_models.Task, tasks_errors.TaskError)
 }
 
 type TasksQueriesService struct {
-	taskRepo         *tasks_repositories.TaskQueriesRepository
+	taskRepo         tasks_repositories.TaskQueriesRepository
 	sprintRepo       sprints.SprintRepository
 	sprintPointsRepo *sprints.SprintPointsRepository
 }
 
-func NewTasksQueriesService(taskRepo *tasks_repositories.TaskQueriesRepository, sprintRepo sprints.SprintRepository, sprintPointsRepo *sprints.SprintPointsRepository) ITasksQueriesService {
+func NewTasksQueriesService(taskRepo tasks_repositories.TaskQueriesRepository, sprintRepo sprints.SprintRepository, sprintPointsRepo *sprints.SprintPointsRepository) ITasksQueriesService {
 	return &TasksQueriesService{
 		taskRepo:         taskRepo,
 		sprintRepo:       sprintRepo,
@@ -95,8 +95,8 @@ func (service *TasksQueriesService) GetTasksGroupedBySprint(projectID string, ta
 	return sprintListWithTasks, nil
 }
 
-func (service *TasksQueriesService) GetTaskById(taskID string) (tasks_models.Task, tasks_errors.TaskError) {
-	taskWithSprint, err := service.taskRepo.GetTaskById(taskID)
+func (service *TasksQueriesService) GetTaskByID(taskID string) (tasks_models.Task, tasks_errors.TaskError) {
+	taskWithSprint, err := service.taskRepo.GetTaskByID(taskID)
 
 	if err.HasError {
 		return tasks_models.Task{}, err

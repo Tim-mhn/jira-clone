@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Prisma } from '@prisma/client';
 import { NotificationNotFound } from '../../../domain';
-import { Task } from '../../../domain/events/new-comment.event';
+import { Task } from '../../../domain/models';
 import { NotificationType } from '../../../domain/models/notification';
 import { CommentNotificationPersistence } from '../../persistence/comment-notification.persistence';
 import { DBCommentNotificationsRepository } from './comment-notifications.repository';

@@ -68,7 +68,7 @@ func (s TaskCommentsService) createNewCommentNotifications(comment CreateComment
 	}()
 
 	go func() {
-		task, _ := s.tasksQueries.GetTaskById(comment.TaskID)
+		task, _ := s.tasksQueries.GetTaskByID(comment.TaskID)
 		taskChan <- task
 		wg.Done()
 
@@ -79,7 +79,7 @@ func (s TaskCommentsService) createNewCommentNotifications(comment CreateComment
 	wg.Wait()
 
 	dto := notifications_api.NewCommentNotificationDTO{
-		Task: notifications_api.CommentTaskDTO{
+		Task: notifications_api.NotificationTaskDTO{
 			Id:   comment.TaskID,
 			Name: *task.Title,
 		},

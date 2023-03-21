@@ -1,17 +1,11 @@
 import { IsNotEmpty } from 'class-validator';
-import { NewCommentEvent, Task } from '../../domain/events/new-comment.event';
+import { NewCommentEvent } from '../../domain/events/new-comment.event';
 import { CommentAuthor, ProjectIdName } from '../../domain/models';
+import { NotificationTaskDTO } from './notification-task.dto';
 
-class CommentTaskDTO implements Task {
-  @IsNotEmpty()
-  id: string;
-
-  @IsNotEmpty()
-  name: string;
-}
 export class NewCommentDTO implements NewCommentEvent {
   @IsNotEmpty()
-  task: CommentTaskDTO;
+  task: NotificationTaskDTO;
 
   @IsNotEmpty()
   project: ProjectIdName;

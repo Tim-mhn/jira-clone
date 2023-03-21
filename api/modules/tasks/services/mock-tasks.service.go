@@ -27,7 +27,7 @@ func (mockService *MockTasksQueriesService) GetTasksGroupedBySprint(
 	return args.Get(0).(tasks_dtos.SprintListWithTasksDTO), err
 }
 
-func (mockService *MockTasksQueriesService) GetTaskById(taskID string) (tasks_models.Task, tasks_errors.TaskError) {
+func (mockService *MockTasksQueriesService) GetTaskByID(taskID string) (tasks_models.Task, tasks_errors.TaskError) {
 	args := mockService.Called(taskID)
 
 	return args.Get(0).(tasks_models.Task), tasks_errors.NoTaskError()

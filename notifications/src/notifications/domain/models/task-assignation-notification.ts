@@ -1,8 +1,9 @@
 import { ProjectIdName } from './ids';
 import { Notification, NotificationType } from './notification';
+import { Task } from './task';
 
 export interface TaskAssignationNotificationData {
-  taskId: string;
+  task: Task;
   project: ProjectIdName;
   assigneeId: string;
 }
@@ -11,7 +12,7 @@ export class TaskAssignationNotification
     Notification<NotificationType.ASSIGNATION>,
     TaskAssignationNotificationData
 {
-  taskId: string;
+  task: Task;
   project: ProjectIdName;
   assigneeId: string; // todo: do we need this ?
   id: string;

@@ -1,9 +1,5 @@
-import { CommentAuthor, ProjectIdName, TaskId } from '../models';
+import { CommentAuthor, ProjectIdName, Task } from '../models';
 
-export type Task = {
-  id: TaskId;
-  name: string;
-};
 export type NewCommentEvent = {
   task: Task;
   project: ProjectIdName;

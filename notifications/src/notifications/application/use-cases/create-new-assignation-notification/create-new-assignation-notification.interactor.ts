@@ -12,7 +12,7 @@ export class CreateNewAssignationNotificationInteractor {
 
   async handle(taskAssigned: TaskAssignedEvent) {
     await this._dismissOtherAssignationNotificationsFromTask(
-      taskAssigned.taskId,
+      taskAssigned.task.id,
     );
     const userHasSelfAssignedTask =
       taskAssigned.assigneeId === taskAssigned.assignerId;

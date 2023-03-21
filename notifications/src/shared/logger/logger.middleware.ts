@@ -6,12 +6,12 @@ export function logger(req: Request, res: Response, next: NextFunction) {
   const method = req.method;
   const methodAndUrl = `${method} ${req.url}`;
 
-  //todo: check why req.body is undefined
   const stringifiedBody = JSON.stringify(req.body);
   console.log(`[REQUEST] - ${now} LOG - ${methodAndUrl} - ${stringifiedBody}`);
 
   res.on('close', () => {
     const statusCode = res.statusCode;
+
     const now = new Date().toLocaleString();
 
     console.log(
@@ -20,3 +20,5 @@ export function logger(req: Request, res: Response, next: NextFunction) {
   });
   next();
 }
+
+// todo: check https://yflooi.medium.com/nestjs-request-and-response-logging-with-middleware-b486121e4907 to log response body

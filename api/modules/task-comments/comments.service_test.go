@@ -111,7 +111,7 @@ func TestCreateNewCommentNotifications(t *testing.T) {
 			Id:    &taskID,
 			Title: &taskName,
 		}
-		mockTaskQueries.On("GetTaskById", taskID).Return(task)
+		mockTaskQueries.On("GetTaskByID", taskID).Return(task)
 		mockProjectRepo.On("GetProjectByID", mockProject.ID).Return(project.Project{
 			Id:   mockProject.ID,
 			Name: mockProject.Name,
@@ -127,7 +127,7 @@ func TestCreateNewCommentNotifications(t *testing.T) {
 		}
 
 		expectedNotifsAPIInput := notifications_api.NewCommentNotificationDTO{
-			Task: notifications_api.CommentTaskDTO{
+			Task: notifications_api.NotificationTaskDTO{
 				Id:   taskID,
 				Name: taskName,
 			},

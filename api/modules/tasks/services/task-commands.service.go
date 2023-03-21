@@ -19,17 +19,20 @@ type CreateTaskInput struct {
 
 type TaskCommandsService struct {
 	repo             tasks_repositories.TaskCommandsRepository
+	taskQueries      tasks_repositories.TaskQueriesRepository
 	tagsService      tags.ITagsService
 	notificationsAPI notifications_api.NotificationsAPI
 	projectQueries   project.ProjectQueriesRepository
 }
 
-func NewTaskCommandsService(repo tasks_repositories.TaskCommandsRepository, tagsService tags.ITagsService, projectQueries project.ProjectQueriesRepository) *TaskCommandsService {
+func NewTaskCommandsService(repo tasks_repositories.TaskCommandsRepository, tagsService tags.ITagsService, projectQueries project.ProjectQueriesRepository, taskQueries tasks_repositories.TaskQueriesRepository,
+) *TaskCommandsService {
 	return &TaskCommandsService{
 		repo:             repo,
 		tagsService:      tagsService,
 		projectQueries:   projectQueries,
 		notificationsAPI: notifications_api.NewNotificationsAPI(),
+		taskQueries:      taskQueries,
 	}
 }
 
@@ -82,9 +85,12 @@ func (service TaskCommandsService) sendNewAssigneeNotificationIfChanged(updateTa
 	if updateTask.NewData.AssigneeId != nil {
 
 		project, _ := service.projectQueries.GetProjectByID(updateTask.ProjectID)
-
+		task, _ := service.taskQueries.GetTaskByID(updateTask.TaskID)
 		dto := notifications_api.AssignationNotificationDTO{
-			TaskID:     updateTask.TaskID,
+			Task: notifications_api.NotificationTaskDTO{
+				Id:   *task.Id,
+				Name: tags.RemoveTagsFromTaskTitle(*task.Title),
+			},
 			AssigneeID: *updateTask.NewData.AssigneeId,
 			Project: notifications_api.ProjectIdName{
 				Name: project.Name,

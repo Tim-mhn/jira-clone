@@ -11,6 +11,7 @@ model TaskAssignationNotification {
   id              String      @id @default(uuid())
   assigneeId      String      @map("assignee_id")
   taskId          String      @map("task_id")
+  taskName        String      @default("") @map("task_name")
   project         TaskProject @relation(fields: [taskProjectUuid], references: [uuid])
   read            Boolean     @default(false)
   dismissed       Boolean     @default(false)

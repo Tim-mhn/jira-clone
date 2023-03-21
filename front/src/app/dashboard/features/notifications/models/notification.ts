@@ -18,6 +18,6 @@ type NotificationTask = {
 export interface Notification<T extends NotificationType> {
   id: NotificationId;
   type: T;
-  task?: NotificationTask;
+  task: NotificationTask;
   project: NotificationProject;
 }

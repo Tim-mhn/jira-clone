@@ -1,6 +1,6 @@
-import { Task } from '../events/new-comment.event';
 import { ProjectIdName } from './ids';
 import { Notification, NotificationType } from './notification';
+import { Task } from './task';
 
 export type CommentAuthor = {
   name: string;

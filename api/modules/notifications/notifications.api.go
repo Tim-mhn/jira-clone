@@ -1,7 +1,9 @@
 package notifications_api
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	http_utils "github.com/tim-mhn/figma-clone/utils/http"
@@ -63,6 +65,14 @@ func (s NotificationsAPIImpl) SendTaskAssignationNotification(dto AssignationNot
 
 	if err != nil {
 		return err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body) // response body is []byte
+
+	print(err)
+	var result interface{}
+	if err := json.Unmarshal(body, &result); err != nil { // Parse []byte to the go struct pointer
+		fmt.Println("Can not unmarshal JSON")
 	}
 	defer resp.Body.Close()
 

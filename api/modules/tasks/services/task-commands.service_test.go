@@ -9,7 +9,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	notifications_api "github.com/tim-mhn/figma-clone/modules/notifications"
 	"github.com/tim-mhn/figma-clone/modules/project"
+	"github.com/tim-mhn/figma-clone/modules/sprints"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
+	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
@@ -20,7 +22,7 @@ func TestCreateTask(t *testing.T) {
 
 	t.Run("should return the error from the TagsService if it returns any", func(t *testing.T) {
 
-		service, mockRepo, mockTagsService, _ := setupServiceAndMocks()
+		service, mockRepo, mockTagsService, _, _, _ := setupServiceAndMocks()
 
 		taskID := primitives.CreateStringPointer("new-task-id")
 		taskTitle := primitives.CreateStringPointer("new task title")
@@ -41,7 +43,7 @@ func TestCreateTask(t *testing.T) {
 
 	t.Run("should not call  ExtractAndUpdateTagsOfTask if there is an error in repo.CreateTask", func(t *testing.T) {
 
-		service, mockRepo, mockTagsService, _ := setupServiceAndMocks()
+		service, mockRepo, mockTagsService, _, _, _ := setupServiceAndMocks()
 
 		newTaskError := fmt.Errorf("error when creating task")
 		mockRepo.On("CreateTask").Return(tasks_models.Task{}, newTaskError)
@@ -57,9 +59,26 @@ func TestCreateTask(t *testing.T) {
 func TestUpdateTask(t *testing.T) {
 
 	TASK_ID := "task-id"
+	project := project.Project{
+		Id:   "project-id",
+		Name: "project name",
+	}
+
+	taskWithSprint := tasks_models.TaskWithSprint{
+		Task: tasks_models.Task{
+			Id:    primitives.CreateStringPointer(TASK_ID),
+			Title: primitives.CreateStringPointer("task title"),
+		},
+		Sprint: sprints.SprintInfo{},
+	}
+
+	noTaskError := tasks_errors.NoTaskError()
+
 	t.Run("it should not call ExtractAndUpdateTagsOfTask if title is empty", func(t *testing.T) {
 
-		service, _, mockTagsService, _ := setupServiceAndMocks()
+		service, _, mockTagsService, _, mockProjectQueries, mockTasksRepo := setupServiceAndMocks()
+		mockTasksRepo.On("GetTaskByID", mock.Anything).Return(taskWithSprint, noTaskError)
+		mockProjectQueries.On("GetProjectByID", project.Id).Return(project)
 
 		updateTask := UpdateTaskInput{
 			TaskID:         TASK_ID,
@@ -75,7 +94,9 @@ func TestUpdateTask(t *testing.T) {
 	})
 
 	t.Run("it should call notificationsAPI.SendTaskAssignationNotification if there is a new assignee", func(t *testing.T) {
-		service, _, _, mockNotificationsAPI := setupServiceAndMocks()
+		service, _, _, mockNotificationsAPI, mockProjectQueries, mockTasksRepo := setupServiceAndMocks()
+		mockProjectQueries.On("GetProjectByID", project.Id).Return(project)
+		mockTasksRepo.On("GetTaskByID", mock.Anything).Return(taskWithSprint, noTaskError)
 
 		newAssigneeId := "new-assignee-id-xyz"
 		patchDTO := tasks_dtos.PatchTaskDTO{
@@ -86,7 +107,7 @@ func TestUpdateTask(t *testing.T) {
 			TaskID:         TASK_ID,
 			NewData:        patchDTO,
 			UpdatingUserID: "user-id",
-			ProjectID:      "project-id",
+			ProjectID:      project.Id,
 		}
 
 		service.UpdateTask(updateTask)
@@ -96,16 +117,18 @@ func TestUpdateTask(t *testing.T) {
 	})
 }
 
-func setupServiceAndMocks() (*TaskCommandsService, *MockTaskCommandsRepo, *MockTagService, *MockNotificationsAPI) {
+func setupServiceAndMocks() (*TaskCommandsService, *MockTaskCommandsRepo, *MockTagService, *MockNotificationsAPI, *project.MockProjectQueriesRepository, *tasks_repositories.MockTaskQueriesRepository) {
 	mockTagsService := new(MockTagService)
 	mockRepo := new(MockTaskCommandsRepo)
 	mockNotifications := new(MockNotificationsAPI)
-	projectQueriesRepo := new(MockProjectQueries)
+	projectQueriesRepo := new(project.MockProjectQueriesRepository)
 	mockNotifications.On("SendTaskAssignationNotification").Return(nil)
 
-	service := NewTaskCommandsService(mockRepo, mockTagsService, projectQueriesRepo)
+	taskQueriesRepo := tasks_repositories.NewMockTaskQueriesRepository()
+
+	service := NewTaskCommandsService(mockRepo, mockTagsService, projectQueriesRepo, taskQueriesRepo)
 	service.notificationsAPI = mockNotifications
-	return service, mockRepo, mockTagsService, mockNotifications
+	return service, mockRepo, mockTagsService, mockNotifications, projectQueriesRepo, taskQueriesRepo
 }
 
 type MockNotificationsAPI struct {
@@ -178,22 +201,4 @@ func (repo *MockTaskCommandsRepo) UpdateTaskData(taskID string, patchDTO tasks_d
 
 func (repo *MockTaskCommandsRepo) DeleteTask(taskID string) (tasks_repositories.DeleteTaskResponse, error) {
 	return tasks_repositories.DeleteTaskResponse{}, nil
-}
-
-type MockProjectQueries struct {
-	mock.Mock
-}
-
-func (projectQueries MockProjectQueries) GetProjectByID(projectID string) (project.Project, error) {
-	return project.Project{}, nil
-}
-func (projectQueries MockProjectQueries) GetProjectMembers(projectID string) ([]project.ProjectMember, error) {
-	return []project.ProjectMember{}, nil
-}
-func (projectQueries MockProjectQueries) GetProjectsOfUser(userID string) ([]project.Project, error) {
-	return []project.Project{}, nil
-
-}
-func (projectQueries MockProjectQueries) MemberIsInProject(projectID string, memberID string) (bool, error) {
-	return true, nil
 }

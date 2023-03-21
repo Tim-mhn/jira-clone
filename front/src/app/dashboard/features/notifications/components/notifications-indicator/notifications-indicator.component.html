@@ -17,8 +17,6 @@
         context: { $implicit: notif }
       "
     ></ng-container>
-
-    <!-- {{ notif | json }} -->
   </tim-dropdown-item>
 </tim-dropdown-menu>
 
@@ -36,7 +34,7 @@
 
 <ng-template #taskAssignedNotification let-notif>
   <div class="text-xs flex-wrap whitespace-normal">
-    You have been assigned to task {{ notif?.taskId }} by
-    {{ notif?.assignerId }}
+    You have been assigned to task
+    <span class="font-medium">{{ notif?.task?.name }}</span>
   </div>
 </ng-template>

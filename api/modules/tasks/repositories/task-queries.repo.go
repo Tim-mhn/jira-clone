@@ -14,13 +14,17 @@ import (
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 )
 
-type TaskQueriesRepository struct {
+type TaskQueriesRepository interface {
+	GetSprintTasks(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.TaskWithSprint, error)
+	GetTaskByID(taskID string) (tasks_models.TaskWithSprint, tasks_errors.TaskError)
+}
+type DBTaskQueriesRepository struct {
 	um   *auth.UserRepository
 	conn *sql.DB
 }
 
-func NewTaskQueriesRepository(um *auth.UserRepository, conn *sql.DB) *TaskQueriesRepository {
-	taskRepo := TaskQueriesRepository{}
+func NewTaskQueriesRepository(um *auth.UserRepository, conn *sql.DB) TaskQueriesRepository {
+	taskRepo := DBTaskQueriesRepository{}
 	taskRepo.um = um
 	taskRepo.conn = conn
 
@@ -31,7 +35,7 @@ func addContextToError(contextErrorMessage string, sourceError error) error {
 	return fmt.Errorf(`%s Details: %s `, contextErrorMessage, sourceError.Error())
 }
 
-func (taskRepo TaskQueriesRepository) GetSprintTasks(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.TaskWithSprint, error) {
+func (taskRepo *DBTaskQueriesRepository) GetSprintTasks(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.TaskWithSprint, error) {
 
 	start := time.Now()
 	fmt.Print(filters)
@@ -100,7 +104,7 @@ func getTaskDataFromRow(rows *sql.Rows) (tasks_models.TaskWithSprint, error) {
 
 }
 
-func (taskRepo *TaskQueriesRepository) GetTaskById(taskID string) (tasks_models.TaskWithSprint, tasks_errors.TaskError) {
+func (taskRepo *DBTaskQueriesRepository) GetTaskByID(taskID string) (tasks_models.TaskWithSprint, tasks_errors.TaskError) {
 	singleTaskQueryBuilder := singleTaskByIdQueryBuilder(taskID)
 
 	rows, err := singleTaskQueryBuilder.RunWith(taskRepo.conn).Query()
