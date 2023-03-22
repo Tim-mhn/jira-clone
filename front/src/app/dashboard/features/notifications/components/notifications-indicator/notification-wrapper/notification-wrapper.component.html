@@ -1,0 +1,8 @@
+<div class="flex items-center">
+  <ng-content></ng-content>
+
+  <span
+    class="w-2 h-2 rounded-full bg-blue-600 ml-1"
+    *ngIf="!notification.read"
+  ></span>
+</div>
