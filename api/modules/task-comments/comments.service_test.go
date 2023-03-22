@@ -8,9 +8,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	notifications_api "github.com/tim-mhn/figma-clone/modules/notifications"
-	"github.com/tim-mhn/figma-clone/modules/project"
-	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
-	tasks_services "github.com/tim-mhn/figma-clone/modules/tasks/services"
 )
 
 type MockCommentsRepository struct {
@@ -30,25 +27,6 @@ func (repo *MockCommentsRepository) getTaskComments(taskID string) (TaskComments
 }
 func (repo *MockCommentsRepository) editCommentText(editComment EditCommentInput) CommentsError {
 	return NO_COMMENTS_ERROR()
-}
-
-type MockNotificationsAPI struct {
-	mock.Mock
-}
-
-func (mock *MockNotificationsAPI) FollowTask(dto notifications_api.FollowTaskDTO, authCookie *http.Cookie) error {
-	return nil
-}
-func (mock *MockNotificationsAPI) CreateCommentNotification(dto notifications_api.NewCommentNotificationDTO, authCookie *http.Cookie) error {
-	args := mock.Called(dto, authCookie)
-	errorOrNil := args.Get(0)
-	if errorOrNil != nil {
-		return errorOrNil.(error)
-	}
-	return nil
-}
-func (mock *MockNotificationsAPI) SendTaskAssignationNotification(dto notifications_api.AssignationNotificationDTO, authCookie *http.Cookie) error {
-	return nil
 }
 
 func TestPostComment(t *testing.T) {
@@ -83,14 +61,10 @@ func TestCreateNewCommentNotifications(t *testing.T) {
 
 	mockCommentsRepo := new(MockCommentsRepository)
 
-	mockProjectRepo := project.NewMockProjectQueriesRepository()
-	mockNotifsAPI := new(MockNotificationsAPI)
-	mockTaskQueries := new(tasks_services.MockTasksQueriesService)
+	mockNotifsAPI := new(notifications_api.MockNotificationsAPI)
 	service := new(TaskCommentsService)
 	service.notificationsAPI = mockNotifsAPI
 	service.repo = mockCommentsRepo
-	service.projectQueries = mockProjectRepo
-	service.tasksQueries = mockTaskQueries
 	t.Run("it should build the correct dto from the task/project queries results", func(t *testing.T) {
 
 		author := auth.User{
@@ -100,22 +74,7 @@ func TestCreateNewCommentNotifications(t *testing.T) {
 		}
 
 		taskID := "task-id-xyz"
-		taskName := "Task Name "
-
-		mockProject := notifications_api.ProjectIdName{
-			Name: "project name",
-			ID:   "project-id-123-npx",
-		}
-
-		task := tasks_models.Task{
-			Id:    &taskID,
-			Title: &taskName,
-		}
-		mockTaskQueries.On("GetTaskByID", taskID).Return(task)
-		mockProjectRepo.On("GetProjectByID", mockProject.ID).Return(project.Project{
-			Id:   mockProject.ID,
-			Name: mockProject.Name,
-		})
+		projectID := "project-id-123-xyz"
 
 		mockNotifsAPI.On("CreateCommentNotification", mock.Anything, mock.Anything).Return(nil)
 
@@ -123,20 +82,17 @@ func TestCreateNewCommentNotifications(t *testing.T) {
 			Text:      "comment",
 			AuthorID:  author.Id,
 			TaskID:    taskID,
-			ProjectID: mockProject.ID,
+			ProjectID: projectID,
 		}
 
-		expectedNotifsAPIInput := notifications_api.NewCommentNotificationDTO{
-			Task: notifications_api.NotificationTaskDTO{
-				Id:   taskID,
-				Name: taskName,
-			},
+		expectedNotifsAPIInput := notifications_api.CreateCommentNotificationInput{
+			TaskID:  taskID,
 			Comment: commentInput.Text,
 			Author: notifications_api.CommentAuthor{
 				Name: author.Name,
 				ID:   author.Id,
 			},
-			Project: mockProject,
+			ProjectID: projectID,
 		}
 		service.createNewCommentNotifications(commentInput, author, &http.Cookie{})
 

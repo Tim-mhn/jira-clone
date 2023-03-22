@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	notifications_api "github.com/tim-mhn/figma-clone/modules/notifications"
-	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
 	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
@@ -19,20 +18,16 @@ type CreateTaskInput struct {
 
 type TaskCommandsService struct {
 	repo             tasks_repositories.TaskCommandsRepository
-	taskQueries      tasks_repositories.TaskQueriesRepository
 	tagsService      tags.ITagsService
 	notificationsAPI notifications_api.NotificationsAPI
-	projectQueries   project.ProjectQueriesRepository
 }
 
-func NewTaskCommandsService(repo tasks_repositories.TaskCommandsRepository, tagsService tags.ITagsService, projectQueries project.ProjectQueriesRepository, taskQueries tasks_repositories.TaskQueriesRepository,
+func NewTaskCommandsService(repo tasks_repositories.TaskCommandsRepository, tagsService tags.ITagsService, notificationsAPI notifications_api.NotificationsAPI,
 ) *TaskCommandsService {
 	return &TaskCommandsService{
 		repo:             repo,
 		tagsService:      tagsService,
-		projectQueries:   projectQueries,
-		notificationsAPI: notifications_api.NewNotificationsAPI(),
-		taskQueries:      taskQueries,
+		notificationsAPI: notificationsAPI,
 	}
 }
 
@@ -84,20 +79,12 @@ func (service TaskCommandsService) updateTaskTagsIfTitleChanged(taskID string, p
 func (service TaskCommandsService) sendNewAssigneeNotificationIfChanged(updateTask UpdateTaskInput) {
 	if updateTask.NewData.AssigneeId != nil {
 
-		project, _ := service.projectQueries.GetProjectByID(updateTask.ProjectID)
-		task, _ := service.taskQueries.GetTaskByID(updateTask.TaskID)
-		dto := notifications_api.AssignationNotificationDTO{
-			Task: notifications_api.NotificationTaskDTO{
-				Id:   *task.Id,
-				Name: tags.RemoveTagsFromTaskTitle(*task.Title),
-			},
+		input := notifications_api.SendAssignationNotificationInput{
+			TaskID:     updateTask.TaskID,
 			AssigneeID: *updateTask.NewData.AssigneeId,
-			Project: notifications_api.ProjectIdName{
-				Name: project.Name,
-				ID:   project.Id,
-			},
+			ProjectID:  updateTask.ProjectID,
 		}
-		service.notificationsAPI.SendTaskAssignationNotification(dto, updateTask.AuthCookie)
+		service.notificationsAPI.SendTaskAssignationNotification(input, updateTask.AuthCookie)
 	}
 }
 

@@ -31,12 +31,14 @@ func NewTasksController(um *auth.UserRepository, projectQueries project.ProjectQ
 
 	taskCommandsRepo := tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn)
 
+	notificationsAPI := notifications_api.NewNotificationsAPI(projectQueries, taskRepo)
+
 	return &TasksController{
 		taskQueries:      tasks_repositories.NewTaskQueriesRepository(um, conn),
 		sprintService:    service,
-		taskCommands:     *tasks_services.NewTaskCommandsService(taskCommandsRepo, tagsService, projectQueries, taskRepo),
+		taskCommands:     *tasks_services.NewTaskCommandsService(taskCommandsRepo, tagsService, notificationsAPI),
 		taskPositionRepo: tasks_repositories.NewTaskPositionRepository(conn),
-		notificationsAPI: notifications_api.NewNotificationsAPI(),
+		notificationsAPI: notificationsAPI,
 	}
 }
 

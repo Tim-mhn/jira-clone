@@ -3,13 +3,11 @@ package task_comments
 import (
 	"fmt"
 	"net/http"
-	"sync"
 
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	notifications_api "github.com/tim-mhn/figma-clone/modules/notifications"
 	"github.com/tim-mhn/figma-clone/modules/project"
-	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
-	tasks_services "github.com/tim-mhn/figma-clone/modules/tasks/services"
+	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
 )
 
 type ITaskCommentsService interface {
@@ -20,17 +18,13 @@ type ITaskCommentsService interface {
 }
 type TaskCommentsService struct {
 	repo             TaskCommentsRepository
-	projectQueries   project.ProjectQueriesRepository
 	notificationsAPI notifications_api.NotificationsAPI
-	tasksQueries     tasks_services.ITasksQueriesService
 }
 
-func NewTaskCommentsService(repo TaskCommentsRepository, projectQueries project.ProjectQueriesRepository, tasksQueries tasks_services.ITasksQueriesService) TaskCommentsService {
+func NewTaskCommentsService(repo TaskCommentsRepository, projectQueries project.ProjectQueriesRepository, taskQueriesRepo tasks_repositories.TaskQueriesRepository) TaskCommentsService {
 	return TaskCommentsService{
 		repo:             repo,
-		projectQueries:   projectQueries,
-		notificationsAPI: notifications_api.NewNotificationsAPI(),
-		tasksQueries:     tasksQueries,
+		notificationsAPI: notifications_api.NewNotificationsAPI(projectQueries, taskQueriesRepo),
 	}
 }
 
@@ -56,45 +50,55 @@ func (s TaskCommentsService) createNewCommentNotifications(comment CreateComment
 		return buildCommentsError(OtherCommentError, fmt.Errorf("missing project id to create comment notification"))
 	}
 
-	projectChan := make(chan project.Project, 1)
-	taskChan := make(chan tasks_models.Task, 1)
-	var wg sync.WaitGroup
-	wg.Add(2)
+	// projectChan := make(chan project.Project, 1)
+	// taskChan := make(chan tasks_models.Task, 1)
+	// var wg sync.WaitGroup
+	// wg.Add(2)
 
-	go func() {
-		project, _ := s.projectQueries.GetProjectByID(comment.ProjectID)
-		projectChan <- project
-		wg.Done()
-	}()
+	// go func() {
+	// 	project, _ := s.projectQueries.GetProjectByID(comment.ProjectID)
+	// 	projectChan <- project
+	// 	wg.Done()
+	// }()
 
-	go func() {
-		task, _ := s.tasksQueries.GetTaskByID(comment.TaskID)
-		taskChan <- task
-		wg.Done()
+	// go func() {
+	// 	task, _ := s.tasksQueries.GetTaskByID(comment.TaskID)
+	// 	taskChan <- task
+	// 	wg.Done()
 
-	}()
+	// }()
 
-	project := <-projectChan
-	task := <-taskChan
-	wg.Wait()
+	// project := <-projectChan
+	// task := <-taskChan
+	// wg.Wait()
 
-	dto := notifications_api.NewCommentNotificationDTO{
-		Task: notifications_api.NotificationTaskDTO{
-			Id:   comment.TaskID,
-			Name: *task.Title,
-		},
+	// dto := notifications_api.NewCommentNotificationDTO{
+	// 	Task: notifications_api.NotificationTaskDTO{
+	// 		Id:   comment.TaskID,
+	// 		Name: tags.RemoveTagsFromTaskTitle(*task.Title), // todo: unify logic to get the tag-less title (for assignation and comment)
+	// 	},
+	// 	Comment: comment.Text,
+	// 	Author: notifications_api.CommentAuthor{
+	// 		Name: author.Name,
+	// 		ID:   author.Id,
+	// 	},
+	// 	Project: notifications_api.ProjectIdName{
+	// 		Name: project.Name,
+	// 		ID:   project.Id,
+	// 	},
+	// }
+
+	commentNotificationInput := notifications_api.CreateCommentNotificationInput{
+		TaskID:  comment.TaskID,
 		Comment: comment.Text,
 		Author: notifications_api.CommentAuthor{
 			Name: author.Name,
 			ID:   author.Id,
 		},
-		Project: notifications_api.ProjectIdName{
-			Name: project.Name,
-			ID:   project.Id,
-		},
+		ProjectID: comment.ProjectID,
 	}
 
-	return s.notificationsAPI.CreateCommentNotification(dto, authCookie)
+	return s.notificationsAPI.CreateCommentNotification(commentNotificationInput, authCookie)
 }
 
 func (s TaskCommentsService) getTaskComments(taskID string) (TaskComments, CommentsError) {

@@ -4,8 +4,10 @@ import {
   TaskAssignationNotificationData,
   TaskAssignedEvent,
 } from '../../../domain';
+import { TaskFollowersRepository } from '../../../domain/repositories';
 import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
 import { TaskAssignationNotificationsRepositoryToken } from '../../../infrastructure/providers';
+import { TaskFollowersRepositoryToken } from '../../../infrastructure/providers/task-followers-repository.provider';
 import { CreateNewAssignationNotificationInteractor } from './create-new-assignation-notification.interactor';
 
 describe('CreateNewAssignationNotificationInteractor', () => {
@@ -18,13 +20,28 @@ describe('CreateNewAssignationNotificationInteractor', () => {
     dismissNotificationsFromTask: jest.fn(),
   };
 
-  const provider: ValueProvider = {
+  const mockFollowersRepo: TaskFollowersRepository = {
+    getTaskFollowersIds: jest.fn(),
+    getTasksFollowedByUser: jest.fn(),
+    markUserAsFollowerOfTask: jest.fn(),
+  };
+
+  const assignationNotifsRepoProvider: ValueProvider = {
     provide: TaskAssignationNotificationsRepositoryToken,
     useValue: mockRepo,
   };
+
+  const followersRepoProvider: ValueProvider = {
+    provide: TaskFollowersRepositoryToken,
+    useValue: mockFollowersRepo,
+  };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CreateNewAssignationNotificationInteractor, provider],
+      providers: [
+        CreateNewAssignationNotificationInteractor,
+        assignationNotifsRepoProvider,
+        followersRepoProvider,
+      ],
     }).compile();
 
     service = module.get<CreateNewAssignationNotificationInteractor>(
@@ -73,5 +90,26 @@ describe('CreateNewAssignationNotificationInteractor', () => {
     await service.handle(taskAssigned);
 
     expect(mockRepo.create).not.toHaveBeenCalled();
+  });
+
+  it('should add the assignee as a task follower ', async () => {
+    const taskAssignedEvent: TaskAssignedEvent = {
+      assigneeId: 'assignee-id',
+      assignerId: 'assigner-id',
+      project: {
+        id: 'project-id',
+        name: 'project-name',
+      },
+      task: {
+        id: 'task-id',
+        name: 'task-name',
+      },
+    };
+    await service.handle(taskAssignedEvent);
+
+    expect(mockFollowersRepo.markUserAsFollowerOfTask).toHaveBeenCalledWith(
+      taskAssignedEvent.assigneeId,
+      taskAssignedEvent.task.id,
+    );
   });
 });
