@@ -13,7 +13,7 @@ export type NotificationProject = {
 
 type NotificationTask = {
   id: string;
-  name: string;
+  title: string;
 };
 export interface NotificationData<T extends NotificationType> {
   id: NotificationId;

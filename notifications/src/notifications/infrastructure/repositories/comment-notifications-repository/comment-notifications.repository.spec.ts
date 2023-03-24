@@ -36,7 +36,7 @@ describe('CommentNotificationsRepositoryService', () => {
           id: 'project-id',
           name: 'project-name',
         },
-        taskName: 'task-name',
+        taskTitle: 'task-name',
         taskId: 'task-id',
       },
 
@@ -74,7 +74,7 @@ describe('CommentNotificationsRepositoryService', () => {
 
       const expectedTask: Task = {
         id: dbNotif.data.taskId,
-        name: dbNotif.data.taskName,
+        title: dbNotif.data.taskTitle,
       };
       expect(commentNotifications[0].task).toEqual(expectedTask);
     });

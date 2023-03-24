@@ -37,7 +37,7 @@ export class DBCommentNotificationsRepository
             project: SELECT_ID_NAME,
             comment: true,
             taskId: true,
-            taskName: true,
+            taskTitle: true,
           },
         },
         id: true,
@@ -55,14 +55,14 @@ export class DBCommentNotificationsRepository
   ): CommentNotification {
     const {
       id,
-      data: { comment, author, project, taskId, taskName },
+      data: { comment, author, project, taskId, taskTitle },
     } = dbNotif;
 
     return {
       id,
       task: {
         id: taskId,
-        name: taskName,
+        title: taskTitle,
       },
       comment,
       author: {
@@ -84,7 +84,7 @@ export class DBCommentNotificationsRepository
       author,
       comment,
       project,
-      task: { id: taskId, name: taskName },
+      task: { id: taskId, title: taskTitle },
       followersIds,
     } = newCommentNotification;
     try {
@@ -96,7 +96,7 @@ export class DBCommentNotificationsRepository
         data: {
           comment,
           taskId,
-          taskName,
+          taskTitle,
           author: {
             create: author,
           },

@@ -23,12 +23,12 @@ export class DBTaskAssignationNotificationsRepository
     const {
       assigneeId,
       project,
-      task: { id: taskId, name: taskName },
+      task: { id: taskId, title: taskTitle },
     } = createTaskAssignationNotification;
     await this.prisma.taskAssignationNotification.create({
       data: {
         taskId,
-        taskName,
+        taskTitle,
         assigneeId,
         project: {
           create: project,
@@ -62,21 +62,21 @@ export class DBTaskAssignationNotificationsRepository
       select: {
         id: true,
         taskId: true,
-        taskName: true,
+        taskTitle: true,
         project: SELECT_PROJECT_ID_NAME,
         assigneeId: true,
       },
     });
 
     return dbNotifs.map((dbNotif) => {
-      const { taskId, taskName, assigneeId, id, project } = dbNotif;
+      const { taskId, taskTitle, assigneeId, id, project } = dbNotif;
       return {
         assigneeId,
         id,
         project,
         task: {
           id: taskId,
-          name: taskName,
+          title: taskTitle,
         },
         type: NotificationType.ASSIGNATION,
       };

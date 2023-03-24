@@ -70,8 +70,8 @@ func TestCreateCommentNotification(t *testing.T) {
 
 		expectedDTO := NewCommentNotificationDTO{
 			Task: NotificationTaskDTO{
-				Id:   taskID,
-				Name: *task.Title,
+				Id:    taskID,
+				Title: *task.Title,
 			},
 			Comment: input.Comment,
 			Author:  input.Author,
@@ -122,7 +122,7 @@ func TestCreateCommentNotification(t *testing.T) {
 		}
 		notificationsAPI.CreateCommentNotification(input, &http.Cookie{})
 
-		assert.EqualValues(t, "this is  the title", dto.Task.Name)
+		assert.EqualValues(t, "this is  the title", dto.Task.Title)
 
 	})
 }
@@ -176,8 +176,8 @@ func TestSendTaskAssignationNotification(t *testing.T) {
 
 		expectedDTO := AssignationNotificationDTO{
 			Task: NotificationTaskDTO{
-				Id:   *task.Id,
-				Name: *task.Title,
+				Id:    *task.Id,
+				Title: *task.Title,
 			},
 			AssigneeID: input.AssigneeID,
 			Project: ProjectIdName{

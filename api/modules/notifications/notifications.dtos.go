@@ -16,8 +16,8 @@ type ProjectIdName struct {
 }
 
 type NotificationTaskDTO struct {
-	Id   string `json:"id" binding:"required"`
-	Name string `json:"name" binding:"required"`
+	Id    string `json:"id" binding:"required"`
+	Title string `json:"title" binding:"required"`
 }
 type NewCommentNotificationDTO struct {
 	Task    NotificationTaskDTO `json:"task" binding:"required"`

@@ -1,7 +1,6 @@
 package notifications_api
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -86,16 +85,9 @@ func (s NotificationsAPIImpl) SendTaskAssignationNotification(input SendAssignat
 		return err
 	}
 
-	body, err := ioutil.ReadAll(resp.Body) // response body is []byte
+	_, err = ioutil.ReadAll(resp.Body) // response body is []byte
 
-	print(err)
-	var result interface{}
-	if err := json.Unmarshal(body, &result); err != nil { // Parse []byte to the go struct pointer
-		fmt.Println("Can not unmarshal JSON")
-	}
-	defer resp.Body.Close()
-
-	return nil
+	return err
 
 }
 
@@ -104,8 +96,8 @@ func (s NotificationsAPIImpl) mapAssignationInputToDTO(input SendAssignationNoti
 
 	dto := AssignationNotificationDTO{
 		Task: NotificationTaskDTO{
-			Id:   input.TaskID,
-			Name: tags.RemoveTagsFromTaskTitle(*task.Title),
+			Id:    input.TaskID,
+			Title: tags.RemoveTagsFromTaskTitle(*task.Title),
 		},
 		Project: ProjectIdName{
 			Name: project.Name,
@@ -123,8 +115,8 @@ func (s NotificationsAPIImpl) mapCommentInputToDTO(input CreateCommentNotificati
 
 	dto := NewCommentNotificationDTO{
 		Task: NotificationTaskDTO{
-			Id:   input.TaskID,
-			Name: tags.RemoveTagsFromTaskTitle(*task.Title),
+			Id:    input.TaskID,
+			Title: tags.RemoveTagsFromTaskTitle(*task.Title),
 		},
 		Comment: input.Comment,
 		Author:  input.Author,

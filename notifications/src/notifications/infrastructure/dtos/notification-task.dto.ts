@@ -6,5 +6,5 @@ export class NotificationTaskDTO implements Task {
   id: string;
 
   @IsNotEmpty()
-  name: string;
+  title: string;
 }

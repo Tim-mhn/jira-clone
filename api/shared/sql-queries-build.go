@@ -119,8 +119,13 @@ func BuildSQLUpdateQuery(tableName string, fieldsToUpdate interface{}, apiToDBFi
 }
 
 func convertStructToMap(fieldsToUpdate interface{}) map[string]interface{} {
-	bytes, _ := json.Marshal(&fieldsToUpdate)
+	bytes, err := json.Marshal(&fieldsToUpdate)
+
+	if err != nil {
+		print(err)
+	}
 	var jsonMap map[string]interface{}
-	_ = json.Unmarshal(bytes, &jsonMap)
+	err = json.Unmarshal(bytes, &jsonMap)
+	print(err)
 	return jsonMap
 }
