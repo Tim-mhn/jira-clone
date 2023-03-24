@@ -43,7 +43,7 @@ export class AppController {
 
   @Get()
   getRoot(): string {
-    return 'Tim JIRA Notifications API';
+    return 'Tim Jira Notifications API';
   }
 
   @Get('/notifications')
