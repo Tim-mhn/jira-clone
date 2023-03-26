@@ -32,7 +32,7 @@ describe('NotificationsController', () => {
       type: NotificationType.COMMENT,
       task: {
         id: 'task-id',
-        name: 'task-name',
+        title: 'task-name',
       },
     });
 
