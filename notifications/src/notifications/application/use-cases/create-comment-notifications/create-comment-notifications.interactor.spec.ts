@@ -51,7 +51,7 @@ describe('CreateCommentNotificationsInteractor', () => {
       project: null,
       task: {
         id: taskId,
-        name: 'taskname',
+        title: 'taskname',
       },
     };
 
