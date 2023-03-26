@@ -62,7 +62,7 @@ describe('CreateNewAssignationNotificationInteractor', () => {
       assignerId: 'another-id',
       task: {
         id: 'task-id',
-        name: 'task name',
+        title: 'task name',
       },
     };
 
@@ -81,7 +81,7 @@ describe('CreateNewAssignationNotificationInteractor', () => {
       assignerId: userId,
       task: {
         id: 'task-id',
-        name: 'task name',
+        title: 'task name',
       },
     };
 
@@ -102,7 +102,7 @@ describe('CreateNewAssignationNotificationInteractor', () => {
       },
       task: {
         id: 'task-id',
-        name: 'task-name',
+        title: 'task-name',
       },
     };
     await service.handle(taskAssignedEvent);
