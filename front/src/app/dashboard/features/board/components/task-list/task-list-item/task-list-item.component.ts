@@ -33,6 +33,7 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   @Input() members: ProjectMember[] = [];
   @Input() sprints: SprintInfo[];
 
+  show = false;
   constructor(
     private tfb: TypedFormBuilder,
     private controller: UpdateTaskController,
@@ -50,7 +51,12 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   tagTemplate$ = this.tagsController.getTagTemplateFn();
   tags$ = this.tagsController.getProjectTags();
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // setTimeout(() => {
+    //   this.show = true;
+    //   this.cdr.detectChanges();
+    // }, 500);
+  }
 
   ngOnChanges(ch: TypedChanges<TaskListItemComponent>) {
     if (ch.task && this.task) {

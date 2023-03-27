@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -19,7 +18,7 @@ import { ProjectMembersService } from '../../state-services/project-members.serv
   templateUrl: './sprint.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SprintComponent implements OnInit, AfterViewInit {
+export class SprintComponent implements OnInit {
   readonly ARROW_RIGHT = ICONS.ARROW_RIGHT_GRAY;
   readonly ARROW_DOWN = ICONS.ARROW_DOWN_GRAY;
 
@@ -38,15 +37,6 @@ export class SprintComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.sprint.update$.subscribe(() => this.cdr.detectChanges());
-  }
-
-  ngAfterViewInit() {
-    this.delayRenderingOfTaskList();
-  }
-
-  delayRenderingOfTaskList() {
-    const delayMilliseconds = 100;
-    setTimeout(() => (this.renderTaskList = true), delayMilliseconds);
   }
 
   showList = false;
