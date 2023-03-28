@@ -42,12 +42,12 @@ func (controller SprintsController) CreateSprint(c *gin.Context) {
 func (controller SprintsController) UpdateSprint(c *gin.Context) {
 	sprintID := getSprintIDParam(c)
 
-	var updateSprintDTO UpdateSprintDTO
+	updateSprintDTO, payloadError := validateUpdateSprintDTO(c)
 
-	if err := c.BindJSON(&updateSprintDTO); err != nil {
-		domainError := BuildSprintError(OtherSprintError, err)
+	if payloadError != nil {
+		domainError := BuildSprintError(OtherSprintError, payloadError)
 		apiError := shared_errors.BuildAPIErrorFromDomainError(domainError)
-		http_utils.ReturnJsonAndAbort(c, http.StatusUnprocessableEntity, apiError)
+		http_utils.ReturnJsonAndAbort(c, http.StatusBadRequest, apiError)
 		return
 	}
 
@@ -61,6 +61,18 @@ func (controller SprintsController) UpdateSprint(c *gin.Context) {
 	}
 
 	c.IndentedJSON(http.StatusOK, nil)
+
+}
+
+func validateUpdateSprintDTO(c *gin.Context) (UpdateSprintDTO, error) {
+	var updateSprintDTO UpdateSprintDTO
+	if err := c.BindJSON(&updateSprintDTO); err != nil {
+		return UpdateSprintDTO{}, err
+	}
+
+	err := updateSprintDTO.hasAtLeastOneFieldNotEmpty()
+
+	return updateSprintDTO, err
 
 }
 
