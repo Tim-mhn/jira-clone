@@ -8,17 +8,17 @@ import (
 	"github.com/tim-mhn/figma-clone/database"
 )
 
-type SearchTasksRepository struct {
+type DBSearchTasksRepository struct {
 	conn *sql.DB
 }
 
-func NewSearchTasksRepository(conn *sql.DB) *SearchTasksRepository {
-	return &SearchTasksRepository{
+func NewSearchTasksRepository(conn *sql.DB) SearchTasksRepository {
+	return &DBSearchTasksRepository{
 		conn: conn,
 	}
 }
 
-func (taskRepo *SearchTasksRepository) SearchTasksWithMatchingContentInUserProjects(input SearchInput) ([]TaskInfo, error) {
+func (taskRepo *DBSearchTasksRepository) SearchTasksWithMatchingContentInUserProjects(input SearchInput) ([]TaskInfo, error) {
 
 	builder := getSQLBuilder(UserID(input.UserID), SearchText(input.Text))
 

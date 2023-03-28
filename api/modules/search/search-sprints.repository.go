@@ -7,17 +7,17 @@ import (
 	"github.com/tim-mhn/figma-clone/database"
 )
 
-type SearchSprintsRepository struct {
+type DBSearchSprintsRepository struct {
 	conn *sql.DB
 }
 
-func NewSearchSprintsRepository(conn *sql.DB) *SearchSprintsRepository {
-	return &SearchSprintsRepository{
+func NewSearchSprintsRepository(conn *sql.DB) SearchSprintsRepository {
+	return &DBSearchSprintsRepository{
 		conn: conn,
 	}
 }
 
-func (repo *SearchSprintsRepository) SearchSprintOfUsersByName(searchInput SearchInput) ([]SprintInfo, error) {
+func (repo *DBSearchSprintsRepository) SearchSprintOfUsersByName(searchInput SearchInput) ([]SprintInfo, error) {
 
 	query := searchSprintsQuery(searchInput)
 

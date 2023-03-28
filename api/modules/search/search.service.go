@@ -1,16 +1,16 @@
 package search
 
 import (
-	"log"
+	"fmt"
 	"sync"
 )
 
 type SearchService struct {
-	repo       *SearchTasksRepository
-	sprintRepo *SearchSprintsRepository
+	repo       SearchTasksRepository
+	sprintRepo SearchSprintsRepository
 }
 
-func NewSearchService(repo *SearchTasksRepository, sprintRepo *SearchSprintsRepository) *SearchService {
+func NewSearchService(repo SearchTasksRepository, sprintRepo SearchSprintsRepository) *SearchService {
 	return &SearchService{
 		repo:       repo,
 		sprintRepo: sprintRepo,
@@ -21,36 +21,30 @@ func (service *SearchService) searchTasksOrSprintsOfUserByText(searchInput Searc
 
 	tasksChan := make(chan []TaskInfo)
 	sprintsChan := make(chan []SprintInfo)
-	errorChan := make(chan error)
 
 	var wg sync.WaitGroup
 
+	var tasksError error
+	var sprintsError error
 	wg.Add(2)
 
 	go func() {
-		tasks, tasksError := service.repo.SearchTasksWithMatchingContentInUserProjects(searchInput)
-		if tasksError != nil {
-			errorChan <- tasksError
-			log.Print(tasksError)
-		}
+		tasks, err := service.repo.SearchTasksWithMatchingContentInUserProjects(searchInput)
+		logErrorIfNotNil("SearchTasksWithMatchingContentInUserProjects", err)
+		tasksError = err
 		tasksChan <- tasks
 		wg.Done()
 	}()
 
 	go func() {
-
-		sprints, sprintsError := service.sprintRepo.SearchSprintOfUsersByName(searchInput)
-		if sprintsError != nil {
-			errorChan <- sprintsError
-			log.Print(sprintsError)
-		}
+		sprints, err := service.sprintRepo.SearchSprintOfUsersByName(searchInput)
+		logErrorIfNotNil("SearchSprintOfUsersByName", err)
+		sprintsError = err
 		sprintsChan <- sprints
 		wg.Done()
 	}()
 	tasks := <-tasksChan
 	sprints := <-sprintsChan
-	err := <-errorChan
-	errorChan <- nil
 	wg.Wait()
 
 	searchResults := SearchResults{
@@ -58,5 +52,20 @@ func (service *SearchService) searchTasksOrSprintsOfUserByText(searchInput Searc
 		Sprints: sprints,
 	}
 
+	err := buildErrorIfBothTasksAndSprintsHaveError(tasksError, sprintsError)
+
 	return searchResults, err
+}
+
+func logErrorIfNotNil(methodName string, err error) {
+	if err != nil {
+		fmt.Printf("[SearchService.searchTasksOrSprintsOfUserByText] An error occurred when calling %s. Details %e", methodName, err)
+	}
+}
+
+func buildErrorIfBothTasksAndSprintsHaveError(tasksError error, sprintsError error) error {
+	if tasksError != nil && sprintsError != nil {
+		return fmt.Errorf("[SearchService.searchTasksOrSprintsOfUserByText] Error when fetching tasks and sprints. \nTasksError: %e \nSprintsError: %e", tasksError, sprintsError)
+	}
+	return nil
 }
