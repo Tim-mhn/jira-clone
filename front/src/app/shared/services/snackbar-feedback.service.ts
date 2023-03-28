@@ -6,7 +6,6 @@ import {
   TimUISnackbarRef,
 } from '@tim-mhn/ng-ui/snackbar';
 import { concatObjectsIf } from '@tim-mhn/common/objects';
-import { logMethod } from '../utils/log-method.decorator';
 
 type MessageConstructorFn<Output> = (output: Output) => string;
 type SnackbarMessages<Output, ErrorType = Error> = {
@@ -41,7 +40,6 @@ export class SnackbarFeedbackService {
   private DEFAULT_SNACKBAR_TIMEOUT = 200;
   constructor(private _snackbar: TimUISnackbar) {}
 
-  @logMethod
   showFeedbackSnackbars<T, ErrorType = Error>(
     _messages?: SnackbarMessages<T, ErrorType>,
     opts?: SnackbarFeedbackOptions

@@ -9,7 +9,6 @@ import {
   SnackbarFeedbackOptions,
   SnackbarFeedbackService,
 } from '../../../shared/services/snackbar-feedback.service';
-import { logMethod } from '../../../shared/utils/log-method.decorator';
 import { SprintsAPI } from '../apis/sprints.api';
 import { DashboardCoreProvidersModule } from '../core.providers.module';
 import { SprintMapper } from '../mappers/sprint.mapper';
@@ -66,7 +65,6 @@ export class SprintController {
     );
   }
 
-  @logMethod
   completeSprintAndShowSnackbarWithUndoAction(
     sprint: Sprint,
     requestState?: RequestState
@@ -75,7 +73,8 @@ export class SprintController {
 
     const options: SnackbarFeedbackOptions = {
       showLoadingMessage: false,
-      undoAction: () => this._undoSprintCompletion(sprint).subscribe(),
+      undoAction: () =>
+        this._undoSprintCompletion({ sprint, projectId }).subscribe(),
     };
     return this.api.completeSprint({ sprintId: sprint.Id, projectId }).pipe(
       this.snackbarFeedback.showFeedbackSnackbars(
@@ -89,10 +88,9 @@ export class SprintController {
     );
   }
 
-  // todo: use actual API call (when available)
-  // todo: handle how to not refresh the list ? recall the /tasks endpoint ? Not call it initially ?
-  private _undoSprintCompletion(sprint: Sprint) {
-    return this.mockAPI.post(null, null, { errorRate: 0 }).pipe(
+  private _undoSprintCompletion(input: { sprint: Sprint; projectId: string }) {
+    const { sprint, projectId } = input;
+    return this.api.reactiveSprint({ projectId, sprintId: sprint.Id }).pipe(
       tap(() => sprint.reactive()),
       this.snackbarFeedback.showFeedbackSnackbars(
         {
