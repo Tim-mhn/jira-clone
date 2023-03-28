@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
 import { switchMap } from 'rxjs';
+import { logMethod } from '../../../../shared/utils/log-method.decorator';
 import { SprintController } from '../../../core/controllers/sprint.controller';
 import { Sprint } from '../../../core/models';
 import { BoardProvidersModule } from '../board-providers.module';
@@ -36,13 +37,13 @@ export class BoardSprintController {
     );
   }
 
+  @logMethod
   completeSprintAndUpdateBoardList(
     sprint: Sprint,
     requestState?: RequestState
   ) {
-    return this.sprintController.completeSprint(sprint).pipe(
-      switchMap(() => this.tasksOfBoardController?.refreshSprintsTasks()),
-      this.requestStateController.handleRequest(requestState)
-    );
+    return this.sprintController
+      .completeSprintAndShowSnackbarWithUndoAction(sprint)
+      .pipe(this.requestStateController.handleRequest(requestState));
   }
 }

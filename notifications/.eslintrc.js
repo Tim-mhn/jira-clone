@@ -23,7 +23,6 @@ module.exports = {
     'plugin:import/typescript',
   ],
 
-  root: true,
   env: {
     node: true,
     jest: true,

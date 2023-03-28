@@ -1,6 +1,6 @@
 import { TimDate } from '@tim-mhn/common/date';
 import { DateRange } from '@tim-mhn/ng-forms/date-range-picker';
-import { Subject } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 
 export type SprintPointsBreakdown = {
   New: number;
@@ -30,6 +30,9 @@ export class Sprint implements SprintProps {
   ProjectId: string;
   Completed: boolean;
 
+  private _completed$ = new ReplaySubject<boolean>();
+  completed$: Observable<boolean> = this._completed$.asObservable();
+
   constructor(props: SprintProps) {
     const { Id, IsBacklog, Name, Points, EndDate, StartDate, Completed } =
       props;
@@ -40,6 +43,7 @@ export class Sprint implements SprintProps {
     this.StartDate = StartDate;
     this.EndDate = EndDate;
     this.Completed = Completed;
+    this._completed$.next(Completed);
   }
 
   public updateName(newName: string) {
@@ -54,8 +58,17 @@ export class Sprint implements SprintProps {
     this._emitUpdate();
   }
 
-  public updateComplete(isComplete: boolean) {
-    this.Completed = isComplete;
+  public reactive() {
+    this._updateCompleted(false);
+  }
+
+  public markAsComplete() {
+    this._updateCompleted(true);
+  }
+
+  private _updateCompleted(completed: boolean) {
+    this.Completed = completed;
+    this._completed$.next(completed);
     this._emitUpdate();
   }
 

@@ -28,16 +28,20 @@
   </div>
   <div class="flex flex-grow gap-4 max-h-full overflow-hidden">
     <div class="flex flex-col flex-grow gap-4 overflow-auto">
-      <jira-sprint
+      <ng-container
         *ngFor="
           let sprintWithTasks of sprintWithTasksList;
           trackBy: trackBySprintId
         "
-        [project]="project"
-        [tasks]="sprintWithTasks.Tasks"
-        [sprint]="sprintWithTasks.Sprint"
-        (taskClicked)="updateTaskSelected($event)"
-      ></jira-sprint>
+      >
+        <jira-sprint
+          *ngIf="!(sprintWithTasks.Sprint.completed$ | async)"
+          [project]="project"
+          [tasks]="sprintWithTasks.Tasks"
+          [sprint]="sprintWithTasks.Sprint"
+          (taskClicked)="updateTaskSelected($event)"
+        ></jira-sprint>
+      </ng-container>
     </div>
 
     <jira-task-details

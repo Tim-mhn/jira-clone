@@ -1,4 +1,3 @@
-import { SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG } from 'constants';
 import { Subject } from 'rxjs';
 import { combineLatestWithTrigger } from './combine-latest-with-trigger.rxjs';
 
@@ -12,7 +11,7 @@ describe('combineLatestWithTrigger', () => {
       b: sourceB,
     });
 
-    var emissionsCount = 0;
+    let emissionsCount = 0;
 
     combineLatestWithTrigger$.subscribe({
       next: () => (emissionsCount += 1),
@@ -38,7 +37,7 @@ describe('combineLatestWithTrigger', () => {
       b: sourceB,
     });
 
-    var emissions: string[][] = [];
+    const emissions: string[][] = [];
 
     combineLatestWithTrigger$.subscribe({
       next: ({ a, b }) => emissions.push([a, b]),
@@ -69,10 +68,10 @@ describe('combineLatestWithTrigger', () => {
       b: sourceB,
     });
 
-    var triggers: string[] = [];
+    const triggers: string[] = [];
 
     combineLatestWithTrigger$.subscribe({
-      next: ({ a, b, trigger }) => triggers.push(trigger),
+      next: ({ trigger }) => triggers.push(trigger),
       complete: () => done(),
     });
 

@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { defer, Observable, tap } from 'rxjs';
-import { TimUISnackbar, TimUISnackbarRef } from '@tim-mhn/ng-ui/snackbar';
+import {
+  TimUISnackbar,
+  TimUISnackBarOptions,
+  TimUISnackbarRef,
+} from '@tim-mhn/ng-ui/snackbar';
+import { concatObjectsIf } from '@tim-mhn/common/objects';
+import { logMethod } from '../utils/log-method.decorator';
 
 type MessageConstructorFn<Output> = (output: Output) => string;
 type SnackbarMessages<Output, ErrorType = Error> = {
@@ -15,10 +21,13 @@ type ShowSnackbarMessages = {
   showErrorMessage?: boolean;
 };
 
-type SnackbarFeedbackOptions = ShowSnackbarMessages & {
+export type SnackbarFeedbackOptions = ShowSnackbarMessages & {
   duration?: number;
   timeout?: number;
+  undoAction?: UndoAction;
 };
+
+type UndoAction = () => void;
 
 @Injectable()
 export class SnackbarFeedbackService {
@@ -32,6 +41,7 @@ export class SnackbarFeedbackService {
   private DEFAULT_SNACKBAR_TIMEOUT = 200;
   constructor(private _snackbar: TimUISnackbar) {}
 
+  @logMethod
   showFeedbackSnackbars<T, ErrorType = Error>(
     _messages?: SnackbarMessages<T, ErrorType>,
     opts?: SnackbarFeedbackOptions
@@ -88,7 +98,8 @@ export class SnackbarFeedbackService {
               this._showSuccessSnackbarAfterSmallTimeout(
                 successMessage,
                 snackbarOptions.duration,
-                snackbarOptions.timeout
+                snackbarOptions.timeout,
+                snackbarOptions.undoAction
               );
             },
           })
@@ -101,16 +112,24 @@ export class SnackbarFeedbackService {
   private _showSuccessSnackbarAfterSmallTimeout(
     successMessage: string,
     duration: number,
-    timeout: number
+    timeout: number,
+    undoAction?: UndoAction
   ) {
-    setTimeout(
-      () =>
-        this._snackbar.open(successMessage, {
-          dismissible: false,
-          duration,
-          mode: 'success',
-        }),
-      timeout
+    const success = 'success' as const;
+    const options: TimUISnackBarOptions = concatObjectsIf(
+      {
+        dismissible: false,
+        duration,
+        mode: success,
+      },
+      {
+        action: {
+          text: 'Undo',
+          action: undoAction,
+        },
+      },
+      !!undoAction
     );
+    setTimeout(() => this._snackbar.open(successMessage, options), timeout);
   }
 }

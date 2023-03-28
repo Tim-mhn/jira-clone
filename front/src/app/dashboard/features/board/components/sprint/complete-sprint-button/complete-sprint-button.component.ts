@@ -28,7 +28,10 @@ export class CompleteSprintButtonComponent implements OnInit {
         .subscribe();
     } else {
       this.sprintController
-        .completeSprint(this.sprint, this.requestState)
+        .completeSprintAndShowSnackbarWithUndoAction(
+          this.sprint,
+          this.requestState
+        )
         .subscribe();
     }
   }

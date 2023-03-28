@@ -4,12 +4,16 @@ module.exports = {
     es2021: true,
     jasmine: true,
   },
+  globals: {
+    DoneFn: 'readonly',
+  },
   extends: ['airbnb-base', 'plugin:import/typescript', 'prettier'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
+  root: true,
   settings: {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts'],
@@ -26,7 +30,6 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'no-console': 'off',
     'class-methods-use-this': 'off',
-    //     'no-underscore-dangle': 'off',
     'no-useless-constructor': 'off',
     'no-use-before-define': 'off',
     'no-empty-function': 'off',
@@ -51,7 +54,7 @@ module.exports = {
     'dot-notation': 'off',
     'no-return-assign': 'off',
     'no-unused-vars': [
-      'error',
+      'off',
       {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_+',
