@@ -59,8 +59,6 @@ describe('SnackbarFeedbackService', () => {
         timeout: 0,
       };
 
-      const { showSuccessMessage } = options;
-
       of('')
         .pipe(
           service.showFeedbackSnackbars({ successMessage: 'success' }, options)

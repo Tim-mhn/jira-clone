@@ -54,7 +54,7 @@ module.exports = {
     'dot-notation': 'off',
     'no-return-assign': 'off',
     'no-unused-vars': [
-      'off',
+      'error',
       {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_+',
