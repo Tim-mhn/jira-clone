@@ -1,8 +1,6 @@
 package tasks_services
 
 import (
-	"net/http"
-
 	notifications_api "github.com/tim-mhn/figma-clone/modules/notifications"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
 	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
@@ -83,6 +81,7 @@ func (service TaskCommandsService) sendNewAssigneeNotificationIfChanged(updateTa
 			TaskID:     updateTask.TaskID,
 			AssigneeID: *updateTask.NewData.AssigneeId,
 			ProjectID:  updateTask.ProjectID,
+			// AssignedBy: ,
 		}
 		service.notificationsAPI.SendTaskAssignationNotification(input, updateTask.AuthCookie)
 	}
@@ -98,5 +97,4 @@ type UpdateTaskInput struct {
 	NewData        tasks_dtos.PatchTaskDTO
 	UpdatingUserID string
 	ProjectID      string
-	AuthCookie     *http.Cookie
 }

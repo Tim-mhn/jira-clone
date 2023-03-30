@@ -19,7 +19,7 @@ export class CreateNewAssignationNotificationInteractor {
       taskAssigned.task.id,
     );
     const userHasSelfAssignedTask =
-      taskAssigned.assigneeId === taskAssigned.assignerId;
+      taskAssigned.assigneeId === taskAssigned.assignedById;
     if (userHasSelfAssignedTask) return;
 
     await this._addAssigneeAsTaskFollower(taskAssigned);

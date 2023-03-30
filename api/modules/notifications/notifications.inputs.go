@@ -8,7 +8,8 @@ type CreateCommentNotificationInput struct {
 }
 
 type SendAssignationNotificationInput struct {
-	TaskID     string
-	AssigneeID string
-	ProjectID  string
+	TaskID       string
+	AssigneeID   string
+	ProjectID    string
+	AssignedByID string
 }

@@ -12,29 +12,19 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
-	http_utils "github.com/tim-mhn/figma-clone/utils/http"
 	"github.com/tim-mhn/figma-clone/utils/primitives"
 )
 
 func TestCreateCommentNotification(t *testing.T) {
 
-	notificationsBaseUrlFn = func() string {
-		return "notifications.api"
-	}
-
-	mockClient := new(http_utils.MockHTTPClient)
-	httpClient = mockClient
-
 	projectID := "project-id-123"
 	taskID := "task-id-xyz"
 
-	mockRequest := http_utils.BuildRequest(http_utils.GET, "url", nil)
+	var dto NewCommentEventDTO
 
-	var dto NewCommentNotificationDTO
-
-	buildRequestFn = func(method http_utils.HTTPMethod, url string, body interface{}) *http.Request {
-		dto = body.(NewCommentNotificationDTO)
-		return mockRequest
+	sendNewCommentEventFn = func(commentDTO NewCommentEventDTO) error {
+		dto = commentDTO
+		return nil
 	}
 
 	project := project.Project{
@@ -56,7 +46,6 @@ func TestCreateCommentNotification(t *testing.T) {
 
 		mockProjectRepo.On("GetProjectByID", mock.Anything).Return(project)
 		mockTaskRepo.On("GetTaskByID", mock.Anything).Return(task, tasks_errors.NoTaskError())
-		mockClient.On("Do", mock.Anything).Return(http_utils.NewMockHTTPResponse(), nil)
 		input := CreateCommentNotificationInput{
 			TaskID:    taskID,
 			Comment:   "this is a comment",
@@ -68,7 +57,7 @@ func TestCreateCommentNotification(t *testing.T) {
 		}
 		notificationsAPI.CreateCommentNotification(input, &http.Cookie{})
 
-		expectedDTO := NewCommentNotificationDTO{
+		expectedDTO := NewCommentEventDTO{
 			Task: NotificationTaskDTO{
 				Id:    taskID,
 				Title: *task.Title,
@@ -110,7 +99,7 @@ func TestCreateCommentNotification(t *testing.T) {
 
 		mockProjectRepo.On("GetProjectByID", mock.Anything).Return(project)
 		mockTaskRepo.On("GetTaskByID", mock.Anything).Return(task, tasks_errors.NoTaskError())
-		mockClient.On("Do", mock.Anything).Return(http_utils.NewMockHTTPResponse(), nil)
+
 		input := CreateCommentNotificationInput{
 			TaskID:    taskID,
 			Comment:   "this is a comment",
@@ -128,29 +117,22 @@ func TestCreateCommentNotification(t *testing.T) {
 }
 
 func TestSendTaskAssignationNotification(t *testing.T) {
-	notificationsBaseUrlFn = func() string {
-		return "notifications.api"
-	}
-
-	mockClient := new(http_utils.MockHTTPClient)
-	httpClient = mockClient
 
 	projectID := "project-id-123"
 	taskID := "task-id-xyz"
-
-	mockRequest := http_utils.BuildRequest(http_utils.GET, "url", nil)
 
 	project := project.Project{
 		Id:   projectID,
 		Name: "my project's name",
 	}
 
-	var taskAssignationDTO AssignationNotificationDTO
+	var taskAssignationDTO TaskAssignationEventDTO
 
-	buildRequestFn = func(method http_utils.HTTPMethod, url string, body interface{}) *http.Request {
-		taskAssignationDTO = body.(AssignationNotificationDTO)
-		return mockRequest
+	sendTaskAssignationEventFn = func(dto TaskAssignationEventDTO) error {
+		taskAssignationDTO = dto
+		return nil
 	}
+
 	t.Run("it should correctly map the input to the TaskAssignationDTO with the outputs of project and task repos", func(t *testing.T) {
 
 		notificationsAPI, mockProjectRepo, mockTaskRepo := setupServiceWithMocks()
@@ -165,16 +147,16 @@ func TestSendTaskAssignationNotification(t *testing.T) {
 
 		mockProjectRepo.On("GetProjectByID", mock.Anything).Return(project)
 		mockTaskRepo.On("GetTaskByID", mock.Anything).Return(task, tasks_errors.NoTaskError())
-		mockClient.On("Do", mock.Anything).Return(http_utils.NewMockHTTPResponse(), nil)
+
 		input := SendAssignationNotificationInput{
 			TaskID:     taskID,
 			ProjectID:  projectID,
 			AssigneeID: "assignee-id-1234",
 		}
 
-		notificationsAPI.SendTaskAssignationNotification(input, &http.Cookie{})
+		notificationsAPI.SendTaskAssignationNotification(input)
 
-		expectedDTO := AssignationNotificationDTO{
+		expectedDTO := TaskAssignationEventDTO{
 			Task: NotificationTaskDTO{
 				Id:    *task.Id,
 				Title: *task.Title,

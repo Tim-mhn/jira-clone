@@ -72,7 +72,7 @@ func (s TaskCommentsService) createNewCommentNotifications(comment CreateComment
 	// task := <-taskChan
 	// wg.Wait()
 
-	// dto := notifications_api.NewCommentNotificationDTO{
+	// dto := notifications_api.NewCommentEventDTO{
 	// 	Task: notifications_api.NotificationTaskDTO{
 	// 		Id:   comment.TaskID,
 	// 		Name: tags.RemoveTagsFromTaskTitle(*task.Title), // todo: unify logic to get the tag-less title (for assignation and comment)

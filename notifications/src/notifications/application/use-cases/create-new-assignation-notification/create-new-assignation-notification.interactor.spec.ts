@@ -59,7 +59,7 @@ describe('CreateNewAssignationNotificationInteractor', () => {
     const taskAssigned: TaskAssignedEvent = {
       assigneeId: 'some-id',
       project: null,
-      assignerId: 'another-id',
+      assignedById: 'another-id',
       task: {
         id: 'task-id',
         title: 'task name',
@@ -78,7 +78,7 @@ describe('CreateNewAssignationNotificationInteractor', () => {
     const taskAssigned: TaskAssignedEvent = {
       assigneeId: userId,
       project: null,
-      assignerId: userId,
+      assignedById: userId,
       task: {
         id: 'task-id',
         title: 'task name',
@@ -95,7 +95,7 @@ describe('CreateNewAssignationNotificationInteractor', () => {
   it('should add the assignee as a task follower ', async () => {
     const taskAssignedEvent: TaskAssignedEvent = {
       assigneeId: 'assignee-id',
-      assignerId: 'assigner-id',
+      assignedById: 'assigner-id',
       project: {
         id: 'project-id',
         name: 'project-name',

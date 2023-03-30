@@ -12,21 +12,16 @@ import {
 import { AuthenticatedRequest } from './auth';
 import { Response } from 'express';
 import {
-  AssignationNotificationDTO,
   FollowTaskDTO,
-  NewCommentDTO,
   ReadNotificationDTO,
 } from './notifications/infrastructure/dtos';
-import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
 import {
   NotificationNotFound,
   NotificationReadEvent,
-  TaskAssignedEvent,
 } from './notifications/domain';
 import { GetNewNotificationsInteractor } from './notifications/application/use-cases/get-new-notifications/get-new-notifications.interactor';
 import { AllNotifications } from './notifications/domain/models/all-notifications';
 import { ReadNotificationInteractor } from './notifications/application/use-cases/read-notification/read-notification.interactor';
-import { CreateCommentNotificationsInteractor } from './notifications/application/use-cases/create-comment-notifications/create-comment-notifications.interactor';
 import { TaskFollowersRepositoryToken } from './notifications/infrastructure/providers/task-followers-repository.provider';
 import { TaskFollowersRepository } from './notifications/domain/repositories';
 
@@ -35,10 +30,8 @@ export class AppController {
   constructor(
     @Inject(TaskFollowersRepositoryToken)
     private followersRepo: TaskFollowersRepository,
-    private createAssignationNotificationInteractor: CreateNewAssignationNotificationInteractor,
     private getNewNotificationsInteractor: GetNewNotificationsInteractor,
     private readNotificationInteractor: ReadNotificationInteractor,
-    private createCommentNotificationsInteractor: CreateCommentNotificationsInteractor,
   ) {}
 
   @Get()
@@ -61,30 +54,6 @@ export class AppController {
     this.followersRepo.markUserAsFollowerOfTask(
       followTaskDTO.userId,
       followTaskDTO.taskId,
-    );
-  }
-
-  @Post('/comment')
-  createCommentNotifications(@Body() newCommentDTO: NewCommentDTO) {
-    this.createCommentNotificationsInteractor.createNotificationsForTaskFollowersExceptCommentAuthor(
-      newCommentDTO,
-    );
-  }
-
-  @Post('/assignation')
-  createNewAssignationNotification(
-    @Body() dto: AssignationNotificationDTO,
-    @Request() authRequest: AuthenticatedRequest,
-  ) {
-    const userId = authRequest?.user?.id;
-
-    const taskAssignedEvent: TaskAssignedEvent = {
-      assignerId: userId,
-      ...dto,
-    };
-
-    return this.createAssignationNotificationInteractor.handle(
-      taskAssignedEvent,
     );
   }
 
