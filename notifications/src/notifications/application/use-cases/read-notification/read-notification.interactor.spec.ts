@@ -4,8 +4,8 @@ import { NotificationReadEvent } from '../../../domain';
 import { getMockCommentNotificationsRepository } from '../../../domain/mocks';
 import { NotificationType } from '../../../domain/models/notification';
 import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
-import { TaskAssignationNotificationsRepositoryToken } from '../../../infrastructure/providers';
-import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
+import { TaskAssignationNotificationsRepositoryToken } from '../../../adapter/providers';
+import { CommentNotificationsRepositoryToken } from '../../../adapter/providers/comment-notification-repository.provider';
 import { ReadNotificationInteractor } from './read-notification.interactor';
 
 describe('ReadNotificationService', () => {

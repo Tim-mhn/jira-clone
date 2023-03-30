@@ -5,8 +5,8 @@ import {
   getMockTaskFollowersRepository,
 } from '../../../domain/mocks';
 import { CommentNotificationsInput } from '../../../domain/repositories/comment-notification.repository';
-import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
-import { TaskFollowersRepositoryToken } from '../../../infrastructure/providers/task-followers-repository.provider';
+import { CommentNotificationsRepositoryToken } from '../../../adapter/providers/comment-notification-repository.provider';
+import { TaskFollowersRepositoryToken } from '../../../adapter/providers/task-followers-repository.provider';
 import { CreateCommentNotificationsInteractor } from './create-comment-notifications.interactor';
 
 describe('CreateCommentNotificationsInteractor', () => {

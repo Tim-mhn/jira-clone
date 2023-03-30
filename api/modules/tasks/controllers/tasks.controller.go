@@ -106,7 +106,6 @@ func (tc *TasksController) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	authCookie := auth.GetAuthCookieFromContext(c)
 	currentUser, _ := auth.GetUserFromRequestContext(c)
 	projectID := project.GetProjectIDParam(c)
 
@@ -115,7 +114,6 @@ func (tc *TasksController) UpdateTask(c *gin.Context) {
 		NewData:        updateTaskDTO,
 		UpdatingUserID: currentUser.Id,
 		ProjectID:      projectID,
-		AuthCookie:     authCookie,
 	}
 
 	updateTaskError := tc.taskCommands.UpdateTask(updateTaskInput)

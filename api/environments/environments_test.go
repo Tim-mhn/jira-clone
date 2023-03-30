@@ -52,7 +52,7 @@ func TestConfigIsValid(t *testing.T) {
 
 		_, invalidFields := configIsValid(c)
 
-		expectedInvalidFields := []string{"Host", "NotificationsAPIURL", "DevClientURL"}
+		expectedInvalidFields := []string{"Host", "NotificationsAPIURL", "DevClientURL", "RabbitMQURI"}
 		assert.EqualValues(t, expectedInvalidFields, invalidFields)
 	})
 
@@ -71,6 +71,7 @@ func TestConfigIsValid(t *testing.T) {
 			},
 			NotificationsAPIURL: "https://notifications.api",
 			DevClientURL:        "https://dev.jira-front.live",
+			RabbitMQURI:         "mq://coj12c-c787c",
 		}
 
 		_, invalidFields := configIsValid(c)

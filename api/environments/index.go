@@ -34,6 +34,7 @@ type Config struct {
 	ClientURL           string `mapstructure:"client_url"`
 	DevClientURL        string `mapstructure:"dev_client_url"`
 	NotificationsAPIURL string `mapstructure:"notifications_api_url"`
+	RabbitMQURI         string `mapstructure:"rabbit_mq_uri"`
 }
 
 func LoadVariables() {
@@ -73,6 +74,7 @@ func loadFromEnvironment() {
 	viper.BindEnv("client_url")
 	viper.BindEnv("notifications_api_url")
 	viper.BindEnv("dev_client_url")
+	viper.BindEnv("rabbit_mq_uri")
 
 	err := viper.Unmarshal(&_config)
 
@@ -168,6 +170,10 @@ func configIsValid(config Config) (bool, []string) {
 
 		if config.DevClientURL == "" {
 			invalidFields = append(invalidFields, "DevClientURL")
+		}
+
+		if config.RabbitMQURI == "" {
+			invalidFields = append(invalidFields, "RabbitMQURI")
 		}
 
 	}

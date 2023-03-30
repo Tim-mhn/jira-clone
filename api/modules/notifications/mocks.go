@@ -21,7 +21,7 @@ func (mock *MockNotificationsAPI) CreateCommentNotification(input CreateCommentN
 	}
 	return nil
 }
-func (mock *MockNotificationsAPI) SendTaskAssignationNotification(input SendAssignationNotificationInput, authCookie *http.Cookie) error {
+func (mock *MockNotificationsAPI) SendTaskAssignationNotification(input SendAssignationNotificationInput) error {
 	mock.Called(input)
 	return nil
 }

@@ -19,15 +19,16 @@ type NotificationTaskDTO struct {
 	Id    string `json:"id" binding:"required"`
 	Title string `json:"title" binding:"required"`
 }
-type NewCommentNotificationDTO struct {
+type NewCommentEventDTO struct {
 	Task    NotificationTaskDTO `json:"task" binding:"required"`
 	Comment string              `json:"comment" binding:"required"`
 	Author  CommentAuthor       `json:"author" binding:"required"`
 	Project ProjectIdName       `json:"project" binding:"required"`
 }
 
-type AssignationNotificationDTO struct {
-	Task       NotificationTaskDTO `json:"task" binding:"required"`
-	AssigneeID string              `json:"assigneeId" binding:"required"`
-	Project    ProjectIdName       `json:"project" binding:"required"`
+type TaskAssignationEventDTO struct {
+	Task         NotificationTaskDTO `json:"task" binding:"required"`
+	AssigneeID   string              `json:"assigneeId" binding:"required"`
+	Project      ProjectIdName       `json:"project" binding:"required"`
+	AssignedByID string              `json:"assignedById" binding:"required"`
 }

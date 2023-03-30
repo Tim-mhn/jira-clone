@@ -2,7 +2,6 @@ package notifications_api
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"sync"
 
@@ -16,7 +15,7 @@ import (
 type NotificationsAPI interface {
 	FollowTask(dto FollowTaskDTO, authCookie *http.Cookie) error
 	CreateCommentNotification(input CreateCommentNotificationInput, authCookie *http.Cookie) error
-	SendTaskAssignationNotification(input SendAssignationNotificationInput, authCookie *http.Cookie) error
+	SendTaskAssignationNotification(input SendAssignationNotificationInput) error
 }
 
 func NewNotificationsAPI(projectRepo project.ProjectQueriesRepository,
@@ -53,48 +52,53 @@ func (s NotificationsAPIImpl) FollowTask(dto FollowTaskDTO, authCookie *http.Coo
 }
 
 var (
-	buildRequestFn                       = http_utils.BuildRequest
-	httpClient     http_utils.HTTPClient = http.DefaultClient
+	sendTaskAssignationEventFn func(dto TaskAssignationEventDTO) error = sendTaskAssignationEvent
+	sendNewCommentEventFn      func(dto NewCommentEventDTO) error      = sendNewCommentEvent
 )
+
+func sendTaskAssignationEvent(dto TaskAssignationEventDTO) error {
+	exchangeName := "task-assigned"
+
+	channel, err := openPubSubChannel(exchangeName)
+
+	if err != nil {
+		return err
+	}
+
+	defer channel.Close()
+
+	return publishJSONDataOverChannel(channel, exchangeName, dto)
+
+}
+
+func sendNewCommentEvent(dto NewCommentEventDTO) error {
+	exchangeName := "new-comment"
+	channel, err := openPubSubChannel(exchangeName)
+	if err != nil {
+		return err
+	}
+
+	defer channel.Close()
+
+	return publishJSONDataOverChannel(channel, exchangeName, dto)
+}
 
 func (s NotificationsAPIImpl) CreateCommentNotification(input CreateCommentNotificationInput, authCookie *http.Cookie) error {
 	dto := s.mapCommentInputToDTO(input)
-	req := buildRequestFn(http_utils.POST, _COMMENT_TASK_URL(), dto)
-	req.AddCookie(authCookie)
-
-	resp, err := httpClient.Do(req)
-
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	return nil
+	return sendNewCommentEventFn(dto)
 
 }
 
-func (s NotificationsAPIImpl) SendTaskAssignationNotification(input SendAssignationNotificationInput, authCookie *http.Cookie) error {
+func (s NotificationsAPIImpl) SendTaskAssignationNotification(input SendAssignationNotificationInput) error {
 	dto := s.mapAssignationInputToDTO(input)
-
-	req := buildRequestFn(http_utils.POST, _ASSIGNATION_URL(), dto)
-	req.AddCookie(authCookie)
-
-	resp, err := httpClient.Do(req)
-
-	if err != nil {
-		return err
-	}
-
-	_, err = ioutil.ReadAll(resp.Body) // response body is []byte
-
-	return err
+	return sendTaskAssignationEventFn(dto)
 
 }
 
-func (s NotificationsAPIImpl) mapAssignationInputToDTO(input SendAssignationNotificationInput) AssignationNotificationDTO {
+func (s NotificationsAPIImpl) mapAssignationInputToDTO(input SendAssignationNotificationInput) TaskAssignationEventDTO {
 	project, task := s.getProjectAndTaskFromIds(input.ProjectID, input.TaskID)
 
-	dto := AssignationNotificationDTO{
+	dto := TaskAssignationEventDTO{
 		Task: NotificationTaskDTO{
 			Id:    input.TaskID,
 			Title: tags.RemoveTagsFromTaskTitle(*task.Title),
@@ -103,17 +107,18 @@ func (s NotificationsAPIImpl) mapAssignationInputToDTO(input SendAssignationNoti
 			Name: project.Name,
 			ID:   project.Id,
 		},
-		AssigneeID: input.AssigneeID,
+		AssigneeID:   input.AssigneeID,
+		AssignedByID: input.AssignedByID,
 	}
 
 	return dto
 
 }
 
-func (s NotificationsAPIImpl) mapCommentInputToDTO(input CreateCommentNotificationInput) NewCommentNotificationDTO {
+func (s NotificationsAPIImpl) mapCommentInputToDTO(input CreateCommentNotificationInput) NewCommentEventDTO {
 	project, task := s.getProjectAndTaskFromIds(input.ProjectID, input.TaskID)
 
-	dto := NewCommentNotificationDTO{
+	dto := NewCommentEventDTO{
 		Task: NotificationTaskDTO{
 			Id:    input.TaskID,
 			Title: tags.RemoveTagsFromTaskTitle(*task.Title),

@@ -5,8 +5,8 @@ import {
   CommentNotificationsInput,
   TaskFollowersRepository,
 } from '../../../domain/repositories';
-import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
-import { TaskFollowersRepositoryToken } from '../../../infrastructure/providers/task-followers-repository.provider';
+import { CommentNotificationsRepositoryToken } from '../../../adapter/providers/comment-notification-repository.provider';
+import { TaskFollowersRepositoryToken } from '../../../adapter/providers/task-followers-repository.provider';
 
 @Injectable()
 export class CreateCommentNotificationsInteractor {
