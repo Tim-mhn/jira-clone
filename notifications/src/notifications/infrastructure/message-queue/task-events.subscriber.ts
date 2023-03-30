@@ -5,12 +5,12 @@ import { NewCommentEvent } from '../../domain/events/new-comment.event';
 import {
   NewCommentExchangeName,
   TaskAssignedExchangeName,
-} from '../../infrastructure/message-queue/exchange-names';
-import { CreateCommentNotificationsInteractor } from '../use-cases/create-comment-notifications/create-comment-notifications.interactor';
-import { CreateNewAssignationNotificationInteractor } from '../use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
+} from './exchange-names';
+import { CreateCommentNotificationsInteractor } from '../../application/use-cases/create-comment-notifications/create-comment-notifications.interactor';
+import { CreateNewAssignationNotificationInteractor } from '../../application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
 
 @Injectable()
-export class TasksEventsConsumer {
+export class TasksEventsSubscriber {
   constructor(
     private createAssignationNotificationInteractor: CreateNewAssignationNotificationInteractor,
     private commentNotificationsInteractor: CreateCommentNotificationsInteractor,

@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TaskAssignationNotificationData } from '../../../domain';
 import { getMockCommentNotificationsRepository } from '../../../domain/mocks';
 import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
-import { TaskAssignationNotificationsRepositoryToken } from '../../../infrastructure/providers';
-import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
+import { TaskAssignationNotificationsRepositoryToken } from '../../../adapter/providers';
+import { CommentNotificationsRepositoryToken } from '../../../adapter/providers/comment-notification-repository.provider';
 import { GetNewNotificationsInteractor } from './get-new-notifications.interactor';
 
 describe('GetNewNotificationsInteractor', () => {

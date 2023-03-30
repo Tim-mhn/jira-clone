@@ -3,8 +3,8 @@ import { NotificationReadEvent } from '../../../domain';
 import { NotificationType } from '../../../domain/models/notification';
 import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
 import { CommentNotificationsRepository } from '../../../domain/repositories/comment-notification.repository';
-import { TaskAssignationNotificationsRepositoryToken } from '../../../infrastructure/providers';
-import { CommentNotificationsRepositoryToken } from '../../../infrastructure/providers/comment-notification-repository.provider';
+import { TaskAssignationNotificationsRepositoryToken } from '../../../adapter/providers';
+import { CommentNotificationsRepositoryToken } from '../../../adapter/providers/comment-notification-repository.provider';
 
 @Injectable()
 export class ReadNotificationInteractor {

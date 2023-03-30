@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/rabbitmq/amqp091-go"
+	"github.com/tim-mhn/figma-clone/environments"
 )
 
 var mqConnection *amqp091.Connection
@@ -16,7 +17,7 @@ func getConnectionOrConnectForTheFirstTime() *amqp091.Connection {
 		return mqConnection
 	}
 
-	conn, err := amqp091.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp091.Dial(environments.GetConfig().RabbitMQURI)
 
 	if err != nil {
 		log.Fatalf("Error when connecting to Message Queue %e", err)

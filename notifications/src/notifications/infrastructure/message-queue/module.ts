@@ -1,13 +1,15 @@
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
-import { ConsumeService } from './consume/consume.service';
+import { NotificationsInteractorsProvidersModule } from '../../application/use-cases/providers.module';
 import {
   NewCommentExchangeName,
   TaskAssignedExchangeName,
 } from './exchange-names';
+import { TasksEventsSubscriber } from './task-events.subscriber';
 
 @Module({
   imports: [
+    NotificationsInteractorsProvidersModule,
     RabbitMQModule.forRoot(RabbitMQModule, {
       exchanges: [
         {
@@ -24,9 +26,9 @@ import {
           type: 'fanout',
         },
       ],
-      uri: 'amqp://guest:guest@localhost:5672',
+      uri: process.env.RABBIT_MQ_URI,
     }),
   ],
-  providers: [ConsumeService],
+  providers: [TasksEventsSubscriber],
 })
 export class NotificationsRabbitMQModule {}

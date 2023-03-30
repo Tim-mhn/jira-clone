@@ -78,12 +78,12 @@ func (service TaskCommandsService) sendNewAssigneeNotificationIfChanged(updateTa
 	if updateTask.NewData.AssigneeId != nil {
 
 		input := notifications_api.SendAssignationNotificationInput{
-			TaskID:     updateTask.TaskID,
-			AssigneeID: *updateTask.NewData.AssigneeId,
-			ProjectID:  updateTask.ProjectID,
-			// AssignedBy: ,
+			TaskID:       updateTask.TaskID,
+			AssigneeID:   *updateTask.NewData.AssigneeId,
+			ProjectID:    updateTask.ProjectID,
+			AssignedByID: updateTask.UpdatingUserID,
 		}
-		service.notificationsAPI.SendTaskAssignationNotification(input, updateTask.AuthCookie)
+		service.notificationsAPI.SendTaskAssignationNotification(input)
 	}
 }
 

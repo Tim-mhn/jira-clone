@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TaskAssignedEvent } from '../../../domain';
 import { TaskFollowersRepository } from '../../../domain/repositories';
 import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
-import { TaskAssignationNotificationsRepositoryToken } from '../../../infrastructure/providers';
-import { TaskFollowersRepositoryToken } from '../../../infrastructure/providers/task-followers-repository.provider';
+import { TaskAssignationNotificationsRepositoryToken } from '../../../adapter/providers';
+import { TaskFollowersRepositoryToken } from '../../../adapter/providers/task-followers-repository.provider';
 
 @Injectable()
 export class CreateNewAssignationNotificationInteractor {

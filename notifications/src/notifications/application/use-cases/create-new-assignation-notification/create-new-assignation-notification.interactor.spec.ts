@@ -6,8 +6,8 @@ import {
 } from '../../../domain';
 import { TaskFollowersRepository } from '../../../domain/repositories';
 import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
-import { TaskAssignationNotificationsRepositoryToken } from '../../../infrastructure/providers';
-import { TaskFollowersRepositoryToken } from '../../../infrastructure/providers/task-followers-repository.provider';
+import { TaskAssignationNotificationsRepositoryToken } from '../../../adapter/providers';
+import { TaskFollowersRepositoryToken } from '../../../adapter/providers/task-followers-repository.provider';
 import { CreateNewAssignationNotificationInteractor } from './create-new-assignation-notification.interactor';
 
 describe('CreateNewAssignationNotificationInteractor', () => {

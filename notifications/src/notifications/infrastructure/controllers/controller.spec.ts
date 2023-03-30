@@ -1,22 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { TaskFollowersRepository } from './notifications/infrastructure/repositories/task-followers-repository/task-followers.repository';
-import { CreateNewAssignationNotificationInteractor } from './notifications/application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
-import { ReadNotificationInteractor } from './notifications/application/use-cases/read-notification/read-notification.interactor';
-import { NotificationNotFound } from './notifications/domain';
 import { createMocks } from 'node-mocks-http';
-import { ReadNotificationDTO } from './notifications/infrastructure/dtos';
-import { AuthenticatedRequest } from './auth';
 import { HttpStatus } from '@nestjs/common';
-import { GetNewNotificationsInteractor } from './notifications/application/use-cases/get-new-notifications/get-new-notifications.interactor';
-import { CommentNotificationsRepository } from './notifications/domain/repositories/comment-notification.repository';
-import { CommentNotificationsRepositoryToken } from './notifications/infrastructure/providers/comment-notification-repository.provider';
-import { CreateCommentNotificationsInteractor } from './notifications/application/use-cases/create-comment-notifications/create-comment-notifications.interactor';
-import { TaskFollowersRepositoryToken } from './notifications/infrastructure/providers/task-followers-repository.provider';
+import { NotificationsController } from './controller';
+import { CommentNotificationsRepository } from '../../domain/repositories';
+import { ReadNotificationInteractor } from '../../application/use-cases/read-notification/read-notification.interactor';
+import { TaskFollowersRepository } from '../repositories/task-followers-repository/task-followers.repository';
+import { CommentNotificationsRepositoryToken } from '../../adapter/providers';
+import { TaskFollowersRepositoryToken } from '../../adapter/providers/task-followers-repository.provider';
+import { CreateNewAssignationNotificationInteractor } from '../../application/use-cases/create-new-assignation-notification/create-new-assignation-notification.interactor';
+import { GetNewNotificationsInteractor } from '../../application/use-cases/get-new-notifications/get-new-notifications.interactor';
+import { CreateCommentNotificationsInteractor } from '../../application/use-cases/create-comment-notifications/create-comment-notifications.interactor';
+import { NotificationNotFound } from '../../domain';
+import { ReadNotificationDTO } from '../dtos';
+import { AuthenticatedRequest } from '../../../auth';
 
-describe('AppController', () => {
-  let controller: AppController;
+describe('NotificationsController', () => {
+  let controller: NotificationsController;
   const mockRepo = {} as CommentNotificationsRepository;
   mockRepo.readNotification = jest.fn();
 
@@ -30,7 +30,7 @@ describe('AppController', () => {
     {} as CreateNewAssignationNotificationInteractor;
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [AppController],
+      controllers: [NotificationsController],
       providers: [
         {
           provide: CommentNotificationsRepositoryToken,
@@ -58,7 +58,7 @@ describe('AppController', () => {
         },
       ],
     }).compile();
-    controller = app.get<AppController>(AppController);
+    controller = app.get<NotificationsController>(NotificationsController);
   });
 
   it('should be defined', () => {

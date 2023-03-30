@@ -1,5 +1,5 @@
 import { Provider } from '@nestjs/common';
-import { DBCommentNotificationsRepository } from '../repositories/comment-notifications-repository/comment-notifications.repository';
+import { DBCommentNotificationsRepository } from '../../infrastructure/repositories/comment-notifications-repository/comment-notifications.repository';
 
 export const CommentNotificationsRepositoryToken =
   'CommentNotificationsRepositoryToken';
