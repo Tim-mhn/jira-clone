@@ -1,0 +1,36 @@
+<div
+  class="relative flex flex-col w-screen h-screen items-start p-8 gap-16 bg-blue-900 text-gray-800"
+>
+  <div class="px-16 flex gap-32 items-center">
+    <img [src]="MOON_IMG" height="380" width="380" class="h-95 w-auto" />
+
+    <img [src]="ASTRONAUT_IMG" height="96" width="96" class="w-24 h-auto" />
+  </div>
+
+  <div class="px-24 flex w-full flex-row gap-12 justify-between">
+    <div class="flex flex-col font-bold text-blue-300 text-9xl">404</div>
+
+    <div class="flex flex-col items-start mt-8">
+      <div class="flex flex-col font-bold text-blue-300 text-7xl">Sorry :/</div>
+
+      <div class="text-lg font-light text-blue-100 mt-7">
+        We couldn't find this page
+      </div>
+
+      <div class="text-2xl font-light text-blue-100 mt-6">Go back to</div>
+
+      <div class="flex gap-4 mt-2">
+        <a routerLink="/auth/login">
+          <tim-chip [clickable]="true" color="primary-darker" size="2xl"
+            >Login</tim-chip
+          >
+        </a>
+        <a routerLink="/">
+          <tim-chip [clickable]="true" color="primary" size="2xl"
+            >Home</tim-chip
+          >
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
