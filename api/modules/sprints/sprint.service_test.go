@@ -23,7 +23,7 @@ func (repo *MockSprintRepository) CreateSprint(name string, projectID string) (s
 func (repo *MockSprintRepository) DeleteSprint(sprintID string) error {
 	return nil
 }
-func (repo *MockSprintRepository) UpdateSprint(sprintID SprintID, updateSprint _UpdateSprint) SprintError {
+func (repo *MockSprintRepository) UpdateSprint(sprintID SprintID, updateSprint UpdateSprint) SprintError {
 	args := repo.Called(sprintID, updateSprint)
 	return args.Get(0).(SprintError)
 }
@@ -44,7 +44,7 @@ func TestServiceUpdateSprint(t *testing.T) {
 
 		returnsNonBacklogSprintOnGetSprintInfo(mockRepo)
 
-		var updateSprint = _UpdateSprint{
+		var updateSprint = UpdateSprint{
 			Name: primitives.CreateStringPointer("new name"),
 		}
 
@@ -67,7 +67,7 @@ func TestServiceUpdateSprint(t *testing.T) {
 		mockRepo.On("UpdateSprint", mock.Anything, mock.Anything).Return(sprintNotFoundError)
 		newName := "sprint's new name"
 
-		updateSprint := _UpdateSprint{
+		updateSprint := UpdateSprint{
 			Name: primitives.CreateStringPointer(newName),
 		}
 		sprintID := "this-is-the-sprint-id"
@@ -92,7 +92,7 @@ func TestServiceUpdateSprint(t *testing.T) {
 		sprintID := "this-is-the-sprint-id"
 		newName := "sprint's new name"
 
-		updateSprint := _UpdateSprint{
+		updateSprint := UpdateSprint{
 			Name: &newName,
 		}
 		err := service.UpdateSprintIfNotBacklog(sprintID, updateSprint)

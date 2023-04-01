@@ -12,7 +12,7 @@ type MockTasksQueriesService struct {
 }
 
 func (mockService *MockTasksQueriesService) GetTasksGroupedBySprint(
-	projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.SprintListWithTasksDTO, error) {
+	projectID string, taskFilters tasks_models.TaskFilters) (tasks_dtos.BoardSprintsDTO, error) {
 
 	args := mockService.Called(projectID, taskFilters)
 
@@ -24,7 +24,7 @@ func (mockService *MockTasksQueriesService) GetTasksGroupedBySprint(
 		err = args.Get(1).(error)
 	}
 
-	return args.Get(0).(tasks_dtos.SprintListWithTasksDTO), err
+	return args.Get(0).(tasks_dtos.BoardSprintsDTO), err
 }
 
 func (mockService *MockTasksQueriesService) GetTaskByID(taskID string) (tasks_models.Task, tasks_errors.TaskError) {

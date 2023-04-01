@@ -4,14 +4,15 @@ import (
 	"database/sql"
 
 	"github.com/tim-mhn/figma-clone/modules/project"
+	sprint_points "github.com/tim-mhn/figma-clone/modules/sprints/points"
 )
 
 func RegisterEndpoints(singleProjectRoutes project.SingleProjectRoutes, conn *sql.DB) {
 
 	repo := NewSprintRepository(conn)
 
-	pointsRepo := NewSprintPointsRepository(conn)
-	service := NewSprintService(repo, *pointsRepo)
+	pointsRepo := sprint_points.NewSprintPointsRepository(conn)
+	service := NewSprintService(repo, pointsRepo)
 
 	controller := NewSprintsController(repo, *service)
 

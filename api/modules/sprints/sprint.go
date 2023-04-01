@@ -2,6 +2,8 @@ package sprints
 
 import (
 	"time"
+
+	sprint_points "github.com/tim-mhn/figma-clone/modules/sprints/points"
 )
 
 type SprintID = string
@@ -18,10 +20,10 @@ type SprintInfo struct {
 
 type Sprint struct {
 	SprintInfo
-	Points SprintPointsBreakdown
+	Points sprint_points.SprintPointsBreakdown
 }
 
-type _UpdateSprint struct {
+type UpdateSprint struct {
 	Name      *string    `json:"name,omitempty"`
 	StartDate *time.Time `json:"startDate,omitempty"`
 	EndDate   *time.Time `json:"endDate,omitempty"`

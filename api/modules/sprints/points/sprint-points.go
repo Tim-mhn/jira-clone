@@ -1,4 +1,4 @@
-package sprints
+package sprint_points
 
 type SprintPointsBreakdown struct {
 	New        int

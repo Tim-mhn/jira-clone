@@ -11,6 +11,7 @@ import (
 	notifications_api "github.com/tim-mhn/figma-clone/modules/notifications"
 	"github.com/tim-mhn/figma-clone/modules/project"
 	tasks_dtos "github.com/tim-mhn/figma-clone/modules/tasks/dtos"
+	"github.com/tim-mhn/figma-clone/modules/tasks/features/board"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
@@ -20,25 +21,25 @@ import (
 )
 
 type TasksController struct {
-	taskQueries      tasks_repositories.TaskQueriesRepository
-	sprintService    tasks_services.ITasksQueriesService
-	taskPositionRepo *tasks_repositories.TaskPositionRepository
-	taskCommands     tasks_services.TaskCommandsService
-	notificationsAPI notifications_api.NotificationsAPI
+	taskQueries         tasks_repositories.TaskQueriesRepository
+	taskPositionRepo    *tasks_repositories.TaskPositionRepository
+	taskCommands        tasks_services.TaskCommandsService
+	notificationsAPI    notifications_api.NotificationsAPI
+	boardSprintsService board.IBoardSprintsService
 }
 
-func NewTasksController(um *auth.UserRepository, projectQueries project.ProjectQueriesRepository, service tasks_services.ITasksQueriesService, taskRepo tasks_repositories.TaskQueriesRepository, tagsService tags.ITagsService, conn *sql.DB) *TasksController {
+func NewTasksController(um *auth.UserRepository, projectQueries project.ProjectQueriesRepository, taskRepo tasks_repositories.TaskQueriesRepository, tagsService tags.ITagsService, boardSprintsService board.IBoardSprintsService, conn *sql.DB) *TasksController {
 
 	taskCommandsRepo := tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn)
 
 	notificationsAPI := notifications_api.NewNotificationsAPI(projectQueries, taskRepo)
 
 	return &TasksController{
-		taskQueries:      tasks_repositories.NewTaskQueriesRepository(um, conn),
-		sprintService:    service,
-		taskCommands:     *tasks_services.NewTaskCommandsService(taskCommandsRepo, tagsService, notificationsAPI),
-		taskPositionRepo: tasks_repositories.NewTaskPositionRepository(conn),
-		notificationsAPI: notificationsAPI,
+		taskQueries:         tasks_repositories.NewTaskQueriesRepository(um, conn),
+		taskCommands:        *tasks_services.NewTaskCommandsService(taskCommandsRepo, tagsService, notificationsAPI),
+		taskPositionRepo:    tasks_repositories.NewTaskPositionRepository(conn),
+		notificationsAPI:    notificationsAPI,
+		boardSprintsService: boardSprintsService,
 	}
 }
 
@@ -134,14 +135,14 @@ func (tc *TasksController) GetTasksGroupedBySprintsOfProject(c *gin.Context) {
 
 	log.Printf(`[TasksController.GetTasksGroupedBySprintsOfProject] projectID=%s`, projectID)
 
-	sprintListWithTasksDTO, err := tc.sprintService.GetTasksGroupedBySprint(projectID, taskFilters)
+	boardSprintsDTO, err := tc.boardSprintsService.GetBoardSprints(projectID, taskFilters)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.IndentedJSON(http.StatusOK, sprintListWithTasksDTO)
+	c.IndentedJSON(http.StatusOK, boardSprintsDTO)
 }
 
 func buildTasksFiltersFromRequest(c *gin.Context) tasks_models.TaskFilters {

@@ -14,7 +14,7 @@ type SprintRepository interface {
 	GetActiveSprintsOfProject(projectID string) ([]SprintInfo, error)
 	CreateSprint(name string, projectID string) (string, error)
 	DeleteSprint(sprintID string) error
-	UpdateSprint(sprintID SprintID, updateSprint _UpdateSprint) SprintError
+	UpdateSprint(sprintID SprintID, updateSprint UpdateSprint) SprintError
 	UpdateCompletedStatus(sprintID string, isCompleted bool) error
 	GetSprintInfo(sprintID string) (SprintInfo, SprintError)
 }
@@ -171,7 +171,7 @@ func (sprintRepo SQLSprintRepository) DeleteSprint(sprintID string) error {
 	return nil
 }
 
-func (sprintRepo SQLSprintRepository) UpdateSprint(sprintID SprintID, updateSprint _UpdateSprint) SprintError {
+func (sprintRepo SQLSprintRepository) UpdateSprint(sprintID SprintID, updateSprint UpdateSprint) SprintError {
 
 	ApiToDBFields := map[string]string{
 		"name":      "name",

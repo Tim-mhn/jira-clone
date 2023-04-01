@@ -2,6 +2,8 @@ package sprints
 
 import (
 	"time"
+
+	sprint_points "github.com/tim-mhn/figma-clone/modules/sprints/points"
 )
 
 type ISprintService interface {
@@ -11,10 +13,10 @@ type ISprintService interface {
 
 type SprintService struct {
 	sprintRepo       SprintRepository
-	sprintPointsRepo SprintPointsRepository
+	sprintPointsRepo sprint_points.SprintPointsRepository
 }
 
-func NewSprintService(sprintRepo SprintRepository, sprintPointsRepo SprintPointsRepository) *SprintService {
+func NewSprintService(sprintRepo SprintRepository, sprintPointsRepo sprint_points.SprintPointsRepository) *SprintService {
 	return &SprintService{
 		sprintRepo:       sprintRepo,
 		sprintPointsRepo: sprintPointsRepo,
@@ -30,7 +32,7 @@ type HasBackLog interface {
 	CreatedOn() time.Time
 }
 
-func (service SprintService) UpdateSprintIfNotBacklog(sprintID string, updateSprint _UpdateSprint) SprintError {
+func (service SprintService) UpdateSprintIfNotBacklog(sprintID string, updateSprint UpdateSprint) SprintError {
 	sprintInfo, _ := service.sprintRepo.GetSprintInfo(sprintID)
 	if sprintInfo.IsBacklog {
 		return BuildSprintError(UnauthorizedToChangeBacklogSprint, nil)
@@ -45,10 +47,10 @@ func (service SprintService) GetSprintDetails(sprintID string) (Sprint, SprintEr
 		return Sprint{}, err
 	}
 
-	pointsBreakdown, err := service.sprintPointsRepo.GetSprintPointsBreakdown(sprintID)
+	pointsBreakdown, pointsBreakdownError := service.sprintPointsRepo.GetSprintPointsBreakdown(sprintID)
 
-	if err.HasError {
-		return Sprint{}, err
+	if pointsBreakdownError != nil {
+		return Sprint{}, BuildSprintError(OtherSprintError, pointsBreakdownError)
 	}
 
 	sprint := Sprint{

@@ -8,10 +8,11 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	"github.com/tim-mhn/figma-clone/modules/project"
 	"github.com/tim-mhn/figma-clone/modules/sprints"
+	sprint_points "github.com/tim-mhn/figma-clone/modules/sprints/points"
 	tasks_controllers "github.com/tim-mhn/figma-clone/modules/tasks/controllers"
+	"github.com/tim-mhn/figma-clone/modules/tasks/features/board"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
-	tasks_services "github.com/tim-mhn/figma-clone/modules/tasks/services"
 )
 
 type SingleTaskRoutes = *gin.RouterGroup
@@ -43,14 +44,15 @@ func buildControllers(conn *sql.DB) (*tasks_controllers.TasksController, *tasks_
 	projectQueriesRepo := project.NewProjectQueriesRepository(conn)
 	taskStatusRepo := tasks_repositories.NewTaskStatusRepository(conn)
 	sprintRepo := sprints.NewSprintRepository(conn)
-	sprintPointsRepo := sprints.NewSprintPointsRepository(conn)
+	sprintPointsRepo := sprint_points.NewSprintPointsRepository(conn)
 
 	taskQueriesRepo := tasks_repositories.NewTaskQueriesRepository(userRepo, conn)
-	tasksService := tasks_services.NewTasksQueriesService(taskQueriesRepo, sprintRepo, sprintPointsRepo)
 
 	tagsService := tags.NewTagsService(conn)
 
-	tasksController := tasks_controllers.NewTasksController(userRepo, projectQueriesRepo, tasksService, taskQueriesRepo, tagsService, conn)
+	boardSprintsService := board.NewBoardSprintsService(sprintRepo, taskQueriesRepo, sprintPointsRepo)
+
+	tasksController := tasks_controllers.NewTasksController(userRepo, projectQueriesRepo, taskQueriesRepo, tagsService, boardSprintsService, conn)
 	taskStatusController := tasks_controllers.NewTaskStatusController(taskStatusRepo)
 
 	return tasksController, taskStatusController

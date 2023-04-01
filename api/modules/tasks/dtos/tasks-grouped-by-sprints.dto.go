@@ -20,4 +20,4 @@ func (sprintWithTasksDTO SprintWithTasks) CreatedOn() time.Time {
 	return sprintWithTasksDTO.Sprint.CreationTime
 }
 
-type SprintListWithTasksDTO = []SprintWithTasks
+type BoardSprintsDTO = []SprintWithTasks

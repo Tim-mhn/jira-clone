@@ -1,21 +1,21 @@
-package sprints
+package sprint_points
 
 import (
 	"database/sql"
 	"fmt"
 )
 
-type SprintPointsRepository struct {
-	conn *sql.DB
-}
-
-func NewSprintPointsRepository(conn *sql.DB) *SprintPointsRepository {
-	return &SprintPointsRepository{
+func NewSprintPointsRepository(conn *sql.DB) SprintPointsRepository {
+	return &DBSprintsPointsRepository{
 		conn: conn,
 	}
 }
 
-func (sprintRepo SprintPointsRepository) GetSprintPointsBreakdown(sprintID string) (SprintPointsBreakdown, SprintError) {
+type DBSprintsPointsRepository struct {
+	conn *sql.DB
+}
+
+func (sprintRepo DBSprintsPointsRepository) GetSprintPointsBreakdown(sprintID string) (SprintPointsBreakdown, error) {
 	query := fmt.Sprintf(`SELECT   
 COALESCE(SUM(task.points) FILTER (WHERE task_status.is_new= TRUE),0) AS is_new_points,
 COALESCE(SUM(task.points) FILTER (WHERE task_status.is_new= FALSE AND task_status.is_done=FALSE),0) AS in_progress_points,
@@ -28,7 +28,7 @@ GROUP BY  task.sprint_id`, sprintID)
 	rows, err := sprintRepo.conn.Query(query)
 
 	if err != nil {
-		return SprintPointsBreakdown{}, BuildSprintError(OtherSprintError, err)
+		return SprintPointsBreakdown{}, err
 	}
 
 	defer rows.Close()
@@ -39,11 +39,11 @@ GROUP BY  task.sprint_id`, sprintID)
 		err := rows.Scan(&pointsBreakdown.New, &pointsBreakdown.InProgress, &pointsBreakdown.Done)
 
 		if err != nil {
-			return SprintPointsBreakdown{}, BuildSprintError(OtherSprintError, err)
+			return SprintPointsBreakdown{}, err
 		}
 
 	}
 
-	return pointsBreakdown, NoSprintError()
+	return pointsBreakdown, nil
 
 }

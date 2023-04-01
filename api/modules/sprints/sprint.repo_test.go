@@ -26,7 +26,7 @@ func TestUpdateSprint(t *testing.T) {
 
 		sprintID := "sprint-id"
 
-		updateSprint := _UpdateSprint{
+		updateSprint := UpdateSprint{
 			Name: primitives.CreateStringPointer("some new name"),
 		}
 
@@ -46,7 +46,7 @@ func TestUpdateSprint(t *testing.T) {
 		*endDate = time.Date(2024, 12, 10, 0, 0, 0, 0, time.UTC)
 
 		newName := "some new name"
-		updateSprint := _UpdateSprint{
+		updateSprint := UpdateSprint{
 			Name:      primitives.CreateStringPointer(newName),
 			StartDate: startDate,
 			EndDate:   endDate,
@@ -81,7 +81,7 @@ func TestUpdateSprint(t *testing.T) {
 		repo := NewSprintRepository(db)
 
 		newName := "some new name"
-		updateSprint := _UpdateSprint{
+		updateSprint := UpdateSprint{
 			Name: primitives.CreateStringPointer(newName),
 		}
 
@@ -110,7 +110,7 @@ func TestUpdateSprint(t *testing.T) {
 		var endDate *time.Time = new(time.Time)
 		*endDate = time.Date(2024, 12, 10, 0, 0, 0, 0, time.Local)
 
-		updateSprint := _UpdateSprint{
+		updateSprint := UpdateSprint{
 			StartDate: startDate,
 			EndDate:   endDate,
 		}
