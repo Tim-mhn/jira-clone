@@ -1,6 +1,5 @@
 import {
   BoardFilters,
-  ITask,
   ProjectMember,
   Task,
   Tasks,
@@ -202,6 +201,7 @@ function buildTask(props: {
     Assignee,
     Type,
     Title: '',
+    RawTitle: '',
     Status,
   });
 }

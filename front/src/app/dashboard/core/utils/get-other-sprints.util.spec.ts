@@ -37,6 +37,7 @@ describe('getSprintsTaskDoesNotBelongTo', () => {
       Sprint: sprintInfo,
       Status: null,
       Title: 'title',
+      RawTitle: 'title',
       Type: {
         Color: 'primary',
         Icon: 'check',
