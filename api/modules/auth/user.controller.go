@@ -8,10 +8,10 @@ import (
 )
 
 type userController struct {
-	um *UserRepository
+	um UserRepository
 }
 
-func NewUserController(um *UserRepository) *userController {
+func NewUserController(um UserRepository) *userController {
 	return &userController{
 		um: um,
 	}

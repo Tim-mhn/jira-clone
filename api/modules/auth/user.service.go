@@ -1,17 +1,17 @@
 package auth
 
 type UserService struct {
-	repo *UserRepository
+	repo UserRepository
 }
 
-func NewUserService(repo *UserRepository) *UserService {
+func NewUserService(repo UserRepository) *UserService {
 	return &UserService{
 		repo: repo,
 	}
 }
 func (service UserService) GetUserFromEmail(email string) (User, UsersError) {
 
-	userWithPwd, userError := service.repo.getUserInfoByEmail(email)
+	userWithPwd, userError := service.repo.GetUserInfoByEmail(email)
 
 	if userError.HasError {
 		return User{}, userError

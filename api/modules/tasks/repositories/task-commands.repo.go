@@ -19,12 +19,12 @@ type TaskCommandsRepository interface {
 	DeleteTask(taskID string) (DeleteTaskResponse, error)
 }
 type SQLTaskCommandsRepository struct {
-	um             *auth.UserRepository
+	um             auth.UserRepository
 	projectQueries project.ProjectQueriesRepository
 	conn           *sql.DB
 }
 
-func NewSQLTaskCommandsRepository(um *auth.UserRepository, projectQueries project.ProjectQueriesRepository, conn *sql.DB) *SQLTaskCommandsRepository {
+func NewSQLTaskCommandsRepository(um auth.UserRepository, projectQueries project.ProjectQueriesRepository, conn *sql.DB) *SQLTaskCommandsRepository {
 	taskRepo := SQLTaskCommandsRepository{}
 	taskRepo.um = um
 	taskRepo.projectQueries = projectQueries

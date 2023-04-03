@@ -8,18 +8,25 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserRepository struct {
+type UserRepository interface {
+	CreateUser(username string, email string, password string) (string, UsersError)
+	GetUserByID(userID string) (User, UsersError)
+	GetUserInfoByEmail(email string) (UserWithPassword, UsersError)
+	SignInByEmail(email string, password string) (User, UsersError)
+}
+
+type DBUserRepository struct {
 	conn *sql.DB
 }
 
-func NewUserRepository(conn *sql.DB) *UserRepository {
-	um := UserRepository{}
+func NewUserRepository(conn *sql.DB) UserRepository {
+	um := DBUserRepository{}
 	um.conn = conn
 
 	return &um
 }
 
-func (um *UserRepository) CreateUser(username string, email string, password string) (string, UsersError) {
+func (um *DBUserRepository) CreateUser(username string, email string, password string) (string, UsersError) {
 
 	hashedPwd, _ := hashAndSalt(password)
 	query := fmt.Sprintf(`INSERT INTO "user" (name, email, password) VALUES ('%s', '%s', '%s') RETURNING id, name, email;`, username, email, hashedPwd)
@@ -47,7 +54,7 @@ func (um *UserRepository) CreateUser(username string, email string, password str
 
 }
 
-func (um *UserRepository) GetUserByID(userID string) (User, UsersError) {
+func (um *DBUserRepository) GetUserByID(userID string) (User, UsersError) {
 
 	var user User
 	query := fmt.Sprintf(`SELECT id, name, email FROM "user" WHERE id='%s' LIMIT 1;`, userID)
@@ -76,7 +83,7 @@ func (um *UserRepository) GetUserByID(userID string) (User, UsersError) {
 
 }
 
-func (um *UserRepository) getUserInfoByEmail(email string) (UserWithPassword, UsersError) {
+func (um *DBUserRepository) GetUserInfoByEmail(email string) (UserWithPassword, UsersError) {
 
 	var userWithPwd UserWithPassword
 	query := fmt.Sprintf(`SELECT password, email, id, name FROM "user" WHERE email='%s' LIMIT 1;`, email)
@@ -103,9 +110,9 @@ func (um *UserRepository) getUserInfoByEmail(email string) (UserWithPassword, Us
 	return userWithPwd, NoUsersError()
 }
 
-func (um *UserRepository) SignInByEmail(email string, password string) (User, UsersError) {
+func (um *DBUserRepository) SignInByEmail(email string, password string) (User, UsersError) {
 
-	userWithPwd, userError := um.getUserInfoByEmail(email)
+	userWithPwd, userError := um.GetUserInfoByEmail(email)
 
 	if userError.HasError {
 		return User{}, userError

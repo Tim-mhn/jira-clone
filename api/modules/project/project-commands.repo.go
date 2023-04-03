@@ -10,12 +10,12 @@ import (
 )
 
 type ProjectCommandsRepository struct {
-	um      *auth.UserRepository
+	um      auth.UserRepository
 	queries ProjectQueriesRepository
 	conn    *sql.DB
 }
 
-func NewProjectCommandsRepository(um *auth.UserRepository, conn *sql.DB) *ProjectCommandsRepository {
+func NewProjectCommandsRepository(um auth.UserRepository, conn *sql.DB) *ProjectCommandsRepository {
 	return &ProjectCommandsRepository{
 		um:      um,
 		queries: NewProjectQueriesRepository(conn),

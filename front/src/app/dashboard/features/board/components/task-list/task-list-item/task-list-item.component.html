@@ -41,7 +41,7 @@
       *ngIf="!editTitleModeActive; else titleInputTempl"
       class="text-xs flex flex-grow gap-2 items-center"
     >
-      <span [innerHTML]="task.Title | sanitizeHtml"></span>
+      <span [innerHTML]="task.RawTitle | sanitizeHtml"></span>
 
       <tim-spinner *ngIf="requestState.isPending" size="xs"></tim-spinner>
 

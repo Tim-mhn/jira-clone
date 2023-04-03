@@ -99,7 +99,7 @@ export class TaskListItemComponent implements OnInit, OnChanges {
         })
       )
       .subscribe(() => {
-        this.task.updateTitle(newTitle);
+        this.task.updateRawTitle(newTitle);
       });
   }
 

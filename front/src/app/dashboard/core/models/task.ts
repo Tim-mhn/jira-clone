@@ -7,6 +7,7 @@ import { TaskType } from './task-type';
 export interface ITask {
   Id: string;
   Title: string;
+  RawTitle: string;
   Description: string;
   Status: TaskStatus;
   Points: number;
@@ -19,6 +20,7 @@ export interface ITask {
 export class Task implements ITask {
   Id: string;
   Title: string;
+  RawTitle: string;
   Description: string;
   Status: TaskStatus;
   Points: number;
@@ -41,6 +43,7 @@ export class Task implements ITask {
       Key,
       Sprint,
       Type,
+      RawTitle,
     } = props;
     this.Id = Id;
     this.Assignee = Assignee;
@@ -51,6 +54,7 @@ export class Task implements ITask {
     this.Key = Key;
     this.Sprint = Sprint;
     this.Type = Type;
+    this.RawTitle = RawTitle;
   }
 
   private _emitUpdate() {
@@ -72,8 +76,8 @@ export class Task implements ITask {
     this._emitUpdate();
   }
 
-  public updateTitle(newTitle: string) {
-    this.Title = newTitle;
+  public updateRawTitle(newTitle: string) {
+    this.RawTitle = newTitle;
     this._emitUpdate();
   }
 

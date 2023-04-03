@@ -64,7 +64,7 @@ export class TaskEditableTitleComponent implements OnInit, OnChanges {
         )
       )
       .subscribe(() => {
-        this.task.updateTitle(this.titleFc.value);
+        this.task.updateRawTitle(this.titleFc.value);
         // this.cdr.detectChanges();
       });
   }

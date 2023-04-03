@@ -11,7 +11,9 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	"github.com/tim-mhn/figma-clone/modules/sprints"
 	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
+	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
+	"github.com/tim-mhn/figma-clone/utils/primitives"
 )
 
 type TaskQueriesRepository interface {
@@ -19,13 +21,11 @@ type TaskQueriesRepository interface {
 	GetTaskByID(taskID string) (tasks_models.TaskWithSprint, tasks_errors.TaskError)
 }
 type DBTaskQueriesRepository struct {
-	um   *auth.UserRepository
 	conn *sql.DB
 }
 
-func NewTaskQueriesRepository(um *auth.UserRepository, conn *sql.DB) TaskQueriesRepository {
+func NewTaskQueriesRepository(conn *sql.DB) TaskQueriesRepository {
 	taskRepo := DBTaskQueriesRepository{}
-	taskRepo.um = um
 	taskRepo.conn = conn
 
 	return &taskRepo
@@ -85,7 +85,7 @@ func getTaskDataFromRow(rows *sql.Rows) (tasks_models.TaskWithSprint, error) {
 	var assigneeIdBytes []byte // handle potential null values
 
 	err := rows.Scan(
-		&task.Id, &task.Title, &task.Points, &task.Description,
+		&task.Id, &task.RawTitle, &task.Points, &task.Description,
 		&task.Status.Id, &task.Status.Label, &task.Status.Color,
 		&assigneeIdBytes, &assignee.Name, &assignee.Email, &task.Key,
 		&task.Type.Id, &task.Type.Label, &task.Type.Color, &task.Type.Icon,
@@ -95,6 +95,7 @@ func getTaskDataFromRow(rows *sql.Rows) (tasks_models.TaskWithSprint, error) {
 		return tasks_models.TaskWithSprint{}, err
 	}
 
+	task.Title = primitives.CreateStringPointer(tags.RemoveTagsFromTaskTitle(*task.RawTitle))
 	task.Assignee = assignee
 	assigneeIdString := string(assigneeIdBytes)
 	task.Assignee = auth.BuildUserWithIcon(assigneeIdString, task.Assignee.Name, task.Assignee.Email)

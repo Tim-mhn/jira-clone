@@ -28,14 +28,14 @@ type TasksController struct {
 	boardSprintsService board.IBoardSprintsService
 }
 
-func NewTasksController(um *auth.UserRepository, projectQueries project.ProjectQueriesRepository, taskRepo tasks_repositories.TaskQueriesRepository, tagsService tags.ITagsService, boardSprintsService board.IBoardSprintsService, conn *sql.DB) *TasksController {
+func NewTasksController(um auth.UserRepository, projectQueries project.ProjectQueriesRepository, taskRepo tasks_repositories.TaskQueriesRepository, tagsService tags.ITagsService, boardSprintsService board.IBoardSprintsService, conn *sql.DB) *TasksController {
 
 	taskCommandsRepo := tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn)
 
 	notificationsAPI := notifications_api.NewNotificationsAPI(projectQueries, taskRepo)
 
 	return &TasksController{
-		taskQueries:         tasks_repositories.NewTaskQueriesRepository(um, conn),
+		taskQueries:         tasks_repositories.NewTaskQueriesRepository(conn),
 		taskCommands:        *tasks_services.NewTaskCommandsService(taskCommandsRepo, tagsService, notificationsAPI),
 		taskPositionRepo:    tasks_repositories.NewTaskPositionRepository(conn),
 		notificationsAPI:    notificationsAPI,
