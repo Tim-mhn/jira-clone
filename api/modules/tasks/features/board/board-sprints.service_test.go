@@ -186,6 +186,63 @@ func TestGetBoardSprints(t *testing.T) {
 
 	})
 
+	t.Run("it should return an error if there is an error in all of the TaskRepo calls", func(t *testing.T) {
+		service, mockTasksRepo, mockSprintsRepo, mockSprintPointsRepo := setupServiceWithMockRepos()
+
+		sprints := []sprints.SprintInfo{
+			SPRINT_2, BACKLOG_SPRINT, SPRINT_1,
+		}
+
+		mockSprintsRepo.On("GetActiveSprintsOfProject", PROJECT_ID).Return(sprints, nil)
+		mockTasksRepo.On("GetSprintTasks", mock.Anything).Return([]tasks_models.TaskWithSprint{}, fmt.Errorf("error in TasksRepo.GetSprintTasks"))
+		mockSprintPointsRepo.On("GetSprintPointsBreakdown", mock.Anything).Return(sprint_points.SprintPointsBreakdown{}, nil)
+
+		_, err := service.GetBoardSprints(PROJECT_ID, tasks_models.TaskFilters{})
+
+		assert.NotNil(t, err, "it should return an error if there is an error in one of the TaskRepo calls")
+	})
+
+	t.Run("it should return an error if there is an error in just one of the TaskRepo calls", func(t *testing.T) {
+		service, mockTasksRepo, mockSprintsRepo, mockSprintPointsRepo := setupServiceWithMockRepos()
+
+		sprints := []sprints.SprintInfo{
+			SPRINT_2, BACKLOG_SPRINT, SPRINT_1,
+		}
+
+		mockSprintsRepo.On("GetActiveSprintsOfProject", PROJECT_ID).Return(sprints, nil)
+
+		mockTasksRepo.On("GetSprintTasks", BACKLOG_SPRINT.Id).Return([]tasks_models.TaskWithSprint{}, nil)
+		mockTasksRepo.On("GetSprintTasks", SPRINT_2_ID).Return([]tasks_models.TaskWithSprint{}, nil)
+
+		mockTasksRepo.On("GetSprintTasks", SPRINT_1.Id).Return([]tasks_models.TaskWithSprint{}, fmt.Errorf("error in GetSprintsTasks for sprint 1"))
+		mockSprintPointsRepo.On("GetSprintPointsBreakdown", mock.Anything).Return(sprint_points.SprintPointsBreakdown{}, nil)
+
+		_, err := service.GetBoardSprints(PROJECT_ID, tasks_models.TaskFilters{})
+
+		assert.NotNil(t, err, "it should return an error if there is an error in one of the TaskRepo calls")
+	})
+
+	t.Run("it should return an error if there is an error in just one of the SprintPointsRepo calls", func(t *testing.T) {
+		service, mockTasksRepo, mockSprintsRepo, mockSprintPointsRepo := setupServiceWithMockRepos()
+
+		sprints := []sprints.SprintInfo{
+			SPRINT_2, BACKLOG_SPRINT, SPRINT_1,
+		}
+
+		mockSprintsRepo.On("GetActiveSprintsOfProject", PROJECT_ID).Return(sprints, nil)
+
+		mockTasksRepo.On("GetSprintTasks", BACKLOG_SPRINT.Id).Return([]tasks_models.TaskWithSprint{}, nil)
+		mockTasksRepo.On("GetSprintTasks", SPRINT_2_ID).Return([]tasks_models.TaskWithSprint{}, nil)
+
+		mockTasksRepo.On("GetSprintTasks", SPRINT_1.Id).Return([]tasks_models.TaskWithSprint{}, nil)
+		mockSprintPointsRepo.On("GetSprintPointsBreakdown", SPRINT_1_ID).Return(sprint_points.SprintPointsBreakdown{}, fmt.Errorf("error in GetSprintPointsBreakdown "))
+		mockSprintPointsRepo.On("GetSprintPointsBreakdown", BACKLOG_SPRINT.Id).Return(sprint_points.SprintPointsBreakdown{}, nil)
+		mockSprintPointsRepo.On("GetSprintPointsBreakdown", SPRINT_2_ID).Return(sprint_points.SprintPointsBreakdown{}, nil)
+
+		_, err := service.GetBoardSprints(PROJECT_ID, tasks_models.TaskFilters{})
+
+		assert.NotNil(t, err, "it should return an error if there is an error in one of the TaskRepo calls")
+	})
 }
 
 func setupServiceWithMockRepos() (BoardSprintsService, *tasks_repositories.MockTaskQueriesRepository, *MockSprintsRepo, *MockSprintPointsRepository) {

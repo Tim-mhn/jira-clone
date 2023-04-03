@@ -35,52 +35,81 @@ func (service BoardSprintsService) GetBoardSprints(projectID string, taskFilters
 	var wg sync.WaitGroup
 	wg.Add(len(activeSprints))
 
-	var boardSprints BoardSprints
-
+	errorsChan := make(chan error, len(activeSprints))
 	sprintWithTasksChan := make(chan SprintWithTasks, len(activeSprints))
 
 	for _, sprint := range activeSprints {
 		go func(sprintInfo sprints.SprintInfo, c chan SprintWithTasks) {
 
-			sprintWithTasks := service.buildSprintWithTasks(sprintInfo, taskFilters)
+			sprintWithTasks, err := service.buildSprintWithTasks(sprintInfo, taskFilters)
+			errorsChan <- err
 			c <- sprintWithTasks
 			wg.Done()
 		}(sprint, sprintWithTasksChan)
 	}
 
 	wg.Wait()
+	close(errorsChan)
 	close(sprintWithTasksChan)
+
+	sprintTasksError := retrieveErrorFromErrorChannel(errorsChan)
+	boardSprints := buildSprintWithTasksListFromChannel(sprintWithTasksChan)
+
+	sortedBoardSprints := sortSprintsMostRecentFirst(boardSprints)
+
+	return sortedBoardSprints, sprintTasksError
+}
+
+func retrieveErrorFromErrorChannel(errorChan chan error) error {
+	for err := range errorChan {
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func buildSprintWithTasksListFromChannel(sprintWithTasksChan chan SprintWithTasks) BoardSprints {
+	var boardSprints BoardSprints
 
 	for sprintWithTasks := range sprintWithTasksChan {
 		boardSprints = append(boardSprints, sprintWithTasks)
 	}
 
-	sortedBoardSprints := sortSprintsMostRecentFirst(boardSprints)
-
-	return sortedBoardSprints, nil
+	return boardSprints
 }
 
-// todo: ERROR HANDLING
-func (service BoardSprintsService) buildSprintWithTasks(sprintInfo sprints.SprintInfo, taskFilters tasks_models.TaskFilters) SprintWithTasks {
+func (service BoardSprintsService) buildSprintWithTasks(sprintInfo sprints.SprintInfo, taskFilters tasks_models.TaskFilters) (SprintWithTasks, error) {
 
 	sprintTasksChan := make(chan []tasks_models.TaskWithSprint)
 	pointsChan := make(chan sprint_points.SprintPointsBreakdown)
+	errorChan := make(chan error, 2)
+	var wg sync.WaitGroup
+	wg.Add(2)
 
 	go func() {
-		sprintTasks, _ := service.tasksRepo.GetSprintTasks(sprintInfo.Id, taskFilters)
+		sprintTasks, tasksError := service.tasksRepo.GetSprintTasks(sprintInfo.Id, taskFilters)
 		sprintTasksChan <- sprintTasks
+		errorChan <- tasksError
+		wg.Done()
 		close(sprintTasksChan)
 
 	}()
 
 	go func() {
-		pointsBreakdown, _ := service.sprintPointsRepo.GetSprintPointsBreakdown(sprintInfo.Id)
+		pointsBreakdown, pointsError := service.sprintPointsRepo.GetSprintPointsBreakdown(sprintInfo.Id)
 		pointsChan <- pointsBreakdown
+		errorChan <- pointsError
+		wg.Done()
 		close(pointsChan)
 	}()
 
 	sprintTasks := <-sprintTasksChan
 	pointsBreakdown := <-pointsChan
+	wg.Wait()
+	close(errorChan)
+	err := retrieveErrorFromErrorChannel(errorChan)
 
 	return SprintWithTasks{
 		Sprint: sprints.Sprint{
@@ -88,7 +117,7 @@ func (service BoardSprintsService) buildSprintWithTasks(sprintInfo sprints.Sprin
 			Points:     pointsBreakdown,
 		},
 		Tasks: sprintTasks,
-	}
+	}, err
 }
 
 func emptyBoardSprintsWithError(err error) (BoardSprints, error) {
