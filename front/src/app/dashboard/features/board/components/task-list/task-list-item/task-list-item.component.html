@@ -66,10 +66,10 @@
           [formControl]="titleFc"
           [noLineBreak]="true"
           (click)="stopPropagation($event)"
-          (blur)="updateTitleIfNoOptionIsClicked()"
+          (blur)="updateTitleIfBlurTriggeredByOutsideClick()"
           (escaped)="cancelEditMode()"
           [timHashtagAutocomplete]="hashtagsAutocomplete"
-          (optionClicked)="markOptionsHaveBeenClicked()"
+          (optionClicked)="markOptionHasBeenClicked()"
         ></tim-html-input>
 
         <tim-hashtag-autocomplete
@@ -95,7 +95,12 @@
             tim-faint-button
             color="destructive"
             size="xs"
-            (click)="cancelEditMode()"
+            (click)="
+              $event.stopImmediatePropagation();
+              $event.stopPropagation();
+              $event.preventDefault();
+              cancelEditMode()
+            "
           >
             X
           </button>

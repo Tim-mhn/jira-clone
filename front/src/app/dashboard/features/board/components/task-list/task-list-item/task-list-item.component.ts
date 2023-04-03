@@ -51,12 +51,7 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   tagTemplate$ = this.tagsController.getTagTemplateFn();
   tags$ = this.tagsController.getProjectTags();
 
-  ngOnInit(): void {
-    // setTimeout(() => {
-    //   this.show = true;
-    //   this.cdr.detectChanges();
-    // }, 500);
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(ch: TypedChanges<TaskListItemComponent>) {
     if (ch.task && this.task) {
@@ -69,16 +64,27 @@ export class TaskListItemComponent implements OnInit, OnChanges {
     this.tagsController.createTagAndUpdateList(newTag).subscribe();
   }
 
-  markOptionsHaveBeenClicked() {
+  markOptionHasBeenClicked() {
     this.optionHasBeenClicked = true;
   }
   optionHasBeenClicked = false;
-  updateTitleIfNoOptionIsClicked() {
+  updateTitleIfBlurTriggeredByOutsideClick() {
     const delay = 200;
+
     setTimeout(() => {
-      if (this.optionHasBeenClicked) this.optionHasBeenClicked = false;
+      if (this.blurTriggeredByHashtagOptionClick)
+        this._ignoreBlurAndResetOptionClicked();
+      else if (this.blurTriggeredByCancelButton)
+        this.ignoreBlurAndResetCancelHasBeenClicked();
       else this.updateTitle();
     }, delay);
+  }
+
+  private get blurTriggeredByHashtagOptionClick() {
+    return this.optionHasBeenClicked;
+  }
+  private _ignoreBlurAndResetOptionClicked() {
+    this.optionHasBeenClicked = false;
   }
 
   updateTitle(event?: Event) {
@@ -86,7 +92,7 @@ export class TaskListItemComponent implements OnInit, OnChanges {
     this.cancelEditMode({ resetControlValue: false });
     const newTitle = this.titleFc.value;
     this.controller
-      .updateTask(
+      .updateTaskTitle(
         {
           taskId: this.task.Id,
           title: newTitle,
@@ -98,8 +104,8 @@ export class TaskListItemComponent implements OnInit, OnChanges {
           this.cdr.detectChanges();
         })
       )
-      .subscribe(() => {
-        this.task.updateRawTitle(newTitle);
+      .subscribe(({ Title, RawTitle }) => {
+        this.task.updateTitle({ Title, RawTitle });
       });
   }
 
@@ -122,8 +128,18 @@ export class TaskListItemComponent implements OnInit, OnChanges {
   cancelEditMode(
     opts: { resetControlValue: boolean } = { resetControlValue: true }
   ) {
+    this.cancelHasBeenClicked = true;
     if (opts?.resetControlValue)
       this.titleFc.setValue(this.task.Title, { emitEvent: false });
     this.editTitleModeActive = false;
+  }
+
+  cancelHasBeenClicked = false;
+  private get blurTriggeredByCancelButton() {
+    return this.cancelHasBeenClicked;
+  }
+
+  ignoreBlurAndResetCancelHasBeenClicked() {
+    this.cancelHasBeenClicked = false;
   }
 }

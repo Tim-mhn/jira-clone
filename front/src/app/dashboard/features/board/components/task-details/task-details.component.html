@@ -30,8 +30,22 @@
         ></button>
       </div>
     </div>
-    <jira-task-editable-title [task]="task" [title]="task?.Title">
+    <jira-task-editable-title
+      [task]="task"
+      [title]="task?.Title"
+      [tags]="tags$ | async"
+      [tagTemplate]="tagTemplate$ | async"
+    >
     </jira-task-editable-title>
+
+    <tim-hashtag-autocomplete
+      #hashtagsAutocomplete
+      [tagTemplate]="tagTemplate$ | async"
+    >
+      <tim-hashtag-option *ngFor="let tag of tags$ | async" [value]="tag">
+        {{ tag }}
+      </tim-hashtag-option>
+    </tim-hashtag-autocomplete>
 
     <div class="flex flex-grow items-center gap-4">
       <jira-task-status-selector

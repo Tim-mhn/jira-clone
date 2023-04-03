@@ -3,7 +3,7 @@
 @tailwind components;
 
 .task-tag {
-  @apply bg-blue-200 text-blue-600 font-medium  border border-gray-100 rounded-sm px-1 py-0.5 text-xs font-medium;
+  @apply bg-blue-200 text-blue-600 font-medium  border border-gray-100 rounded-sm px-1 py-0.5 h-fit text-xs font-medium;
 }
 
 @tailwind utilities;

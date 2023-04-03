@@ -15,7 +15,7 @@ func TestTagTemplate(t *testing.T) {
 
 		htmlElement := strings.Replace(tagTemplate, "{{TAG}}", tag, 1)
 
-		expectedHtmlElement := `<span class="task-tag">#design</span>`
+		expectedHtmlElement := `<span class="task-tag" contenteditable="false">#design</span>`
 		assert.Equal(t, expectedHtmlElement, htmlElement)
 	})
 }

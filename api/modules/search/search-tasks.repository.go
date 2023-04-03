@@ -6,6 +6,7 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/tim-mhn/figma-clone/database"
+	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 )
 
 type DBSearchTasksRepository struct {
@@ -47,7 +48,7 @@ func getTaskInfoListFromSQLRows(rows *sql.Rows) ([]TaskInfo, error) {
 		var task TaskInfo
 		var projectInfo ProjectInfo
 		err := rows.Scan(&task.Id, &task.Title, &task.Points, &task.Description, &task.Key, &projectInfo.Name, &projectInfo.Id)
-
+		task.Title = tags.RemoveTagsFromTaskTitle(task.Title)
 		if err != nil {
 			return []TaskInfo{}, err
 		}

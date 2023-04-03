@@ -8,9 +8,10 @@ import {
 } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { TypedChanges } from '@tim-mhn/common/extra-types';
-import { RequestState, RequestStateController } from '@tim-mhn/common/http';
+import { RequestState } from '@tim-mhn/common/http';
 import { ICONS } from '@tim-mhn/common/icons';
 import { TypedFormBuilder } from '@tim-mhn/common/typed-forms';
+import { TagTemplateBuilder } from '@tim-mhn/ng-forms/autocomplete';
 import {
   catchError,
   distinctUntilChanged,
@@ -20,6 +21,7 @@ import {
 } from 'rxjs';
 import { UpdateTaskController } from '../../../../../core/controllers/update-task.controller';
 import { Task } from '../../../../../core/models';
+import { TaskTags } from '../../../../tags';
 
 @Component({
   selector: 'jira-task-editable-title',
@@ -32,14 +34,22 @@ export class TaskEditableTitleComponent implements OnInit, OnChanges {
 
   @Input() task: Task;
   @Input() title: string;
+  @Input() tags: TaskTags;
+  @Input() tagTemplate: TagTemplateBuilder;
 
   titleFc = this.tfb.control('', Validators.required);
+
+  focused = false;
+  onClick() {
+    if (this.focused) return;
+    this.focused = true;
+    this.titleFc.setValue(this.task.RawTitle, { emitEvent: false });
+  }
 
   requestState = new RequestState();
   constructor(
     private tfb: TypedFormBuilder,
     private controller: UpdateTaskController,
-    private requestStateController: RequestStateController,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -49,7 +59,7 @@ export class TaskEditableTitleComponent implements OnInit, OnChanges {
 
   ngOnChanges(ch: TypedChanges<TaskEditableTitleComponent>) {
     if (ch.title) {
-      this.titleFc.setValue(this.task.Title, { emitEvent: false });
+      this.titleFc.setValue(this.task.RawTitle, { emitEvent: false });
     }
   }
 
@@ -63,14 +73,14 @@ export class TaskEditableTitleComponent implements OnInit, OnChanges {
           this.updateTaskTitle(newTitle).pipe(catchError(() => EMPTY))
         )
       )
-      .subscribe(() => {
-        this.task.updateRawTitle(this.titleFc.value);
-        // this.cdr.detectChanges();
+      .subscribe(({ Title, RawTitle }) => {
+        this.task.updateTitle({ Title, RawTitle });
+        this.cdr.detectChanges();
       });
   }
 
   updateTaskTitle(newTitle: string) {
-    return this.controller.updateTask(
+    return this.controller.updateTaskTitle(
       {
         taskId: this.task.Id,
         title: newTitle,

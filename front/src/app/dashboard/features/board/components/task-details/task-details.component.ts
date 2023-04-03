@@ -9,6 +9,7 @@ import {
 import { ProjectMember, SprintInfo, Task } from '../../../../core/models';
 import { Project } from '../../../../core/models/project';
 import { buildTaskPageRoute } from '../../../browse/utils/build-browse-page-routes.util';
+import { TaskTagsController } from '../../../tags';
 
 @Component({
   selector: 'jira-task-details',
@@ -22,11 +23,15 @@ export class TaskDetailsComponent implements OnInit, OnChanges {
   @Input() withCloseIcon: boolean;
 
   @Output() crossClicked = new EventEmitter<void>();
-  constructor() {}
+  constructor(private tagsController: TaskTagsController) {}
 
   ngOnInit(): void {}
 
   taskPageRoute: string[] = [];
+
+  tagTemplate$ = this.tagsController.getTagTemplateFn();
+  tags$ = this.tagsController.getProjectTags();
+
   ngOnChanges(): void {
     if (!this.task || !this.project) return;
 

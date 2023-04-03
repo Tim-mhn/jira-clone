@@ -9,6 +9,7 @@ import { TimEditableHeaderInputModule } from '@tim-mhn/ng-forms/editable-header-
 import { TimUISpinnerModule } from '@tim-mhn/ng-ui/spinner';
 import { RouterModule } from '@angular/router';
 import { TimUILinkModule } from '@tim-mhn/ng-ui/link';
+import { TimAutocompleteModule } from '@tim-mhn/ng-forms/autocomplete';
 import { TaskDetailsComponent } from './task-details.component';
 import { TaskEditableTitleComponent } from './task-editable-title/task-editable-title.component';
 import { TaskDetailsEditableDescriptionComponent } from './task-details-editable-description/task-details-editable-description.component';
@@ -19,6 +20,7 @@ import { TaskSideActionsModule } from '../../../../core/components/task-side-act
 import { TaskSprintModule } from '../../../../core/components/task-sprint/task-sprint.module';
 import { TaskTypeModule } from '../../../../core/components/task-type/task-type.module';
 import { TaskCommentsModule } from '../../../comments/module';
+import { TagsModule } from '../../../tags';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,8 @@ import { TaskCommentsModule } from '../../../comments/module';
     TaskSprintModule,
     TaskTypeModule,
     TaskCommentsModule,
+    TimAutocompleteModule,
+    TagsModule,
   ],
   exports: [TaskDetailsComponent],
 })

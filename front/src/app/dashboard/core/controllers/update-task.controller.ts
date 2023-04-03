@@ -1,6 +1,6 @@
 import { Injectable, Optional } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import { Observable, of, switchMap } from 'rxjs';
+import { Observable, map, of, switchMap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
 import { GetTasksOfBoardController } from '../../features/board/controllers/get-board-tasks.controller';
 import { TaskCommandsAPI } from '../apis/task-commands.api';
@@ -9,6 +9,7 @@ import { PatchTaskDTO } from '../dtos';
 import { SprintInfo, Task, TaskType } from '../models';
 import { TaskStatus } from '../models/task-status';
 import { CurrentProjectService } from '../state-services/current-project.service';
+import { GetTasksAPI } from '../apis/get-tasks.api';
 
 @Injectable({ providedIn: DashboardCoreProvidersModule })
 export class UpdateTaskController {
@@ -17,6 +18,7 @@ export class UpdateTaskController {
     private api: TaskCommandsAPI,
     private currentProjectService: CurrentProjectService,
     private snackbarFeedback: SnackbarFeedbackService,
+    private taskQueriesAPI: GetTasksAPI,
     @Optional() private tasksOfBoardController: GetTasksOfBoardController
   ) {}
 
@@ -35,6 +37,26 @@ export class UpdateTaskController {
         this.requestStateController.handleRequest(requestState),
         this.snackbarFeedback.showFeedbackSnackbars()
       );
+  }
+
+  updateTaskTitle(
+    taskWithNewTitle: Pick<PatchTaskDTO, 'title' | 'taskId'>,
+    requestState: RequestState
+  ): Observable<{ Title: string; RawTitle: string }> {
+    const projectId = this._currentProjectId;
+    const { taskId } = taskWithNewTitle;
+    const dto: PatchTaskDTO = {
+      ...taskWithNewTitle,
+      projectId,
+    };
+    return this.api.updateTask(dto).pipe(
+      switchMap(() => this.taskQueriesAPI.getSingleTask({ taskId, projectId })),
+      map(({ Title, RawTitle }) => ({
+        Title,
+        RawTitle,
+      })),
+      this.requestStateController.handleRequest(requestState)
+    );
   }
 
   updateTaskPoints(taskId: string, newPoints: number) {

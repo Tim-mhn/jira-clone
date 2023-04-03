@@ -76,8 +76,10 @@ export class Task implements ITask {
     this._emitUpdate();
   }
 
-  public updateRawTitle(newTitle: string) {
-    this.RawTitle = newTitle;
+  public updateTitle(titles: { RawTitle: string; Title: string }) {
+    const { RawTitle, Title } = titles;
+    this.RawTitle = RawTitle;
+    this.Title = Title;
     this._emitUpdate();
   }
 

@@ -2,7 +2,15 @@
   <tim-editable-header-input
     [formControl]="titleFc"
     placeholder="Title"
+    mode="html"
+    [timHashtagAutocomplete]="hashtagsAutocomplete"
   ></tim-editable-header-input>
+
+  <tim-hashtag-autocomplete #hashtagsAutocomplete [tagTemplate]="tagTemplate">
+    <tim-hashtag-option *ngFor="let tag of tags" [value]="tag">
+      {{ tag }}
+    </tim-hashtag-option>
+  </tim-hashtag-autocomplete>
 
   <div class="flex pt-2">
     <tim-spinner
