@@ -29,7 +29,7 @@ func (service TagsService) ExtractAndUpdateTagsOfTask(taskID string, htmlTitle s
 	* - tags := extractTags(title)
 	* - repo.updateTaskTags(id, tags)
 	 */
-	tags := extractTagsFromHTMLTitle(htmlTitle)
+	tags := ExtractTagsFromHTMLTitle(htmlTitle)
 	return service.repo.UpdateTaskTags(taskID, tags)
 
 }

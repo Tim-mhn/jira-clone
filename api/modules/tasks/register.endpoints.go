@@ -12,6 +12,7 @@ import (
 	tasks_controllers "github.com/tim-mhn/figma-clone/modules/tasks/controllers"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/board"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
+	tasks_queries "github.com/tim-mhn/figma-clone/modules/tasks/queries"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
 )
 
@@ -50,7 +51,9 @@ func buildControllers(conn *sql.DB) (*tasks_controllers.TasksController, *tasks_
 
 	tagsService := tags.NewTagsService(conn)
 
-	boardSprintsService := board.NewBoardSprintsService(sprintRepo, taskQueriesRepo, sprintPointsRepo)
+	tasksQueriesService := tasks_queries.NewTasksQueriesService(tasks_queries.NewTaskQueriesRepository(conn))
+
+	boardSprintsService := board.NewBoardSprintsService(sprintRepo, taskQueriesRepo, sprintPointsRepo, tasksQueriesService)
 
 	tasksController := tasks_controllers.NewTasksController(userRepo, projectQueriesRepo, taskQueriesRepo, tagsService, boardSprintsService, conn)
 	taskStatusController := tasks_controllers.NewTaskStatusController(taskStatusRepo)

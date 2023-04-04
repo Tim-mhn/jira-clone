@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 import { User } from '../../../auth/models/user';
-import { SprintInfo } from './sprint';
+import { SprintIdName, SprintInfo } from './sprint';
 import { TaskStatus } from './task-status';
 import { TaskType } from './task-type';
 
@@ -13,7 +13,7 @@ export interface ITask {
   Points: number;
   Assignee: User;
   Key: string;
-  Sprint: SprintInfo;
+  Sprint: SprintIdName;
   Type: TaskType;
 }
 
@@ -26,7 +26,7 @@ export class Task implements ITask {
   Points: number;
   Assignee: User;
   Key: string;
-  Sprint: SprintInfo;
+  Sprint: SprintIdName;
   Type: TaskType;
 
   private _update$ = new Subject<void>();

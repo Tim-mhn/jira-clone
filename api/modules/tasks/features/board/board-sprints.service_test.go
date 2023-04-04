@@ -10,7 +10,7 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/sprints"
 	sprint_points "github.com/tim-mhn/figma-clone/modules/sprints/points"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
-	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
+	tasks_queries "github.com/tim-mhn/figma-clone/modules/tasks/queries"
 	"github.com/tim-mhn/figma-clone/utils/arrays"
 	"github.com/tim-mhn/figma-clone/utils/primitives"
 	tests_utils "github.com/tim-mhn/figma-clone/utils/tests"
@@ -49,7 +49,7 @@ func TestGetBoardSprints(t *testing.T) {
 		service, mockTasksRepo, mockSprintsRepo, mockSprintPointsRepo := setupServiceWithMockRepos()
 
 		mockSprintsRepo.On("GetActiveSprintsOfProject", PROJECT_ID).Return(MOCK_SPRINTS, nil)
-		mockTasksRepo.On("GetSprintTasks", mock.Anything).Return([]tasks_models.TaskWithSprint{}, nil)
+		mockTasksRepo.On("GetSprintTasks", mock.Anything).Return([]tasks_models.Task{}, nil)
 		mockSprintPointsRepo.On("GetSprintPointsBreakdown", mock.Anything).Return(sprint_points.SprintPointsBreakdown{}, nil)
 		boardSprints, _ := service.GetBoardSprints(PROJECT_ID, tasks_models.TaskFilters{})
 
@@ -60,7 +60,7 @@ func TestGetBoardSprints(t *testing.T) {
 		service, mockTasksRepo, mockSprintsRepo, mockSprintPointsRepo := setupServiceWithMockRepos()
 
 		mockSprintsRepo.On("GetActiveSprintsOfProject", PROJECT_ID).Return(MOCK_SPRINTS, fmt.Errorf("error in GetActiveSprintsOfProject"))
-		mockTasksRepo.On("GetSprintTasks", mock.Anything).Return([]tasks_models.TaskWithSprint{}, nil)
+		mockTasksRepo.On("GetSprintTasks", mock.Anything).Return([]tasks_models.Task{}, nil)
 		mockSprintPointsRepo.On("GetSprintPointsBreakdown", mock.Anything).Return(sprint_points.SprintPointsBreakdown{}, nil)
 
 		_, err := service.GetBoardSprints(PROJECT_ID, tasks_models.TaskFilters{})
@@ -74,36 +74,24 @@ func TestGetBoardSprints(t *testing.T) {
 		mockSprintsRepo.On("GetActiveSprintsOfProject", PROJECT_ID).Return(MOCK_SPRINTS, nil)
 		mockSprintPointsRepo.On("GetSprintPointsBreakdown", mock.Anything).Return(sprint_points.SprintPointsBreakdown{}, nil)
 
-		tasksOfSprint1 := []tasks_models.TaskWithSprint{
+		tasksOfSprint1 := []tasks_models.Task{
 			{
-				Sprint: SPRINT_1,
-				Task: tasks_models.Task{
-					Id:    primitives.CreateStringPointer("task-a"),
-					Title: primitives.CreateStringPointer("task a "),
-				},
+				Id:    primitives.CreateStringPointer("task-a"),
+				Title: primitives.CreateStringPointer("task a "),
 			},
 			{
-				Sprint: SPRINT_1,
-				Task: tasks_models.Task{
-					Id:    primitives.CreateStringPointer("task-b"),
-					Title: primitives.CreateStringPointer("task b "),
-				},
+				Id:    primitives.CreateStringPointer("task-b"),
+				Title: primitives.CreateStringPointer("task b "),
 			},
 			{
-				Sprint: SPRINT_1,
-				Task: tasks_models.Task{
-					Id:    primitives.CreateStringPointer("task-c"),
-					Title: primitives.CreateStringPointer("task c "),
-				},
+				Id:    primitives.CreateStringPointer("task-c"),
+				Title: primitives.CreateStringPointer("task c "),
 			},
 		}
 
-		tasksOfSprint2 := []tasks_models.TaskWithSprint{
-			{Sprint: SPRINT_2,
-				Task: tasks_models.Task{
-					Id:    primitives.CreateStringPointer("task-d"),
-					Title: primitives.CreateStringPointer("task d"),
-				},
+		tasksOfSprint2 := []tasks_models.Task{
+			{Id: primitives.CreateStringPointer("task-d"),
+				Title: primitives.CreateStringPointer("task d"),
 			},
 		}
 
@@ -113,9 +101,7 @@ func TestGetBoardSprints(t *testing.T) {
 		boardSprints, _ := service.GetBoardSprints(PROJECT_ID, tasks_models.TaskFilters{})
 
 		tasksListOfList := arrays.MapArray(boardSprints, func(s SprintWithTasks) []tasks_models.Task {
-			return arrays.MapArray(s.Tasks, func(sWithSprint tasks_models.TaskWithSprint) tasks_models.Task {
-				return sWithSprint.Task
-			})
+			return s.Tasks
 		})
 
 		allTasks := arrays.Flatten(tasksListOfList)
@@ -142,7 +128,7 @@ func TestGetBoardSprints(t *testing.T) {
 		mockSprintPointsRepo.On("GetSprintPointsBreakdown", SPRINT_1_ID).Return(sprint1PointsBreakdown, nil)
 		mockSprintPointsRepo.On("GetSprintPointsBreakdown", SPRINT_2_ID).Return(sprint2PointsBreakdown, nil)
 
-		mockTasksRepo.On("GetSprintTasks", mock.Anything).Return([]tasks_models.TaskWithSprint{}, nil)
+		mockTasksRepo.On("GetSprintTasks", mock.Anything).Return([]tasks_models.Task{}, nil)
 
 		boardSprints, _ := service.GetBoardSprints(PROJECT_ID, tasks_models.TaskFilters{})
 
@@ -171,7 +157,7 @@ func TestGetBoardSprints(t *testing.T) {
 		}
 
 		mockSprintsRepo.On("GetActiveSprintsOfProject", PROJECT_ID).Return(sprints, nil)
-		mockTasksRepo.On("GetSprintTasks", mock.Anything).Return([]tasks_models.TaskWithSprint{}, nil)
+		mockTasksRepo.On("GetSprintTasks", mock.Anything).Return([]tasks_models.Task{}, nil)
 		mockSprintPointsRepo.On("GetSprintPointsBreakdown", mock.Anything).Return(sprint_points.SprintPointsBreakdown{}, nil)
 
 		boardSprints, _ := service.GetBoardSprints(PROJECT_ID, tasks_models.TaskFilters{})
@@ -194,7 +180,7 @@ func TestGetBoardSprints(t *testing.T) {
 		}
 
 		mockSprintsRepo.On("GetActiveSprintsOfProject", PROJECT_ID).Return(sprints, nil)
-		mockTasksRepo.On("GetSprintTasks", mock.Anything).Return([]tasks_models.TaskWithSprint{}, fmt.Errorf("error in TasksRepo.GetSprintTasks"))
+		mockTasksRepo.On("GetSprintTasks", mock.Anything).Return([]tasks_models.Task{}, fmt.Errorf("error in TasksRepo.GetSprintTasks"))
 		mockSprintPointsRepo.On("GetSprintPointsBreakdown", mock.Anything).Return(sprint_points.SprintPointsBreakdown{}, nil)
 
 		_, err := service.GetBoardSprints(PROJECT_ID, tasks_models.TaskFilters{})
@@ -211,10 +197,10 @@ func TestGetBoardSprints(t *testing.T) {
 
 		mockSprintsRepo.On("GetActiveSprintsOfProject", PROJECT_ID).Return(sprints, nil)
 
-		mockTasksRepo.On("GetSprintTasks", BACKLOG_SPRINT.Id).Return([]tasks_models.TaskWithSprint{}, nil)
-		mockTasksRepo.On("GetSprintTasks", SPRINT_2_ID).Return([]tasks_models.TaskWithSprint{}, nil)
+		mockTasksRepo.On("GetSprintTasks", BACKLOG_SPRINT.Id).Return([]tasks_models.Task{}, nil)
+		mockTasksRepo.On("GetSprintTasks", SPRINT_2_ID).Return([]tasks_models.Task{}, nil)
 
-		mockTasksRepo.On("GetSprintTasks", SPRINT_1.Id).Return([]tasks_models.TaskWithSprint{}, fmt.Errorf("error in GetSprintsTasks for sprint 1"))
+		mockTasksRepo.On("GetSprintTasks", SPRINT_1.Id).Return([]tasks_models.Task{}, fmt.Errorf("error in GetSprintsTasks for sprint 1"))
 		mockSprintPointsRepo.On("GetSprintPointsBreakdown", mock.Anything).Return(sprint_points.SprintPointsBreakdown{}, nil)
 
 		_, err := service.GetBoardSprints(PROJECT_ID, tasks_models.TaskFilters{})
@@ -231,10 +217,10 @@ func TestGetBoardSprints(t *testing.T) {
 
 		mockSprintsRepo.On("GetActiveSprintsOfProject", PROJECT_ID).Return(sprints, nil)
 
-		mockTasksRepo.On("GetSprintTasks", BACKLOG_SPRINT.Id).Return([]tasks_models.TaskWithSprint{}, nil)
-		mockTasksRepo.On("GetSprintTasks", SPRINT_2_ID).Return([]tasks_models.TaskWithSprint{}, nil)
+		mockTasksRepo.On("GetSprintTasks", BACKLOG_SPRINT.Id).Return([]tasks_models.Task{}, nil)
+		mockTasksRepo.On("GetSprintTasks", SPRINT_2_ID).Return([]tasks_models.Task{}, nil)
 
-		mockTasksRepo.On("GetSprintTasks", SPRINT_1.Id).Return([]tasks_models.TaskWithSprint{}, nil)
+		mockTasksRepo.On("GetSprintTasks", SPRINT_1.Id).Return([]tasks_models.Task{}, nil)
 		mockSprintPointsRepo.On("GetSprintPointsBreakdown", SPRINT_1_ID).Return(sprint_points.SprintPointsBreakdown{}, fmt.Errorf("error in GetSprintPointsBreakdown "))
 		mockSprintPointsRepo.On("GetSprintPointsBreakdown", BACKLOG_SPRINT.Id).Return(sprint_points.SprintPointsBreakdown{}, nil)
 		mockSprintPointsRepo.On("GetSprintPointsBreakdown", SPRINT_2_ID).Return(sprint_points.SprintPointsBreakdown{}, nil)
@@ -245,13 +231,13 @@ func TestGetBoardSprints(t *testing.T) {
 	})
 }
 
-func setupServiceWithMockRepos() (BoardSprintsService, *tasks_repositories.MockTaskQueriesRepository, *MockSprintsRepo, *MockSprintPointsRepository) {
+func setupServiceWithMockRepos() (BoardSprintsService, *tasks_queries.MockTasksQueriesService, *MockSprintsRepo, *MockSprintPointsRepository) {
 	mockSprintsRepo := new(MockSprintsRepo)
-	mockTasksRepo := new(tasks_repositories.MockTaskQueriesRepository)
+	mockTasksQueriesService := new(tasks_queries.MockTasksQueriesService)
 	mockSprintPointsRepo := new(MockSprintPointsRepository)
-	service := NewBoardSprintsService(mockSprintsRepo, mockTasksRepo, mockSprintPointsRepo)
+	service := NewBoardSprintsService(mockSprintsRepo, mockSprintPointsRepo, mockTasksQueriesService)
 
-	return service, mockTasksRepo, mockSprintsRepo, mockSprintPointsRepo
+	return service, mockTasksQueriesService, mockSprintsRepo, mockSprintPointsRepo
 
 }
 

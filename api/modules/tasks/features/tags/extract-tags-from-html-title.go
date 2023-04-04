@@ -6,7 +6,7 @@ import (
 	"github.com/tim-mhn/figma-clone/utils/arrays"
 )
 
-func extractTagsFromHTMLTitle(htmlTitle string) []string {
+func ExtractTagsFromHTMLTitle(htmlTitle string) []string {
 
 	fmt.Println(htmlTitle)
 	regex := buildFindTagsRegex()

@@ -6,21 +6,23 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/sprints"
 	sprint_points "github.com/tim-mhn/figma-clone/modules/sprints/points"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
-	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
+	tasks_queries "github.com/tim-mhn/figma-clone/modules/tasks/queries"
+
 	"github.com/tim-mhn/figma-clone/utils/arrays"
 )
 
 type BoardSprintsService struct {
 	sprintRepo       sprints.SprintRepository
-	tasksRepo        tasks_repositories.TaskQueriesRepository
+	tasksQueries     tasks_queries.ITasksQueriesService
 	sprintPointsRepo sprint_points.SprintPointsRepository
 }
 
-func NewBoardSprintsService(sprintRepo sprints.SprintRepository, tasksRepo tasks_repositories.TaskQueriesRepository, sprintPointsRepo sprint_points.SprintPointsRepository) BoardSprintsService {
+func NewBoardSprintsService(sprintRepo sprints.SprintRepository, sprintPointsRepo sprint_points.SprintPointsRepository, taskQueriesService tasks_queries.ITasksQueriesService) BoardSprintsService {
+
 	return BoardSprintsService{
 		sprintRepo:       sprintRepo,
-		tasksRepo:        tasksRepo,
 		sprintPointsRepo: sprintPointsRepo,
+		tasksQueries:     taskQueriesService,
 	}
 }
 
@@ -82,14 +84,14 @@ func buildSprintWithTasksListFromChannel(sprintWithTasksChan chan SprintWithTask
 
 func (service BoardSprintsService) buildSprintWithTasks(sprintInfo sprints.SprintInfo, taskFilters tasks_models.TaskFilters) (SprintWithTasks, error) {
 
-	sprintTasksChan := make(chan []tasks_models.TaskWithSprint)
+	sprintTasksChan := make(chan []tasks_models.Task)
 	pointsChan := make(chan sprint_points.SprintPointsBreakdown)
 	errorChan := make(chan error, 2)
 	var wg sync.WaitGroup
 	wg.Add(2)
 
 	go func() {
-		sprintTasks, tasksError := service.tasksRepo.GetSprintTasks(sprintInfo.Id, taskFilters)
+		sprintTasks, tasksError := service.tasksQueries.GetSprintTasks(sprintInfo.Id, taskFilters)
 		sprintTasksChan <- sprintTasks
 		errorChan <- tasksError
 		wg.Done()

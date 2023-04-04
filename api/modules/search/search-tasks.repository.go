@@ -7,6 +7,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	"github.com/tim-mhn/figma-clone/database"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
+	tasks_queries "github.com/tim-mhn/figma-clone/modules/tasks/queries"
 )
 
 type DBSearchTasksRepository struct {
@@ -61,6 +62,7 @@ func getTaskInfoListFromSQLRows(rows *sql.Rows) ([]TaskInfo, error) {
 	return taskList, nil
 }
 
+//todo: check if we should not move this into task-queries.repo for SRP ?
 func getSQLBuilder(userID UserID, searchText SearchText) sq.SelectBuilder {
 	searchPattern := "%" + searchText + "%"
 
@@ -70,7 +72,7 @@ func getSQLBuilder(userID UserID, searchText SearchText) sq.SelectBuilder {
 		"title",
 		"points",
 		"description",
-		"CONCAT(project.key, '-', task.number) as task_key",
+		tasks_queries.TASK_KEY_SQL,
 		"project.name as project_name",
 		"project.id as project_id").
 		From("task").

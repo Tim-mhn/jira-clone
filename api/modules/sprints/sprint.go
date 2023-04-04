@@ -18,6 +18,11 @@ type SprintInfo struct {
 	Completed    bool
 }
 
+type SprintIdName struct {
+	Name SprintName
+	Id   SprintID
+}
+
 type Sprint struct {
 	SprintInfo
 	Points sprint_points.SprintPointsBreakdown

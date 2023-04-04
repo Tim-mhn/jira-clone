@@ -8,9 +8,8 @@ export type SprintPointsBreakdown = {
   Done: number;
 };
 
-export type SprintInfo = {
-  Id: string;
-  Name: string;
+export type SprintIdName = { Id: string; Name: string };
+export type SprintInfo = SprintIdName & {
   IsBacklog: boolean;
   StartDate: TimDate;
   EndDate: TimDate;

@@ -4,7 +4,7 @@ import {
   Input,
   OnInit,
 } from '@angular/core';
-import { SprintInfo } from '../../../models';
+import { SprintIdName } from '../../../models';
 
 @Component({
   selector: 'jira-sprint-tag',
@@ -12,7 +12,7 @@ import { SprintInfo } from '../../../models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SprintTagComponent implements OnInit {
-  @Input() sprint: SprintInfo;
+  @Input() sprint: SprintIdName;
   constructor() {}
 
   ngOnInit(): void {}

@@ -64,6 +64,12 @@ func TestGetTaskByID(t *testing.T) {
 		assert.EqualValues(t, *repoTaskOutput.Title, *repoTaskOutput.RawTitle)
 
 	})
+
+	t.Run("should correctly set the Tags field by extracting the tags from the title", func(t *testing.T) {
+		tags := repoTaskOutput.Tags
+		expectedTags := []string{"world"}
+		assert.EqualValues(t, expectedTags, tags)
+	})
 }
 
 func buildMockRowsFromTestData(taskWithSprint tasks_models.TaskWithSprint) *sqlmock.Rows {
