@@ -7,10 +7,6 @@ import { Project } from '../models/project';
   providedIn: DashboardSingletonsProvidersModule,
 })
 export class CurrentProjectService {
-  constructor() {
-    console.count('CurrentProjectService');
-  }
-
   private _currentProject$ = new ReplaySubject<Project>();
   readonly currentProject$ = this._currentProject$
     .asObservable()

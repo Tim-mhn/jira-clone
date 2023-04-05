@@ -3,6 +3,7 @@ import { User } from '../../../auth/models/user';
 import { SprintIdName, SprintInfo } from './sprint';
 import { TaskStatus } from './task-status';
 import { TaskType } from './task-type';
+import { TaskTag } from '../../features/tags/task-tag';
 
 export interface ITask {
   Id: string;
@@ -15,6 +16,7 @@ export interface ITask {
   Key: string;
   Sprint: SprintIdName;
   Type: TaskType;
+  Tags: TaskTag[];
 }
 
 export class Task implements ITask {
@@ -28,6 +30,7 @@ export class Task implements ITask {
   Key: string;
   Sprint: SprintIdName;
   Type: TaskType;
+  Tags: TaskTag[];
 
   private _update$ = new Subject<void>();
   public update$ = this._update$.asObservable();
@@ -44,6 +47,7 @@ export class Task implements ITask {
       Sprint,
       Type,
       RawTitle,
+      Tags,
     } = props;
     this.Id = Id;
     this.Assignee = Assignee;
@@ -55,6 +59,7 @@ export class Task implements ITask {
     this.Sprint = Sprint;
     this.Type = Type;
     this.RawTitle = RawTitle;
+    this.Tags = Tags;
   }
 
   private _emitUpdate() {
@@ -80,6 +85,11 @@ export class Task implements ITask {
     const { RawTitle, Title } = titles;
     this.RawTitle = RawTitle;
     this.Title = Title;
+    this._emitUpdate();
+  }
+
+  public updateTags(tags: TaskTag[]) {
+    this.Tags = tags;
     this._emitUpdate();
   }
 

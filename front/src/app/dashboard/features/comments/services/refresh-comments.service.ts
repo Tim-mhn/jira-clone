@@ -6,9 +6,7 @@ import { TaskCommentsProvidersModule } from '../comments-providers.module';
   providedIn: TaskCommentsProvidersModule,
 })
 export class RefreshTaskCommentsService {
-  constructor() {
-    console.count('RefreshTaskCommentsService');
-  }
+  constructor() {}
   private _refreshComments$ = new Subject<void>();
   public refreshComments$ = this._refreshComments$.asObservable();
 

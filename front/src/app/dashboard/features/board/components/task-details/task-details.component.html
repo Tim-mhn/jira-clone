@@ -30,6 +30,7 @@
         ></button>
       </div>
     </div>
+
     <jira-task-editable-title
       [task]="task"
       [title]="task?.Title"
@@ -47,26 +48,32 @@
       </tim-hashtag-option>
     </tim-hashtag-autocomplete>
 
-    <div class="flex flex-grow items-center gap-4">
-      <jira-task-status-selector
-        [task]="task"
-        [allStatus]="project?.AllTaskStatus"
-      ></jira-task-status-selector>
+    <div class="flex flex-wrap gap-2">
+      <div class="flex items-center gap-4">
+        <jira-task-status-selector
+          [task]="task"
+          [allStatus]="project?.AllTaskStatus"
+        ></jira-task-status-selector>
 
-      <jira-task-assignee-selector
-        [task]="task"
-        [assigneeOptions]="members"
-      ></jira-task-assignee-selector>
+        <jira-task-assignee-selector
+          [task]="task"
+          [assigneeOptions]="members"
+        ></jira-task-assignee-selector>
 
-      <jira-task-points-chip
-        [task]="task"
-        [taskPoints]="task?.Points"
-      ></jira-task-points-chip>
+        <jira-task-points-chip
+          [task]="task"
+          [taskPoints]="task?.Points"
+        ></jira-task-points-chip>
 
-      <jira-task-sprint-selector
-        [task]="task"
-        [activeSprints]="sprints"
-      ></jira-task-sprint-selector>
+        <jira-task-sprint-selector
+          [task]="task"
+          [activeSprints]="sprints"
+        ></jira-task-sprint-selector>
+      </div>
+
+      <div class="flex gap-2 items-center">
+        <div class="task-tag" *ngFor="let tag of task.Tags">{{ tag }}</div>
+      </div>
     </div>
     <jira-task-details-editable-description
       [task]="task"

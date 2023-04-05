@@ -10,6 +10,7 @@ import { SprintInfo, Task, TaskType } from '../models';
 import { TaskStatus } from '../models/task-status';
 import { CurrentProjectService } from '../state-services/current-project.service';
 import { GetTasksAPI } from '../apis/get-tasks.api';
+import { TaskTags } from '../../features/tags';
 
 @Injectable({ providedIn: DashboardCoreProvidersModule })
 export class UpdateTaskController {
@@ -42,7 +43,7 @@ export class UpdateTaskController {
   updateTaskTitle(
     taskWithNewTitle: Pick<PatchTaskDTO, 'title' | 'taskId'>,
     requestState: RequestState
-  ): Observable<{ Title: string; RawTitle: string }> {
+  ): Observable<{ Title: string; RawTitle: string; Tags: TaskTags }> {
     const projectId = this._currentProjectId;
     const { taskId } = taskWithNewTitle;
     const dto: PatchTaskDTO = {
@@ -51,9 +52,10 @@ export class UpdateTaskController {
     };
     return this.api.updateTask(dto).pipe(
       switchMap(() => this.taskQueriesAPI.getSingleTask({ taskId, projectId })),
-      map(({ Title, RawTitle }) => ({
+      map(({ Title, RawTitle, Tags }) => ({
         Title,
         RawTitle,
+        Tags,
       })),
       this.requestStateController.handleRequest(requestState)
     );
