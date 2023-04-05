@@ -12,3 +12,8 @@ type TaskPersistenceModel struct {
 	assignee_id, assignee_name, assignee_email                     string
 	points, task_number                                            int
 }
+
+type TaskInfoPersistenceModel struct {
+	Id, Raw_title, Description, Project_key, Project_id, Project_name string
+	Points, Task_number                                               int
+}

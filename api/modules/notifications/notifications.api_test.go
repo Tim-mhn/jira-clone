@@ -7,11 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/tim-mhn/figma-clone/modules/project"
-	"github.com/tim-mhn/figma-clone/modules/sprints"
 	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
-	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
+	tasks_queries "github.com/tim-mhn/figma-clone/modules/tasks/queries"
 	"github.com/tim-mhn/figma-clone/utils/primitives"
 )
 
@@ -36,12 +35,9 @@ func TestCreateCommentNotification(t *testing.T) {
 
 		notificationsAPI, mockProjectRepo, mockTaskRepo := setupServiceWithMocks()
 
-		task := tasks_models.TaskWithSprint{
-			Task: tasks_models.Task{
-				Id:    primitives.CreateStringPointer(taskID),
-				Title: primitives.CreateStringPointer("title of task"),
-			},
-			Sprint: sprints.SprintInfo{},
+		task := tasks_models.Task{
+			Id:    primitives.CreateStringPointer(taskID),
+			Title: primitives.CreateStringPointer("title of task"),
 		}
 
 		mockProjectRepo.On("GetProjectByID", mock.Anything).Return(project)
@@ -89,12 +85,9 @@ func TestCreateCommentNotification(t *testing.T) {
 			},
 		})
 
-		task := tasks_models.TaskWithSprint{
-			Task: tasks_models.Task{
-				Id:    primitives.CreateStringPointer(taskID),
-				Title: primitives.CreateStringPointer(titleWithTags),
-			},
-			Sprint: sprints.SprintInfo{},
+		task := tasks_models.Task{
+			Id:    primitives.CreateStringPointer(taskID),
+			Title: primitives.CreateStringPointer(titleWithTags),
 		}
 
 		mockProjectRepo.On("GetProjectByID", mock.Anything).Return(project)
@@ -137,14 +130,10 @@ func TestSendTaskAssignationNotification(t *testing.T) {
 
 		notificationsAPI, mockProjectRepo, mockTaskRepo := setupServiceWithMocks()
 
-		task := tasks_models.TaskWithSprint{
-			Task: tasks_models.Task{
-				Id:    primitives.CreateStringPointer(taskID),
-				Title: primitives.CreateStringPointer("title of task"),
-			},
-			Sprint: sprints.SprintInfo{},
+		task := tasks_models.Task{
+			Id:    primitives.CreateStringPointer(taskID),
+			Title: primitives.CreateStringPointer("title of task"),
 		}
-
 		mockProjectRepo.On("GetProjectByID", mock.Anything).Return(project)
 		mockTaskRepo.On("GetTaskByID", mock.Anything).Return(task, tasks_errors.NoTaskError())
 
@@ -172,9 +161,9 @@ func TestSendTaskAssignationNotification(t *testing.T) {
 	})
 }
 
-func setupServiceWithMocks() (NotificationsAPI, *project.MockProjectQueriesRepository, *tasks_repositories.MockTaskQueriesRepository) {
+func setupServiceWithMocks() (NotificationsAPI, *project.MockProjectQueriesRepository, *tasks_queries.MockTasksQueriesService) {
 	mockProjectRepo := new(project.MockProjectQueriesRepository)
-	mockTaskRepo := new(tasks_repositories.MockTaskQueriesRepository)
+	mockTaskRepo := new(tasks_queries.MockTasksQueriesService)
 	notificationsAPI := NewNotificationsAPI(mockProjectRepo, mockTaskRepo)
 
 	return notificationsAPI, mockProjectRepo, mockTaskRepo

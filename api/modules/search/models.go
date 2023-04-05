@@ -1,13 +1,6 @@
 package search
 
-type ProjectInfo struct {
-	Id, Name string
-}
-type TaskInfo struct {
-	Points                      int
-	Id, Title, Description, Key string
-	Project                     ProjectInfo
-}
+import tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 
 type UserID string
 
@@ -20,7 +13,7 @@ type SearchInput struct {
 
 type SprintInfo struct {
 	Id, Name string
-	Project  ProjectInfo
+	Project  tasks_models.ProjectInfo
 }
 
 type SearchResultType string
@@ -31,6 +24,6 @@ const (
 )
 
 type SearchResults struct {
-	Tasks   []TaskInfo
+	Tasks   []tasks_models.TaskInfo
 	Sprints []SprintInfo
 }

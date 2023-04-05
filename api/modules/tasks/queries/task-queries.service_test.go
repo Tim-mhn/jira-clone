@@ -193,6 +193,7 @@ func TestTaskQueriesServiceGetTSprintTasks(t *testing.T) {
 		assert.NotNil(t, err)
 
 	})
+
 }
 
 type MockTaskQueriesRepo struct {

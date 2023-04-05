@@ -14,6 +14,7 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/board"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
+	tasks_queries "github.com/tim-mhn/figma-clone/modules/tasks/queries"
 	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
 	tasks_services "github.com/tim-mhn/figma-clone/modules/tasks/services"
 	shared_errors "github.com/tim-mhn/figma-clone/shared/errors"
@@ -21,32 +22,32 @@ import (
 )
 
 type TasksController struct {
-	taskQueries         tasks_repositories.TaskQueriesRepository
 	taskPositionRepo    *tasks_repositories.TaskPositionRepository
+	tasksQueries        tasks_queries.ITasksQueriesService
 	taskCommands        tasks_services.TaskCommandsService
 	notificationsAPI    notifications_api.NotificationsAPI
 	boardSprintsService board.IBoardSprintsService
 }
 
-func NewTasksController(um auth.UserRepository, projectQueries project.ProjectQueriesRepository, taskRepo tasks_repositories.TaskQueriesRepository, tagsService tags.ITagsService, boardSprintsService board.IBoardSprintsService, conn *sql.DB) *TasksController {
+func NewTasksController(um auth.UserRepository, projectQueries project.ProjectQueriesRepository, tagsService tags.ITagsService, boardSprintsService board.IBoardSprintsService, tasksQueriesService tasks_queries.ITasksQueriesService, conn *sql.DB) *TasksController {
 
 	taskCommandsRepo := tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn)
 
-	notificationsAPI := notifications_api.NewNotificationsAPI(projectQueries, taskRepo)
+	notificationsAPI := notifications_api.NewNotificationsAPI(projectQueries, tasksQueriesService)
 
 	return &TasksController{
-		taskQueries:         tasks_repositories.NewTaskQueriesRepository(conn),
 		taskCommands:        *tasks_services.NewTaskCommandsService(taskCommandsRepo, tagsService, notificationsAPI),
 		taskPositionRepo:    tasks_repositories.NewTaskPositionRepository(conn),
 		notificationsAPI:    notificationsAPI,
 		boardSprintsService: boardSprintsService,
+		tasksQueries:        tasksQueriesService,
 	}
 }
 
 func (tc *TasksController) GetTaskByID(c *gin.Context) {
 	taskID := GetTaskIDParam(c)
 
-	task, err := tc.taskQueries.GetTaskByID(taskID)
+	task, err := tc.tasksQueries.GetTaskByID(taskID)
 
 	if err.HasError {
 		buildAndReturnAPIError(c, err)

@@ -3,6 +3,8 @@ package search
 import (
 	"fmt"
 	"sync"
+
+	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 )
 
 type SearchService struct {
@@ -19,7 +21,7 @@ func NewSearchService(repo SearchTasksRepository, sprintRepo SearchSprintsReposi
 
 func (service *SearchService) searchTasksOrSprintsOfUserByText(searchInput SearchInput) (SearchResults, error) {
 
-	tasksChan := make(chan []TaskInfo)
+	tasksChan := make(chan []tasks_models.TaskInfo)
 	sprintsChan := make(chan []SprintInfo)
 
 	var wg sync.WaitGroup

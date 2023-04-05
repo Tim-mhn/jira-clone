@@ -8,7 +8,7 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/project"
 	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
-	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
+	tasks_queries "github.com/tim-mhn/figma-clone/modules/tasks/queries"
 	http_utils "github.com/tim-mhn/figma-clone/utils/http"
 )
 
@@ -19,7 +19,7 @@ type NotificationsAPI interface {
 }
 
 func NewNotificationsAPI(projectRepo project.ProjectQueriesRepository,
-	taskQueries tasks_repositories.TaskQueriesRepository) NotificationsAPI {
+	taskQueries tasks_queries.ITasksQueriesService) NotificationsAPI {
 	return NotificationsAPIImpl{
 		projectRepo: projectRepo,
 		taskQueries: taskQueries,
@@ -28,7 +28,7 @@ func NewNotificationsAPI(projectRepo project.ProjectQueriesRepository,
 
 type NotificationsAPIImpl struct {
 	projectRepo project.ProjectQueriesRepository
-	taskQueries tasks_repositories.TaskQueriesRepository
+	taskQueries tasks_queries.ITasksQueriesService
 }
 
 func (s NotificationsAPIImpl) FollowTask(dto FollowTaskDTO, authCookie *http.Cookie) error {
@@ -148,8 +148,8 @@ func (s NotificationsAPIImpl) getProjectAndTaskFromIds(projectID string, taskID 
 	}()
 
 	go func() {
-		taskWithSprint, _ := s.taskQueries.GetTaskByID(taskID)
-		taskChan <- taskWithSprint.Task
+		task, _ := s.taskQueries.GetTaskByID(taskID)
+		taskChan <- task
 		wg.Done()
 
 	}()

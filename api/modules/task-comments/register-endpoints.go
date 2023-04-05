@@ -5,7 +5,7 @@ import (
 
 	"github.com/tim-mhn/figma-clone/modules/project"
 	"github.com/tim-mhn/figma-clone/modules/tasks"
-	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
+	tasks_queries "github.com/tim-mhn/figma-clone/modules/tasks/queries"
 )
 
 func RegisterEndpoints(singleTaskRoutes tasks.SingleTaskRoutes, conn *sql.DB) {
@@ -13,9 +13,10 @@ func RegisterEndpoints(singleTaskRoutes tasks.SingleTaskRoutes, conn *sql.DB) {
 	repo := newSQLTaskCommentsRepository(conn)
 
 	projectQueries := project.NewProjectQueriesRepository(conn)
-	taskQueriesRepo := tasks_repositories.NewTaskQueriesRepository(conn)
+	tasksQueriesRepo := tasks_queries.NewTaskQueriesRepository(conn)
+	tasksQueriesService := tasks_queries.NewTasksQueriesService(tasksQueriesRepo)
 
-	controller := newTaskCommentsController(repo, projectQueries, taskQueriesRepo)
+	controller := newTaskCommentsController(repo, projectQueries, tasksQueriesService)
 
 	commentsRoutes := singleTaskRoutes.Group("/comments")
 

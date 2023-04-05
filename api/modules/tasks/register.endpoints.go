@@ -47,15 +47,13 @@ func buildControllers(conn *sql.DB) (*tasks_controllers.TasksController, *tasks_
 	sprintRepo := sprints.NewSprintRepository(conn)
 	sprintPointsRepo := sprint_points.NewSprintPointsRepository(conn)
 
-	taskQueriesRepo := tasks_repositories.NewTaskQueriesRepository(conn)
-
 	tagsService := tags.NewTagsService(conn)
 
 	tasksQueriesService := tasks_queries.NewTasksQueriesService(tasks_queries.NewTaskQueriesRepository(conn))
 
-	boardSprintsService := board.NewBoardSprintsService(sprintRepo, taskQueriesRepo, sprintPointsRepo, tasksQueriesService)
+	boardSprintsService := board.NewBoardSprintsService(sprintRepo, sprintPointsRepo, tasksQueriesService)
 
-	tasksController := tasks_controllers.NewTasksController(userRepo, projectQueriesRepo, taskQueriesRepo, tagsService, boardSprintsService, conn)
+	tasksController := tasks_controllers.NewTasksController(userRepo, projectQueriesRepo, tagsService, boardSprintsService, tasksQueriesService, conn)
 	taskStatusController := tasks_controllers.NewTaskStatusController(taskStatusRepo)
 
 	return tasksController, taskStatusController

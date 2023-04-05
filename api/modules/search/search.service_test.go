@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 )
 
 func TestSearchTasksOrSprintsOfUserByText(t *testing.T) {
@@ -21,7 +22,7 @@ func TestSearchTasksOrSprintsOfUserByText(t *testing.T) {
 			Text:   "fix css",
 		}
 
-		taskList := []TaskInfo{
+		taskList := []tasks_models.TaskInfo{
 			{
 				Points: 1,
 				Id:     "task-1",
@@ -52,7 +53,7 @@ func TestSearchTasksOrSprintsOfUserByText(t *testing.T) {
 
 		tasksError := fmt.Errorf("an error occurred when fetching the task list")
 		sprintsError := fmt.Errorf("an error occurred when fetching the sprint list")
-		mockTasksRepo.On("SearchTasksWithMatchingContentInUserProjects", mock.Anything).Return([]TaskInfo{}, tasksError)
+		mockTasksRepo.On("SearchTasksWithMatchingContentInUserProjects", mock.Anything).Return([]tasks_models.TaskInfo{}, tasksError)
 
 		mockSprintsRepo.On("SearchSprintOfUsersByName", mock.Anything).Return([]SprintInfo{}, sprintsError)
 
@@ -71,7 +72,7 @@ func TestSearchTasksOrSprintsOfUserByText(t *testing.T) {
 
 		tasksError := fmt.Errorf("an error occurred when fetching the task list")
 		var NO_ERROR error = nil
-		mockTasksRepo.On("SearchTasksWithMatchingContentInUserProjects", mock.Anything).Return([]TaskInfo{}, tasksError)
+		mockTasksRepo.On("SearchTasksWithMatchingContentInUserProjects", mock.Anything).Return([]tasks_models.TaskInfo{}, tasksError)
 
 		mockSprintsRepo.On("SearchSprintOfUsersByName", mock.Anything).Return([]SprintInfo{
 			{

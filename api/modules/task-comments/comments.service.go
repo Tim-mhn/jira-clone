@@ -7,7 +7,7 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
 	notifications_api "github.com/tim-mhn/figma-clone/modules/notifications"
 	"github.com/tim-mhn/figma-clone/modules/project"
-	tasks_repositories "github.com/tim-mhn/figma-clone/modules/tasks/repositories"
+	tasks_queries "github.com/tim-mhn/figma-clone/modules/tasks/queries"
 )
 
 type ITaskCommentsService interface {
@@ -21,10 +21,10 @@ type TaskCommentsService struct {
 	notificationsAPI notifications_api.NotificationsAPI
 }
 
-func NewTaskCommentsService(repo TaskCommentsRepository, projectQueries project.ProjectQueriesRepository, taskQueriesRepo tasks_repositories.TaskQueriesRepository) TaskCommentsService {
+func NewTaskCommentsService(repo TaskCommentsRepository, projectQueries project.ProjectQueriesRepository, tasksQueriresService tasks_queries.ITasksQueriesService) TaskCommentsService {
 	return TaskCommentsService{
 		repo:             repo,
-		notificationsAPI: notifications_api.NewNotificationsAPI(projectQueries, taskQueriesRepo),
+		notificationsAPI: notifications_api.NewNotificationsAPI(projectQueries, tasksQueriresService),
 	}
 }
 

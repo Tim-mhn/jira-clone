@@ -3,10 +3,7 @@ package tasks_queries
 import (
 	"fmt"
 
-	"github.com/tim-mhn/figma-clone/modules/auth"
-	"github.com/tim-mhn/figma-clone/modules/sprints"
 	tasks_errors "github.com/tim-mhn/figma-clone/modules/tasks/errors"
-	"github.com/tim-mhn/figma-clone/modules/tasks/features/tags"
 	tasks_models "github.com/tim-mhn/figma-clone/modules/tasks/models"
 )
 
@@ -36,32 +33,6 @@ func (service *TasksQueriesService) GetTaskByID(taskID string) (tasks_models.Tas
 	task := buildTaskFromPersistenceData(taskPersistence)
 	return task, tasks_errors.NoTaskError()
 
-}
-
-func buildTaskFromPersistenceData(taskPersistence TaskPersistenceModel) tasks_models.Task {
-	taskKey := buildTaskKey(taskPersistence.project_key, taskPersistence.task_number)
-
-	assignee := auth.BuildUserWithIcon(taskPersistence.assignee_id, taskPersistence.assignee_name, taskPersistence.assignee_email)
-	title := tags.RemoveTagsFromTaskTitle(taskPersistence.rawTitle)
-
-	tags := tags.ExtractTagsFromHTMLTitle(taskPersistence.rawTitle)
-
-	return tasks_models.Task{
-		Id:          &taskPersistence.id,
-		Description: &taskPersistence.description,
-		Title:       &title,
-		RawTitle:    &taskPersistence.rawTitle,
-		Points:      taskPersistence.points,
-		Key:         &taskKey,
-		Type:        taskPersistence.Type,
-		Assignee:    assignee,
-		Status:      taskPersistence.status,
-		Tags:        tags,
-		Sprint: sprints.SprintIdName{
-			Name: taskPersistence.sprint_name,
-			Id:   taskPersistence.sprint_id,
-		},
-	}
 }
 
 func (service *TasksQueriesService) GetSprintTasks(sprintID string, filters tasks_models.TaskFilters) ([]tasks_models.Task, error) {
