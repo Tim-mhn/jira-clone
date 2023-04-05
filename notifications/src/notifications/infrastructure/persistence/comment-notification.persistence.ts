@@ -6,7 +6,7 @@ import {
 } from '@prisma/client';
 export type CommentNotificationPersistence = Pick<
   DBCommentNotification,
-  'id'
+  'id' | 'followerId'
 > & {
   data: Partial<DBCommentNotificationData> & {
     author: Omit<Author, 'uuid'>;

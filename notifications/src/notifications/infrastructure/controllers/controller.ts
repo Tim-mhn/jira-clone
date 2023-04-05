@@ -8,6 +8,7 @@ import {
   Post,
   Request,
   Res,
+  Sse,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../../../auth';
@@ -18,6 +19,8 @@ import { AllNotifications } from '../../domain/models/all-notifications';
 import { FollowTaskDTO, ReadNotificationDTO } from '../dtos';
 import { TaskFollowersRepositoryToken } from '../../adapter/providers/task-followers-repository.provider';
 import { TaskFollowersRepository } from '../repositories/task-followers-repository/task-followers.repository';
+import { Observable, map } from 'rxjs';
+import { NewNotificationEmitter } from '../../application/emitters/new-notification.emitter';
 
 @Controller()
 export class NotificationsController {
@@ -26,6 +29,7 @@ export class NotificationsController {
     private followersRepo: TaskFollowersRepository,
     private getNewNotificationsInteractor: GetNewNotificationsInteractor,
     private readNotificationInteractor: ReadNotificationInteractor,
+    private notificationEmitter: NewNotificationEmitter,
   ) {}
 
   @Get('/notifications')
@@ -33,8 +37,25 @@ export class NotificationsController {
     @Request() req: AuthenticatedRequest,
   ): Promise<AllNotifications> {
     const userId = req.user.id;
+    console.log(req.user);
     return this.getNewNotificationsInteractor.getUserCommentNotifications(
       userId,
+    );
+  }
+
+  @Sse('/notifications/events')
+  sse(@Request() req: AuthenticatedRequest): Observable<MessageEvent> {
+    console.log(req.user);
+    // return interval(1000).pipe(
+    //   map((_) => ({ data: { hello: 'world' } } as MessageEvent)),
+    // );
+    return this.notificationEmitter.newNotification$.pipe(
+      map(
+        (newNotification) =>
+          ({
+            data: newNotification,
+          } as MessageEvent),
+      ),
     );
   }
 

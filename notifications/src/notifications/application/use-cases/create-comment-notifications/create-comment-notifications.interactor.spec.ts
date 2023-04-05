@@ -4,16 +4,22 @@ import {
   getMockCommentNotificationsRepository,
   getMockTaskFollowersRepository,
 } from '../../../domain/mocks';
-import { CommentNotificationsInput } from '../../../domain/repositories/comment-notification.repository';
+import {
+  CommentNotificationsInput,
+  CreateCommentNotificationsOutput,
+} from '../../../domain/repositories/comment-notification.repository';
 import { CommentNotificationsRepositoryToken } from '../../../adapter/providers/comment-notification-repository.provider';
 import { TaskFollowersRepositoryToken } from '../../../adapter/providers/task-followers-repository.provider';
 import { CreateCommentNotificationsInteractor } from './create-comment-notifications.interactor';
+import { NewNotificationEmitter } from '../../emitters/new-notification.emitter';
 
 describe('CreateCommentNotificationsInteractor', () => {
   let service: CreateCommentNotificationsInteractor;
 
   const mockCommentsNotifsRepo = getMockCommentNotificationsRepository();
   const mockTaskFollowersRepo = getMockTaskFollowersRepository();
+
+  let notificationEmitter: NewNotificationEmitter;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -26,9 +32,13 @@ describe('CreateCommentNotificationsInteractor', () => {
           provide: TaskFollowersRepositoryToken,
           useValue: mockTaskFollowersRepo,
         },
+        NewNotificationEmitter,
       ],
     }).compile();
 
+    notificationEmitter = module.get<NewNotificationEmitter>(
+      NewNotificationEmitter,
+    );
     service = module.get<CreateCommentNotificationsInteractor>(
       CreateCommentNotificationsInteractor,
     );
@@ -104,6 +114,41 @@ describe('CreateCommentNotificationsInteractor', () => {
       expect(mockTaskFollowersRepo.getTaskFollowersIds).toHaveBeenCalledWith(
         taskId,
       );
+    });
+
+    it('should call the NotificationsEmitter with the list of correctly built CommentNotifications', async () => {
+      const followerIds = ['follower-1', 'follower-2', 'follower-3'];
+
+      const createCommentNotificationsOutput: CreateCommentNotificationsOutput =
+        [
+          {
+            followerId: 'follower-1',
+            notificationId: 'notif-1',
+          },
+          {
+            followerId: 'follower-2',
+            notificationId: 'notif-2',
+          },
+          {
+            followerId: 'follower-3',
+            notificationId: 'notif-3',
+          },
+        ];
+
+      jest
+        .spyOn(mockTaskFollowersRepo, 'getTaskFollowersIds')
+        .mockImplementation(async () => followerIds);
+      jest.spyOn(notificationEmitter, 'fireNewNotificationEvent');
+      jest
+        .spyOn(mockCommentsNotifsRepo, 'createCommentNotifications')
+        .mockImplementation(async () => createCommentNotificationsOutput);
+      await service.createNotificationsForTaskFollowersExceptCommentAuthor(
+        newCommentEvent,
+      );
+
+      expect(
+        notificationEmitter.fireNewNotificationEvent,
+      ).toHaveBeenCalledTimes(3);
     });
   });
 });

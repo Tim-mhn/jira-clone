@@ -1,9 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { TaskAssignedEvent } from '../../../domain';
+import {
+  NotificationId,
+  TaskAssignationNotification,
+  TaskAssignedEvent,
+} from '../../../domain';
 import { TaskFollowersRepository } from '../../../domain/repositories';
 import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
 import { TaskAssignationNotificationsRepositoryToken } from '../../../adapter/providers';
 import { TaskFollowersRepositoryToken } from '../../../adapter/providers/task-followers-repository.provider';
+import { NewNotificationEmitter } from '../../emitters/new-notification.emitter';
 
 @Injectable()
 export class CreateNewAssignationNotificationInteractor {
@@ -12,18 +17,40 @@ export class CreateNewAssignationNotificationInteractor {
     private repo: TaskAssignationNotificationsRepository,
     @Inject(TaskFollowersRepositoryToken)
     private followersRepo: TaskFollowersRepository,
+    private newNotificationEmitter: NewNotificationEmitter,
   ) {}
 
   async handle(taskAssigned: TaskAssignedEvent) {
-    await this._dismissOtherAssignationNotificationsFromTask(
-      taskAssigned.task.id,
-    );
-    const userHasSelfAssignedTask =
-      taskAssigned.assigneeId === taskAssigned.assignedById;
+    const { assignedById, assigneeId, task } = taskAssigned;
+
+    await this._dismissOtherAssignationNotificationsFromTask(task.id);
+
+    const userHasSelfAssignedTask = assigneeId === assignedById;
     if (userHasSelfAssignedTask) return;
 
     await this._addAssigneeAsTaskFollower(taskAssigned);
-    return this.repo.create(taskAssigned);
+    const newNotificationId = await this.repo.create(taskAssigned);
+    const newNotification = this._buildTaskAssignationNotification(
+      taskAssigned,
+      newNotificationId,
+    );
+    this.newNotificationEmitter.fireNewNotificationEvent(newNotification);
+  }
+
+  private _buildTaskAssignationNotification(
+    taskAssigned: TaskAssignedEvent,
+    notificationId: NotificationId,
+  ) {
+    const { assigneeId, project, task } = taskAssigned;
+
+    const newNotification = new TaskAssignationNotification({
+      id: notificationId,
+      assigneeId,
+      project,
+      task,
+    });
+
+    return newNotification;
   }
 
   private async _addAssigneeAsTaskFollower(taskAssigned: TaskAssignedEvent) {

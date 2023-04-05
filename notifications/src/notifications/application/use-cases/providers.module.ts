@@ -4,6 +4,7 @@ import { CreateCommentNotificationsInteractor } from './create-comment-notificat
 import { CreateNewAssignationNotificationInteractor } from './create-new-assignation-notification/create-new-assignation-notification.interactor';
 import { GetNewNotificationsInteractor } from './get-new-notifications/get-new-notifications.interactor';
 import { ReadNotificationInteractor } from './read-notification/read-notification.interactor';
+import { NewNotificationEmitter } from '../emitters/new-notification.emitter';
 
 @Module({
   imports: [NotificationsRepositoriesProvidersModule],
@@ -12,6 +13,7 @@ import { ReadNotificationInteractor } from './read-notification/read-notificatio
     GetNewNotificationsInteractor,
     CreateNewAssignationNotificationInteractor,
     CreateCommentNotificationsInteractor,
+    NewNotificationEmitter,
   ],
   exports: [
     NotificationsRepositoriesProvidersModule,
@@ -19,6 +21,7 @@ import { ReadNotificationInteractor } from './read-notification/read-notificatio
     GetNewNotificationsInteractor,
     CreateNewAssignationNotificationInteractor,
     CreateCommentNotificationsInteractor,
+    NewNotificationEmitter,
   ],
 })
 export class NotificationsInteractorsProvidersModule {}
