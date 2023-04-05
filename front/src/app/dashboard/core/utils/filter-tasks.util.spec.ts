@@ -203,5 +203,6 @@ function buildTask(props: {
     Title: '',
     RawTitle: '',
     Status,
+    Tags: [],
   });
 }

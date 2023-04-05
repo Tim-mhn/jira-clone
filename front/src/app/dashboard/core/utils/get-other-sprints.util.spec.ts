@@ -44,6 +44,7 @@ describe('getSprintsTaskDoesNotBelongTo', () => {
         Label: 'Story',
         Id: 1,
       },
+      Tags: [],
     });
 
     const allSprintsExceptSprint2 = getSprintsTaskDoesNotBelongTo(
