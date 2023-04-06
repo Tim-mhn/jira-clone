@@ -18,7 +18,7 @@ Nestjs, Prisma, Jest
 Angular, Tailwind, [Self-built Angular UI libs](https://github.com/Tim-mhn/ng-libs/tree/master), Jasmine
 
 #### Infrastructure
-[Railway](https://railway.app/), [Netlify](https://www.netlify.com/), [Cloudflare](https://www.cloudflare.com/)
+[Railway](https://railway.app/), [Netlify](https://www.netlify.com/), [Cloudflare](https://www.cloudflare.com/), RabbitMQ
 
 
 ### Software Architecture
