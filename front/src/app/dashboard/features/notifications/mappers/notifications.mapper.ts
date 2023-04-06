@@ -32,7 +32,6 @@ export class NotificationsMapper
         return new TaskAssignationNotification(dto);
 
       default:
-        console.log(dto);
         throw new Error(
           `[NotificationsMapper] could not create Notification object for notification dto with missing type`
         );

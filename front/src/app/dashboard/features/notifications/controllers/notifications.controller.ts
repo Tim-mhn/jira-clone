@@ -16,7 +16,7 @@ import { NotificationsAPI } from '../apis/notifications.api';
 import { NotificationsMapper } from '../mappers/notifications.mapper';
 import { NewNotifications, Notification, NotificationType } from '../models';
 import { NotificationsProvidersModule } from '../notifications-providers.module';
-import { streamToArray } from './stream-to-array.operator';
+import { streamToArray } from '../../../../shared/rxjs-operators';
 
 @Injectable({
   providedIn: NotificationsProvidersModule,
@@ -56,7 +56,8 @@ export class NotificationsController {
     return streamToArray(
       this.api
         .getRealTimeNewNotificationsStream()
-        .pipe(map((dto) => this.mapper.buildNotificationFromDTO(dto)))
+        .pipe(map((dto) => this.mapper.buildNotificationFromDTO(dto))),
+      'newest-first'
     ).pipe(startWith([]));
   }
 

@@ -2,7 +2,11 @@ import { Router } from '@angular/router';
 import { EMPTY, Subject, of, take } from 'rxjs';
 import { NotificationsAPI } from '../apis/notifications.api';
 import { NotificationsMapper } from '../mappers/notifications.mapper';
-import { CommentNotification, NotificationType } from '../models';
+import {
+  CommentNotification,
+  NotificationId,
+  NotificationType,
+} from '../models';
 import { NotificationsController } from './notifications.controller';
 import {
   NewNotificationsDTO,
@@ -112,7 +116,7 @@ describe('NotificationsController', () => {
       );
     });
 
-    it('should correctly the new notifications coming from the NewNotification stream', () => {
+    it('should correctly the list of notifications with the newest notifications first, when the RealtimeNotification stream emits ', () => {
       const newNotification: TaskAssignationNotificationDTO = {
         id: 'notif-3',
         project: null,
@@ -131,29 +135,43 @@ describe('NotificationsController', () => {
 
       const mockNewNotificationStream =
         new Subject<TaskAssignationNotificationDTO>();
-      mockNewNotificationStream.next(newNotification);
       spyApi.getNewNotifications.and.returnValue(of(firstListOfNotifications));
       spyApi.getRealTimeNewNotificationsStream.and.returnValue(
         mockNewNotificationStream
       );
 
       let emissionCount = 0;
-      const notifsLength: { [emission: number]: number } = {};
+      const notificationsIdsEmissions: {
+        [emission: number]: NotificationId[];
+      } = {};
       controller
         .getNewNotificationsForCurrentUser()
         .pipe(take(3))
         .subscribe({
           next: (notifs) => {
             emissionCount += 1;
-            notifsLength[emissionCount] = notifs.length;
+            notificationsIdsEmissions[emissionCount] = notifs.map((n) => n.id);
           },
           complete: () => {
-            expect(notifsLength[1]).toEqual(2);
-            expect(notifsLength[2]).toEqual(3);
-            expect(notifsLength[3]).toEqual(4);
+            expect(notificationsIdsEmissions[1]).toEqual([
+              'notif-1',
+              'notif-2',
+            ]);
+            expect(notificationsIdsEmissions[2]).toEqual([
+              'notif-3',
+              'notif-1',
+              'notif-2',
+            ]);
+            expect(notificationsIdsEmissions[3]).toEqual([
+              'notif-4',
+              'notif-3',
+              'notif-1',
+              'notif-2',
+            ]);
           },
         });
 
+      mockNewNotificationStream.next(newNotification);
       mockNewNotificationStream.next(anotherNotification);
     });
   });

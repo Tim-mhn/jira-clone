@@ -27,7 +27,6 @@ export class TaskTagsController {
 
   private _tagTemplateFn$ = this._currentProjectService.currentProject$.pipe(
     switchMap((project) => this.api.getTagTemplate({ projectId: project.Id })),
-    tap(console.log),
     map((tagTemplate) => {
       const fn = (tag: string) => tagTemplate.replace('{{TAG}}', tag);
       return fn;

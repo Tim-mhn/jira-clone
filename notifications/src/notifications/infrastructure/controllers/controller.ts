@@ -11,7 +11,7 @@ import {
   Sse,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthenticatedRequest } from '../../../auth';
+import { AuthenticatedRequest, User } from '../../../auth';
 import { GetNewNotificationsInteractor } from '../../application/use-cases/get-new-notifications/get-new-notifications.interactor';
 import { ReadNotificationInteractor } from '../../application/use-cases/read-notification/read-notification.interactor';
 import { NotificationNotFound, NotificationReadEvent } from '../../domain';
@@ -45,11 +45,12 @@ export class NotificationsController {
 
   @Sse('/notifications/events')
   sse(@Request() req: AuthenticatedRequest): Observable<MessageEvent> {
-    console.log(req.user);
-    // return interval(1000).pipe(
-    //   map((_) => ({ data: { hello: 'world' } } as MessageEvent)),
-    // );
-    return this.notificationEmitter.newNotification$.pipe(
+    const user: User = {
+      Email: '',
+      Id: req.user.id,
+      Name: req.user.name,
+    };
+    return this.notificationEmitter.getNotificationStreamOfUser(user).pipe(
       map(
         (newNotification) =>
           ({

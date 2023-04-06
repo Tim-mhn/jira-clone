@@ -123,8 +123,6 @@ export class TaskListItemComponent implements OnInit, OnChanges {
     this.cancelEditMode();
   }
 
-  log = console.log;
-
   cancelEditMode(
     opts: { resetControlValue: boolean } = { resetControlValue: true }
   ) {

@@ -33,7 +33,6 @@ export class NotificationsIndicatorComponent implements OnInit {
       .getNewNotificationsForCurrentUser()
       .pipe(
         tap((notifs) => (this.allNotifications = notifs)),
-        tap(console.log),
         shareReplay()
       );
   }

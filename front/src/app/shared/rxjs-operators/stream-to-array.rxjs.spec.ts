@@ -1,5 +1,5 @@
 import { from, of, skip, take } from 'rxjs';
-import { streamToArray } from './stream-to-array.operator';
+import { streamToArray } from './stream-to-array.rxjs';
 
 describe('streamToArray', () => {
   it('should emit the first value inside an array', () => {
