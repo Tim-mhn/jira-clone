@@ -14,6 +14,7 @@ import { CreateCommentNotificationsInteractor } from '../../application/use-case
 import { NotificationNotFound } from '../../domain';
 import { ReadNotificationDTO } from '../dtos';
 import { AuthenticatedRequest } from '../../../auth';
+import { NewNotificationEmitter } from '../../application/emitters/new-notification.emitter';
 
 describe('NotificationsController', () => {
   let controller: NotificationsController;
@@ -56,6 +57,7 @@ describe('NotificationsController', () => {
           provide: CreateCommentNotificationsInteractor,
           useValue: {},
         },
+        NewNotificationEmitter,
       ],
     }).compile();
     controller = app.get<NotificationsController>(NotificationsController);

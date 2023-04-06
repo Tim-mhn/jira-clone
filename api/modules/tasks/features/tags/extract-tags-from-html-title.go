@@ -1,14 +1,11 @@
 package tags
 
 import (
-	"fmt"
-
 	"github.com/tim-mhn/figma-clone/utils/arrays"
 )
 
 func ExtractTagsFromHTMLTitle(htmlTitle string) []string {
 
-	fmt.Println(htmlTitle)
 	regex := buildFindTagsRegex()
 
 	matches := regex.FindAllStringSubmatch(htmlTitle, -1)
@@ -21,8 +18,6 @@ func ExtractTagsFromHTMLTitle(htmlTitle string) []string {
 	tags := arrays.MapArray(matches, func(match []string) string {
 		return match[1]
 	})
-
-	fmt.Println(tags)
 
 	return tags
 }

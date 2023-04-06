@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { CommentNotification, NotificationNotFound } from '../../../domain';
-import { NotificationType } from '../../../domain/models/notification';
 import {
   CommentNotificationsRepository,
   CommentNotificationsInput,
+  CreateCommentNotificationsOutput,
 } from '../../../domain/repositories/comment-notification.repository';
 import { prismaClient } from '../../database';
 import { CommentNotificationPersistence } from '../../persistence/comment-notification.persistence';
@@ -41,6 +41,7 @@ export class DBCommentNotificationsRepository
           },
         },
         id: true,
+        followerId: true,
       },
 
       where: {
@@ -58,7 +59,7 @@ export class DBCommentNotificationsRepository
       data: { comment, author, project, taskId, taskTitle },
     } = dbNotif;
 
-    return {
+    return new CommentNotification({
       id,
       task: {
         id: taskId,
@@ -73,13 +74,13 @@ export class DBCommentNotificationsRepository
         id: project.id,
         name: project.name,
       },
-      type: NotificationType.COMMENT,
-    };
+      followerId: dbNotif.followerId,
+    });
   }
 
   async createCommentNotifications(
     newCommentNotification: CommentNotificationsInput,
-  ): Promise<void> {
+  ): Promise<CreateCommentNotificationsOutput> {
     const {
       author,
       comment,
@@ -92,24 +93,38 @@ export class DBCommentNotificationsRepository
         followerId,
       }));
 
-      await this.prisma.commentNotificationData.create({
-        data: {
-          comment,
-          taskId,
-          taskTitle,
-          author: {
-            create: author,
-          },
-          project: {
-            create: project,
-          },
-          commentNotifications: {
-            createMany: {
-              data: commentNotificationsCreateData,
+      const { commentNotifications: notificationWithFollowerIds } =
+        await this.prisma.commentNotificationData.create({
+          data: {
+            comment,
+            taskId,
+            taskTitle,
+            author: {
+              create: author,
+            },
+            project: {
+              create: project,
+            },
+            commentNotifications: {
+              createMany: {
+                data: commentNotificationsCreateData,
+              },
             },
           },
-        },
-      });
+          select: {
+            commentNotifications: {
+              select: {
+                id: true,
+                followerId: true,
+              },
+            },
+          },
+        });
+
+      return notificationWithFollowerIds.map(({ id, followerId }) => ({
+        notificationId: id,
+        followerId,
+      }));
     } catch (err) {
       console.error(err);
       throw err;

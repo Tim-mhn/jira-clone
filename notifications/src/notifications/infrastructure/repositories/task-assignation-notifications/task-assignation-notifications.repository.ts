@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import {
   TaskAssignationNotificationData,
   TaskAssignationNotification,
+  NotificationId,
 } from '../../../domain';
-import { NotificationType } from '../../../domain/models/notification';
 import { TaskAssignationNotificationsRepository } from '../../../domain/repositories/assignation-notification.repository';
 import { prismaClient } from '../../database';
 import { SELECT_PROJECT_ID_NAME } from '../db-selectors';
@@ -19,13 +19,13 @@ export class DBTaskAssignationNotificationsRepository
       TaskAssignationNotificationData,
       'id'
     >,
-  ): Promise<void> {
+  ): Promise<NotificationId> {
     const {
       assigneeId,
       project,
       task: { id: taskId, title: taskTitle },
     } = createTaskAssignationNotification;
-    await this.prisma.taskAssignationNotification.create({
+    const { id } = await this.prisma.taskAssignationNotification.create({
       data: {
         taskId,
         taskTitle,
@@ -34,7 +34,12 @@ export class DBTaskAssignationNotificationsRepository
           create: project,
         },
       },
+      select: {
+        id: true,
+      },
     });
+
+    return id;
   }
 
   async readNotification(notificationId: string): Promise<void> {
@@ -70,7 +75,7 @@ export class DBTaskAssignationNotificationsRepository
 
     return dbNotifs.map((dbNotif) => {
       const { taskId, taskTitle, assigneeId, id, project } = dbNotif;
-      return {
+      return new TaskAssignationNotification({
         assigneeId,
         id,
         project,
@@ -78,8 +83,7 @@ export class DBTaskAssignationNotificationsRepository
           id: taskId,
           title: taskTitle,
         },
-        type: NotificationType.ASSIGNATION,
-      };
+      });
     });
   }
 

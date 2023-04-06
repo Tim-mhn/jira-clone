@@ -1,6 +1,7 @@
 import { ValueProvider } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  TaskAssignationNotification,
   TaskAssignationNotificationData,
   TaskAssignedEvent,
 } from '../../../domain';
@@ -9,6 +10,7 @@ import { TaskAssignationNotificationsRepository } from '../../../domain/reposito
 import { TaskAssignationNotificationsRepositoryToken } from '../../../adapter/providers';
 import { TaskFollowersRepositoryToken } from '../../../adapter/providers/task-followers-repository.provider';
 import { CreateNewAssignationNotificationInteractor } from './create-new-assignation-notification.interactor';
+import { NewNotificationEmitter } from '../../emitters/new-notification.emitter';
 
 describe('CreateNewAssignationNotificationInteractor', () => {
   let service: CreateNewAssignationNotificationInteractor;
@@ -20,6 +22,8 @@ describe('CreateNewAssignationNotificationInteractor', () => {
     dismissNotificationsFromTask: jest.fn(),
   };
 
+  let notificationEmitter: NewNotificationEmitter;
+  // *jest.spyOn(notificationEmitter, 'fireNewNotificationEvent').
   const mockFollowersRepo: TaskFollowersRepository = {
     getTaskFollowersIds: jest.fn(),
     getTasksFollowedByUser: jest.fn(),
@@ -41,8 +45,13 @@ describe('CreateNewAssignationNotificationInteractor', () => {
         CreateNewAssignationNotificationInteractor,
         assignationNotifsRepoProvider,
         followersRepoProvider,
+        NewNotificationEmitter,
       ],
     }).compile();
+
+    notificationEmitter = module.get<NewNotificationEmitter>(
+      NewNotificationEmitter,
+    );
 
     service = module.get<CreateNewAssignationNotificationInteractor>(
       CreateNewAssignationNotificationInteractor,
@@ -110,6 +119,41 @@ describe('CreateNewAssignationNotificationInteractor', () => {
     expect(mockFollowersRepo.markUserAsFollowerOfTask).toHaveBeenCalledWith(
       taskAssignedEvent.assigneeId,
       taskAssignedEvent.task.id,
+    );
+  });
+
+  it('if the user has not self-assigned a task, it should call notificationEmitter.fireNewNotificationEvent with the correctly built Notification', async () => {
+    const userId = 'user-id-xyz';
+    const assigneeId = 'assignee-123-abc';
+    const taskAssigned: TaskAssignedEvent = {
+      assigneeId: assigneeId,
+      project: null,
+      assignedById: userId,
+      task: {
+        id: 'task-id',
+        title: 'task name',
+      },
+    };
+
+    const newNotificationId = 'notification-id-123456';
+    jest
+      .spyOn(mockRepo, 'create')
+      .mockImplementation(async () => newNotificationId);
+    jest.spyOn(notificationEmitter, 'fireNewNotificationEvent');
+
+    await service.handle(taskAssigned);
+
+    const expectedNotification = new TaskAssignationNotification({
+      assigneeId,
+      id: newNotificationId,
+      project: null,
+      task: {
+        id: 'task-id',
+        title: 'task name',
+      },
+    });
+    expect(notificationEmitter.fireNewNotificationEvent).toHaveBeenCalledWith(
+      expectedNotification,
     );
   });
 });

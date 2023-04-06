@@ -1,12 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
+import {
+  combineLatest,
+  forkJoin,
+  map,
+  Observable,
+  of,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { ProjectIdName } from '../../../core/models';
 import { buildTaskPageRoute } from '../../browse/utils/build-browse-page-routes.util';
 import { NotificationsAPI } from '../apis/notifications.api';
 import { NotificationsMapper } from '../mappers/notifications.mapper';
 import { NewNotifications, Notification, NotificationType } from '../models';
 import { NotificationsProvidersModule } from '../notifications-providers.module';
+import { streamToArray } from '../../../../shared/rxjs-operators';
 
 @Injectable({
   providedIn: NotificationsProvidersModule,
@@ -19,10 +29,36 @@ export class NotificationsController {
   ) {}
 
   public getNewNotificationsForCurrentUser(): Observable<NewNotifications> {
-    return this.api.getNewNotifications().pipe(
-      map((notifsDTO) => this.mapper.toDomain(notifsDTO)),
+    const firstLoadNotifications$ = this._getFirstLoadNotifications();
+
+    const realtimeNewNotification$ = this._getRealtimeNewNotifications$();
+
+    return combineLatest({
+      firstLoadNotifications: firstLoadNotifications$,
+      realtimeNewNotifications: realtimeNewNotification$,
+    }).pipe(
+      map(({ firstLoadNotifications, realtimeNewNotifications }) => [
+        ...realtimeNewNotifications,
+        ...firstLoadNotifications,
+      ]),
+      map((notificationsDTO) => this.mapper.toDomain(notificationsDTO)),
       tap(console.log)
     );
+  }
+
+  private _getFirstLoadNotifications(): Observable<NewNotifications> {
+    return this.api
+      .getNewNotifications()
+      .pipe(map((notificationsDTO) => this.mapper.toDomain(notificationsDTO)));
+  }
+
+  private _getRealtimeNewNotifications$(): Observable<NewNotifications> {
+    return streamToArray(
+      this.api
+        .getRealTimeNewNotificationsStream()
+        .pipe(map((dto) => this.mapper.buildNotificationFromDTO(dto))),
+      'newest-first'
+    ).pipe(startWith([]));
   }
 
   public goToTaskPageAndMarkNotificationAsRead<T extends NotificationType>(

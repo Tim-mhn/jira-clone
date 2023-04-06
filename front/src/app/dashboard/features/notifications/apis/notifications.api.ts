@@ -1,9 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
 import { ReadNotificationDTO } from '../dtos/read-notification.dto';
-import { NewNotifications } from '../models';
 import { NotificationsProvidersModule } from '../notifications-providers.module';
+import {
+  CommentNotificationDTO,
+  NewNotificationsDTO,
+  TaskAssignationNotificationDTO,
+} from '../dtos/new-notifications.dto';
 
 @Injectable({
   providedIn: NotificationsProvidersModule,
@@ -15,10 +20,28 @@ export class NotificationsAPI {
   private readEndpoint = `${environment.notificationsUrl}read`;
   public getNewNotifications() {
     const endpoint = `${this.endpoint}`;
-    return this.http.get<NewNotifications>(endpoint);
+    return this.http.get<NewNotificationsDTO>(endpoint);
+  }
+
+  public getRealTimeNewNotificationsStream() {
+    const endpoint = `${environment.notificationsUrl}notifications/events`;
+    const source = new EventSource(endpoint, { withCredentials: true });
+    return buildObservableFromEventSource<
+      CommentNotificationDTO | TaskAssignationNotificationDTO
+    >(source);
   }
 
   public readNotification(dto: ReadNotificationDTO) {
     return this.http.post<void>(this.readEndpoint, dto);
   }
+}
+
+function buildObservableFromEventSource<T>(es: EventSource) {
+  return new Observable<T>((observer) => {
+    es.addEventListener('message', (messageEvent: MessageEvent<string>) => {
+      observer.next(JSON.parse(messageEvent.data) as T);
+    });
+
+    es.addEventListener('error', (err) => observer.error(err));
+  });
 }

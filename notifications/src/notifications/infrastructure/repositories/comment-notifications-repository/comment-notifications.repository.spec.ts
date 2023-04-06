@@ -6,7 +6,7 @@ import { NotificationType } from '../../../domain/models/notification';
 import { CommentNotificationPersistence } from '../../persistence/comment-notification.persistence';
 import { DBCommentNotificationsRepository } from './comment-notifications.repository';
 
-describe('CommentNotificationsRepositoryService', () => {
+describe('CommentNotificationsRepository', () => {
   let repo: DBCommentNotificationsRepository;
 
   beforeEach(async () => {
@@ -39,7 +39,7 @@ describe('CommentNotificationsRepositoryService', () => {
         taskTitle: 'task-name',
         taskId: 'task-id',
       },
-
+      followerId: 'follower-id',
       id: 'notification-id',
     };
 

@@ -4,9 +4,12 @@ import {
   CommentNotificationsRepository,
   CommentNotificationsInput,
   TaskFollowersRepository,
+  CreateCommentNotificationsOutput,
 } from '../../../domain/repositories';
 import { CommentNotificationsRepositoryToken } from '../../../adapter/providers/comment-notification-repository.provider';
 import { TaskFollowersRepositoryToken } from '../../../adapter/providers/task-followers-repository.provider';
+import { NewNotificationEmitter } from '../../emitters/new-notification.emitter';
+import { CommentNotification } from '../../../domain';
 
 @Injectable()
 export class CreateCommentNotificationsInteractor {
@@ -15,6 +18,7 @@ export class CreateCommentNotificationsInteractor {
     private taskFollowersRepo: TaskFollowersRepository,
     @Inject(CommentNotificationsRepositoryToken)
     private commentNotificationsRepo: CommentNotificationsRepository,
+    private newNotificationEmitter: NewNotificationEmitter,
   ) {}
 
   async createNotificationsForTaskFollowersExceptCommentAuthor(
@@ -39,6 +43,31 @@ export class CreateCommentNotificationsInteractor {
       followersIds: followersIdsExceptAuthor,
     };
 
-    await this.commentNotificationsRepo.createCommentNotifications(input);
+    const notificationWithFollowerIds =
+      await this.commentNotificationsRepo.createCommentNotifications(input);
+
+    this._emitCommentNotificationsEvents(input, notificationWithFollowerIds);
+  }
+
+  private _emitCommentNotificationsEvents(
+    commentNotificationsInput: CommentNotificationsInput,
+    notificationsIdFollowerId: CreateCommentNotificationsOutput,
+  ) {
+    const { author, comment, project, task } = commentNotificationsInput;
+    const commentNotifications: CommentNotification[] =
+      notificationsIdFollowerId?.map(({ notificationId, followerId }) => {
+        return new CommentNotification({
+          author,
+          comment,
+          followerId,
+          id: notificationId,
+          project,
+          task,
+        });
+      });
+
+    commentNotifications?.forEach((commentNotif) =>
+      this.newNotificationEmitter.fireNewNotificationEvent(commentNotif),
+    );
   }
 }
