@@ -19,3 +19,8 @@ Angular, Tailwind, [Self-built Angular UI libs](https://github.com/Tim-mhn/ng-li
 
 #### Infrastructure
 [Railway](https://railway.app/), [Netlify](https://www.netlify.com/), [Cloudflare](https://www.cloudflare.com/)
+
+
+### Software Architecture
+
+![Architecture Diagram](https://raw.githubusercontent.com/Tim-mhn/jira-clone/4f789a5d91f1f8f3c89aca91a557b970deab2b39/images/jira-clone-architecture.svg "Architecture diagram")
