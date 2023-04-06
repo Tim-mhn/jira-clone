@@ -26,7 +26,7 @@ export class NotificationsAPI {
   public getRealTimeNewNotificationsStream() {
     const endpoint = `${environment.notificationsUrl}notifications/events`;
     const source = new EventSource(endpoint, { withCredentials: true });
-    return fromEventSource<
+    return buildObservableFromEventSource<
       CommentNotificationDTO | TaskAssignationNotificationDTO
     >(source);
   }
@@ -36,7 +36,7 @@ export class NotificationsAPI {
   }
 }
 
-function fromEventSource<T>(es: EventSource) {
+function buildObservableFromEventSource<T>(es: EventSource) {
   return new Observable<T>((observer) => {
     es.addEventListener('message', (messageEvent: MessageEvent<string>) => {
       observer.next(JSON.parse(messageEvent.data) as T);
