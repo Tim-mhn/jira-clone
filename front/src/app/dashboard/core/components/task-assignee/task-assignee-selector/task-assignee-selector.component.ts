@@ -61,14 +61,9 @@ export class TaskAssigneeSelectorComponent
   }
 
   updateTaskAssignee(newAssignee: User) {
-    this.controller
-      .updateTask({
-        taskId: this.task.Id,
-        assigneeId: newAssignee.Id,
-      })
-      .subscribe(() => {
-        this.task.updateAssignee(newAssignee);
-      });
+    this.controller.updateTaskAssignee(this.task, newAssignee).subscribe(() => {
+      this.task.updateAssignee(newAssignee);
+    });
   }
 
   ngOnDestroy() {

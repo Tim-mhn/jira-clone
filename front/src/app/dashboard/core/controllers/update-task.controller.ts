@@ -1,6 +1,6 @@
 import { Injectable, Optional } from '@angular/core';
 import { RequestState, RequestStateController } from '@tim-mhn/common/http';
-import { Observable, map, of, switchMap } from 'rxjs';
+import { Observable, map, of, switchMap, tap } from 'rxjs';
 import { SnackbarFeedbackService } from '../../../shared/services/snackbar-feedback.service';
 import { GetTasksOfBoardController } from '../../features/board/controllers/get-board-tasks.controller';
 import { TaskCommandsAPI } from '../apis/task-commands.api';
@@ -11,6 +11,7 @@ import { TaskStatus } from '../models/task-status';
 import { CurrentProjectService } from '../state-services/current-project.service';
 import { GetTasksAPI } from '../apis/get-tasks.api';
 import { TaskTags } from '../../features/tags';
+import { User } from '../../../auth/models/user';
 
 @Injectable({ providedIn: DashboardCoreProvidersModule })
 export class UpdateTaskController {
@@ -74,6 +75,30 @@ export class UpdateTaskController {
         this.snackbarFeedback.showFeedbackSnackbars(),
         this._refreshTaskListIfInBoardPage()
       );
+  }
+
+  updateTaskAssignee(
+    task: Task,
+    newAssignee: User,
+    requestState?: RequestState
+  ) {
+    const currentAssignee = task.Assignee;
+    const revertToInitialAssignee = () => task.updateAssignee(currentAssignee);
+
+    task.updateAssignee(newAssignee);
+
+    const dto: PatchTaskDTO = {
+      taskId: task.Id,
+      assigneeId: newAssignee.Id,
+      projectId: this._currentProjectId,
+    };
+    return this.api.updateTask(dto).pipe(
+      this.requestStateController.handleRequest(requestState),
+      this.snackbarFeedback.showFeedbackSnackbars(),
+      tap({
+        error: () => revertToInitialAssignee(),
+      })
+    );
   }
 
   updateTaskStatus(taskId: string, newStatus: TaskStatus) {
