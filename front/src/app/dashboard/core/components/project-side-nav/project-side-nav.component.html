@@ -1,7 +1,9 @@
 <div
   class="flex flex-col flex-grow w-60 bg-gray-100 p-3 h-full text-gray-800 gap-4"
 >
-  <div class="text-md font-medium">{{ (currentProject$ | async)?.Name }}</div>
+  <div class="text-lg font-medium px-2">
+    {{ (currentProject$ | async)?.Name }}
+  </div>
 
   <jira-side-nav-item [link]="['/', 'projects', projectId$ | async, 'board']"
     >Board</jira-side-nav-item
