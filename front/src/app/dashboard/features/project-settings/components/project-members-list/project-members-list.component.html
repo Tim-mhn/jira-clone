@@ -15,19 +15,6 @@
     </tim-input>
   </div>
 
-  <div class="py-4">
-    <tim-html-input
-      [formControl]="tagCtrl"
-      [timHashtagAutocomplete]="autocomplete"
-    >
-    </tim-html-input>
-
-    <tim-hashtag-autocomplete [tagTemplate]="tagTemplate" #autocomplete>
-      <tim-hashtag-option *ngFor="let tag of ALL_TAGS" [value]="tag">
-        {{ tag }}
-      </tim-hashtag-option>
-    </tim-hashtag-autocomplete>
-  </div>
   <div class="flex flex-grow relative">
     <jira-table
       class="absolute left-0 right-0 top-0 bottom-0"
