@@ -22,7 +22,8 @@ func SetAuthCookieFromUser(user User, c *gin.Context) {
 }
 func DeleteAuthCookie(c *gin.Context) {
 	MAX_AGE := -1
-	c.SetCookie(AUTH_COOKIE_NAME, "", MAX_AGE, _COOKIE_PATH, environments.GetConfig().ClientDomain, _SECURE, _HTTP_ONLY)
+	EMPTY_COOKIE := ""
+	c.SetCookie(AUTH_COOKIE_NAME, EMPTY_COOKIE, MAX_AGE, _COOKIE_PATH, environments.GetConfig().ClientDomain, _SECURE, _HTTP_ONLY)
 }
 
 func GetAuthCookieFromContext(c *gin.Context) *http.Cookie {

@@ -64,14 +64,7 @@ func (uc *userController) Me(c *gin.Context) {
 }
 
 func (uc *userController) SignOut(c *gin.Context) {
-	cookie := &http.Cookie{
-		Name:     "Authorization",
-		Value:    "",
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-	}
 
-	c.SetCookie(cookie.Name, cookie.Value, cookie.MaxAge, cookie.Path, "localhost", true, true)
+	DeleteAuthCookie(c)
 	c.IndentedJSON(http.StatusOK, nil)
 }
