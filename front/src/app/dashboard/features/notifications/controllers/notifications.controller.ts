@@ -41,8 +41,7 @@ export class NotificationsController {
         ...realtimeNewNotifications,
         ...firstLoadNotifications,
       ]),
-      map((notificationsDTO) => this.mapper.toDomain(notificationsDTO)),
-      tap(console.log)
+      map((notificationsDTO) => this.mapper.toDomain(notificationsDTO))
     );
   }
 

@@ -22,7 +22,5 @@ export class SprintPage implements OnInit {
 
   project$ = this._currentProjectService.currentProject$;
 
-  ngOnInit(): void {
-    this.route.params.subscribe(console.log);
-  }
+  ngOnInit(): void {}
 }

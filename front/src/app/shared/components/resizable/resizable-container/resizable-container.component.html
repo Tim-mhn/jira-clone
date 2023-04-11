@@ -1,0 +1,12 @@
+<div class="flex flex-grow max-h-full overflow-hidden" #container>
+  <ng-content select="[resizableLeftElement]"></ng-content>
+  <div
+    *ngIf="resizable"
+    class="relative w-1 cursor-ew-resize hover:bg-cyan-400"
+    [ngClass]="resizing ? 'bg-cyan-400' : 'bg-gray-200'"
+    (mousemove)="resizeRightElement($event)"
+    (mousedown)="enableResizing()"
+  ></div>
+
+  <ng-content select="[resizableRightElement]"></ng-content>
+</div>

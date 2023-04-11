@@ -8,6 +8,7 @@ import { SprintModule } from '../sprint/sprint.module';
 import { CreateSprintModule } from '../../../../core/components/create-sprint/create-sprint.module';
 import { BoardFiltersModule } from '../board-filters/board-filters.module';
 import { FeaturePageContainerModule } from '../../../../core/components/feature-page-container/feature-page-container.module';
+import { ResizableModule } from '../../../../../shared/components/resizable/resizable.module';
 
 @NgModule({
   declarations: [BoardUiComponent],
@@ -20,6 +21,7 @@ import { FeaturePageContainerModule } from '../../../../core/components/feature-
     CreateSprintModule,
     BoardFiltersModule,
     FeaturePageContainerModule,
+    ResizableModule,
   ],
   exports: [BoardUiComponent],
 })

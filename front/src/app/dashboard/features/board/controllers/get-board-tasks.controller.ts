@@ -63,7 +63,6 @@ export class GetTasksOfBoardController {
         tap((sprintsTasks) =>
           this.sprintsService.updateSprintList(sprintsTasks)
         ),
-        tap(console.log),
         this.requestStateController.handleRequest(requestState),
         map(() => null)
       );

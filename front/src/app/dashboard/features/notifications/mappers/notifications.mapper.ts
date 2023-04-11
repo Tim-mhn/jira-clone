@@ -12,7 +12,6 @@ import {
   NotificationType,
 } from '../models';
 import { NotificationsProvidersModule } from '../notifications-providers.module';
-import { logMethod } from '../../../../shared/utils/log-method.decorator';
 
 @Injectable({
   providedIn: NotificationsProvidersModule,
@@ -20,7 +19,6 @@ import { logMethod } from '../../../../shared/utils/log-method.decorator';
 export class NotificationsMapper
   implements Mapper<NewNotifications, NewNotificationsDTO>
 {
-  @logMethod
   buildNotificationFromDTO(
     dto: CommentNotificationDTO | TaskAssignationNotificationDTO
   ): TaskAssignationNotification | CommentNotification {
