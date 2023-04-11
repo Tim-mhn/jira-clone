@@ -3,7 +3,6 @@ package notifications_api
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"time"
 
 	"github.com/rabbitmq/amqp091-go"
@@ -12,24 +11,26 @@ import (
 
 var mqConnection *amqp091.Connection
 
-func getConnectionOrConnectForTheFirstTime() *amqp091.Connection {
+func getConnectionOrConnectForTheFirstTime() (*amqp091.Connection, error) {
 	if mqConnection != nil {
-		return mqConnection
+		return mqConnection, nil
 	}
 
 	conn, err := amqp091.Dial(environments.GetConfig().RabbitMQURI)
 
 	if err != nil {
-		log.Fatalf("Error when connecting to Message Queue %e", err)
+		return &amqp091.Connection{}, err
 	}
 
-	return conn
+	return conn, nil
 
 }
 
 func openPubSubChannel(name string) (*amqp091.Channel, error) {
-	conn := getConnectionOrConnectForTheFirstTime()
-
+	conn, err := getConnectionOrConnectForTheFirstTime()
+	if err != nil {
+		return &amqp091.Channel{}, err
+	}
 	ch, err := conn.Channel()
 	if err != nil {
 		return &amqp091.Channel{}, err

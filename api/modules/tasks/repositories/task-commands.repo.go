@@ -80,7 +80,7 @@ func buildCreateTaskQuery(projectID string, sprintID string, title string, assig
 	return fmt.Sprintf(`
 		WITH insert_task AS (
     WITH task_number AS (
-		SELECT MAX(number) + 1 as next_number
+		SELECT COALESCE(MAX(number) + 1, 1) as next_number
 		FROM task
 		JOIN sprint ON task.sprint_id=sprint.id
 		JOIN project ON sprint.project_id=project.id
