@@ -13,7 +13,6 @@ import {
 import { map, switchMap, takeUntil } from 'rxjs';
 import { ResizableLeftElementDirective } from '../resizable-left-element.directive';
 import { ResizableRightElementDirective } from '../resizable-right-element.directive';
-import { logMethod } from '../../../utils/log-method.decorator';
 import { SubscriptionHandler } from '../../../services/subscription-handler.service';
 
 @Component({
@@ -83,7 +82,6 @@ export class ResizableContainerComponent
     this.resizing = true;
   }
 
-  @logMethod
   disableResizing() {
     this.resizing = false;
   }

@@ -21,13 +21,22 @@ export class AuthController {
   ) {}
 
   fetchCurrentUserOrGoBackToLogin() {
-    return this.fetchAndUpdateCurrentUser().pipe(
+    return this._getCurrentUserOrFetchFromAPI().pipe(
       tap({
         next: (u) => this.loggedInUserService.setLoggedInUser(u),
         error: (err) => {
           console.error(err);
           this.router.navigate(['/auth', 'login']);
         },
+      })
+    );
+  }
+
+  private _getCurrentUserOrFetchFromAPI() {
+    return this.loggedInUserService.isLoggedIn$.pipe(
+      switchMap((isLoggedIn) => {
+        if (isLoggedIn) return this.loggedInUserService.user$;
+        return this.fetchAndUpdateCurrentUser();
       })
     );
   }

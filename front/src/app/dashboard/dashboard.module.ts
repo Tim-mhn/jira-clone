@@ -5,7 +5,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { DashboardLayoutComponent } from './core/components/dashboard-layout/dashboard-layout.component';
 import { DashboardLayoutModule } from './core/components/dashboard-layout/dashboard-layout.module';
-import { LoggedInUserService } from './core/state-services/logged-in-user.service';
 import { DashboardCoreProvidersModule } from './core/core.providers.module';
 import { DashboardSingletonsProvidersModule } from './dashboard-singletons.providers.module';
 
@@ -31,6 +30,5 @@ const routes: Routes = [
     DashboardCoreProvidersModule,
     DashboardSingletonsProvidersModule,
   ],
-  providers: [LoggedInUserService],
 })
 export class DashboardModule {}

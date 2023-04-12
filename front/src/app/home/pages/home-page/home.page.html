@@ -13,20 +13,12 @@
         used by agile teams.
       </div>
 
-      <div class="mt-8 flex flex-row justify-start items-center gap-2">
-        <button
-          tim-flat-button
-          color="primary"
-          [routerLink]="['auth', 'login']"
-        >
-          Login
-        </button>
-        <button
-          tim-flat-button
-          color="destructive"
-          [routerLink]="['auth', 'sign-up']"
-        >
-          Sign up
+      <div
+        class="mt-8 flex flex-row w-full flex-grow justify-center text-base text-gray-800"
+        *ngIf="loggedIn$ | async; else: authButtons"
+      >
+        <button tim-faint-button routerLink="/projects" size="lg">
+          Go to projects
         </button>
       </div>
 
@@ -49,3 +41,18 @@
     </div>
   </div>
 </jira-non-dashboard-page-container>
+
+<ng-template #authButtons>
+  <div class="mt-8 flex flex-row justify-start items-center gap-2">
+    <button tim-flat-button color="primary" [routerLink]="['auth', 'login']">
+      Login
+    </button>
+    <button
+      tim-flat-button
+      color="destructive"
+      [routerLink]="['auth', 'sign-up']"
+    >
+      Sign up
+    </button>
+  </div>
+</ng-template>
