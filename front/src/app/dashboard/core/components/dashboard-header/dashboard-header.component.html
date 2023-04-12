@@ -24,10 +24,15 @@
     style="--logo-color: #2684ff; --logo-fill: var(--ds-text, #253858)"
     aria-label="Jira Software"
     role="img"
-    class="css-12mte9y"
+    class="relative"
   >
-    <img src="assets/jira-icon.svg"
-  /></span>
+    <div
+      class="absolute text-red-500 font-bold text-lg -rotate-12 -right-5 top-4"
+    >
+      Clone
+    </div>
+    <img width="178" height="32" src="assets/jira-icon.svg" />
+  </span>
 </ng-template>
 
 <tim-dropdown-menu #accountDropdown>
