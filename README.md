@@ -24,3 +24,8 @@ Angular, Tailwind, [Self-built Angular UI libs](https://github.com/Tim-mhn/ng-li
 ### Software Architecture
 
 ![Architecture Diagram](https://raw.githubusercontent.com/Tim-mhn/jira-clone/4f789a5d91f1f8f3c89aca91a557b970deab2b39/images/jira-clone-architecture.svg "Architecture diagram")
+
+
+
+#### NB
+All images are the property of Atlassian Corporation, developer of the Jira platform. This is only a personal project for learning and has no commercial purpose. 
