@@ -1,0 +1,51 @@
+<jira-non-dashboard-page-container>
+  <div class="flex flex-col jusitfy-center flex-col-reverse lg:flex-row gap-8">
+    <div
+      class="flex flex-grow flex-col items-center lg:items-start justify-center gap-8 text-2xl xl:text-4xl font-medium text-blue-800 mb-20"
+    >
+      <div>
+        Welcome to Tim's Jira,<br />
+        a clone of the collaborative platform Jira.
+      </div>
+
+      <div>
+        Jira is the #1 software development tool<br />
+        used by agile teams.
+      </div>
+
+      <div class="mt-8 flex flex-row justify-start items-center gap-2">
+        <button
+          tim-flat-button
+          color="primary"
+          [routerLink]="['auth', 'login']"
+        >
+          Login
+        </button>
+        <button
+          tim-flat-button
+          color="destructive"
+          [routerLink]="['auth', 'sign-up']"
+        >
+          Sign up
+        </button>
+      </div>
+
+      <div
+        class="mt-20 text-sm font-light text-gray-800 flex-grow flex flex-col justify-end"
+      >
+        All images are the property of Atlassian Corporation, developer of the
+        Jira platform. This is only a personal project for learning and has no
+        commercial purpose.
+      </div>
+    </div>
+
+    <div class="flex flex-grow">
+      <img
+        height="480"
+        width="809"
+        src="assets/collaborative-work.png"
+        class="h-auto w-full"
+      />
+    </div>
+  </div>
+</jira-non-dashboard-page-container>
