@@ -29,7 +29,7 @@ type TasksController struct {
 	boardSprintsService board.IBoardSprintsService
 }
 
-func NewTasksController(um auth.UserRepository, projectQueries project.ProjectQueriesRepository, tagsService tags.ITagsService, boardSprintsService board.IBoardSprintsService, tasksQueriesService tasks_queries.ITasksQueriesService, conn *sql.DB) *TasksController {
+func NewTasksController(um auth.UserRepository, projectQueries project.ProjectRepository, tagsService tags.ITagsService, boardSprintsService board.IBoardSprintsService, tasksQueriesService tasks_queries.ITasksQueriesService, conn *sql.DB) *TasksController {
 
 	taskCommandsRepo := tasks_repositories.NewSQLTaskCommandsRepository(um, projectQueries, conn)
 

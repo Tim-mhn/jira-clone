@@ -9,14 +9,12 @@ import (
 )
 
 type projectController struct {
-	projectCommands *ProjectCommandsRepository
-	projectQueries  ProjectQueriesRepository
+	projectRepo ProjectRepository
 }
 
-func NewProjectController(projectCommands *ProjectCommandsRepository, projectQueries ProjectQueriesRepository) *projectController {
+func NewProjectController(projectRepo ProjectRepository) *projectController {
 	return &projectController{
-		projectCommands: projectCommands,
-		projectQueries:  projectQueries,
+		projectRepo: projectRepo,
 	}
 }
 
@@ -29,14 +27,14 @@ func (pc *projectController) CreateProject(c *gin.Context) {
 
 	user, _ := auth.GetUserFromRequestContext(c)
 
-	newProject, err := pc.projectCommands.CreateProject(newProjectDTO.Name, newProjectDTO.Key, *user)
+	newProject, err := pc.projectRepo.CreateProject(newProjectDTO.Name, newProjectDTO.Key, *user)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	err = pc.projectCommands.AddMemberToProject(newProject.Id, (user).Id)
+	err = pc.projectRepo.AddMemberToProject(newProject.Id, (user).Id)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
@@ -52,7 +50,7 @@ func (pc *projectController) AddMemberToProject(c *gin.Context) {
 
 	c.BindJSON(&addMemberToProjectDTO)
 
-	err := pc.projectCommands.AddMemberToProject(projectID, addMemberToProjectDTO.MemberID)
+	err := pc.projectRepo.AddMemberToProject(projectID, addMemberToProjectDTO.MemberID)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, err.Error())
@@ -66,7 +64,7 @@ func (pc *projectController) AddMemberToProject(c *gin.Context) {
 func (pc *projectController) GetProject(c *gin.Context) {
 	projectID := GetProjectIDParam(c)
 
-	project, err := pc.projectQueries.GetProjectByID(projectID)
+	project, err := pc.projectRepo.GetProjectByID(projectID)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
@@ -81,7 +79,7 @@ func (pc *projectController) GetProject(c *gin.Context) {
 func (pc *projectController) GetProjectMembers(c *gin.Context) {
 	projectID := GetProjectIDParam(c)
 
-	members, err := pc.projectQueries.GetProjectMembers(projectID)
+	members, err := pc.projectRepo.GetProjectMembers(projectID)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
@@ -97,7 +95,7 @@ func (pc *projectController) GetUserProjects(c *gin.Context) {
 	log.Println("ProjectController.GetUserProjects called")
 	user, _ := auth.GetUserFromRequestContext(c)
 
-	userProjects, err := pc.projectQueries.GetProjectsOfUser(user.Id)
+	userProjects, err := pc.projectRepo.GetProjectsOfUser(user.Id)
 
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, err.Error())
@@ -112,7 +110,7 @@ func (pc *projectController) DeleteProject(c *gin.Context) {
 
 	projectID := GetProjectIDParam(c)
 
-	err := pc.projectCommands.DeleteProjectByID(projectID)
+	err := pc.projectRepo.DeleteProjectByID(projectID)
 
 	if err != nil {
 		if err != nil {

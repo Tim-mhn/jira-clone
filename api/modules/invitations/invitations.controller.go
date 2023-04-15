@@ -13,7 +13,7 @@ type InvitationsController struct {
 	service *ProjectInvitationService
 }
 
-func NewInvitationsController(repo *ProjectInvitationRepository, projectRepo *project.ProjectCommandsRepository, userRepo auth.UserRepository) *InvitationsController {
+func NewInvitationsController(repo *ProjectInvitationRepository, projectRepo project.ProjectRepository, userRepo auth.UserRepository) *InvitationsController {
 	userService := auth.NewUserService(userRepo)
 
 	return &InvitationsController{

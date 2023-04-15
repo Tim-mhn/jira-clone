@@ -21,7 +21,7 @@ type TaskCommentsService struct {
 	notificationsAPI notifications_api.NotificationsAPI
 }
 
-func NewTaskCommentsService(repo TaskCommentsRepository, projectQueries project.ProjectQueriesRepository, tasksQueriresService tasks_queries.ITasksQueriesService) TaskCommentsService {
+func NewTaskCommentsService(repo TaskCommentsRepository, projectQueries project.ProjectRepository, tasksQueriresService tasks_queries.ITasksQueriesService) TaskCommentsService {
 	return TaskCommentsService{
 		repo:             repo,
 		notificationsAPI: notifications_api.NewNotificationsAPI(projectQueries, tasksQueriresService),

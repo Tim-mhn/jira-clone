@@ -42,7 +42,7 @@ func RegisterEndpoints(singleProjectRoutes project.SingleProjectRoutes, conn *sq
 func buildControllers(conn *sql.DB) (*tasks_controllers.TasksController, *tasks_controllers.TaskStatusController) {
 	userRepo := auth.NewUserRepository(conn)
 
-	projectQueriesRepo := project.NewProjectQueriesRepository(conn)
+	projectQueriesRepo := project.NewProjectRepository(userRepo, conn)
 	taskStatusRepo := tasks_repositories.NewTaskStatusRepository(conn)
 	sprintRepo := sprints.NewSprintRepository(conn)
 	sprintPointsRepo := sprint_points.NewSprintPointsRepository(conn)

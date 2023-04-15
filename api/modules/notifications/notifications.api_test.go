@@ -161,8 +161,8 @@ func TestSendTaskAssignationNotification(t *testing.T) {
 	})
 }
 
-func setupServiceWithMocks() (NotificationsAPI, *project.MockProjectQueriesRepository, *tasks_queries.MockTasksQueriesService) {
-	mockProjectRepo := new(project.MockProjectQueriesRepository)
+func setupServiceWithMocks() (NotificationsAPI, *project.MockProjectRepository, *tasks_queries.MockTasksQueriesService) {
+	mockProjectRepo := new(project.MockProjectRepository)
 	mockTaskRepo := new(tasks_queries.MockTasksQueriesService)
 	notificationsAPI := NewNotificationsAPI(mockProjectRepo, mockTaskRepo)
 
