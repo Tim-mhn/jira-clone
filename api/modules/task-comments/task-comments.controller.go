@@ -18,7 +18,7 @@ type TaskCommentsController struct {
 	service ITaskCommentsService
 }
 
-func newTaskCommentsController(repo TaskCommentsRepository, projectQueries project.ProjectQueriesRepository, tasksQueries tasks_queries.ITasksQueriesService) *TaskCommentsController {
+func newTaskCommentsController(repo TaskCommentsRepository, projectQueries project.ProjectRepository, tasksQueries tasks_queries.ITasksQueriesService) *TaskCommentsController {
 	return &TaskCommentsController{
 		service: NewTaskCommentsService(repo, projectQueries, tasksQueries),
 	}

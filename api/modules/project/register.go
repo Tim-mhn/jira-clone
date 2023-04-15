@@ -16,7 +16,8 @@ type ProjectRouterGroups struct {
 }
 
 func GetProjectRouterGroups(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
-	projectQueries := NewProjectQueriesRepository(conn)
+	userRepo := auth.NewUserRepository(conn)
+	projectQueries := NewProjectRepository(userRepo, conn)
 
 	requiresAuthRoutes := router.Group("", auth.IsAuthenticatedMiddleware())
 
@@ -33,10 +34,9 @@ func GetProjectRouterGroups(router *gin.Engine, conn *sql.DB) ProjectRouterGroup
 }
 func RegisterEndpoints(router *gin.Engine, conn *sql.DB) ProjectRouterGroups {
 	userRepo := auth.NewUserRepository(conn)
-	projectQueries := NewProjectQueriesRepository(conn)
-	projectRepo := NewProjectCommandsRepository(userRepo, conn)
+	projectRepo := NewProjectRepository(userRepo, conn)
 
-	pc := NewProjectController(projectRepo, projectQueries)
+	pc := NewProjectController(projectRepo)
 
 	projectRouteGroups := GetProjectRouterGroups(router, conn)
 	singleProjectRoutes := projectRouteGroups.SingleProjectRoutes

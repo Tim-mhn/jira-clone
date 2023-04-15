@@ -1,25 +1,38 @@
 package project
 
-import "github.com/stretchr/testify/mock"
+import (
+	"github.com/stretchr/testify/mock"
+	"github.com/tim-mhn/figma-clone/modules/auth"
+)
 
-func NewMockProjectQueriesRepository() *MockProjectQueriesRepository {
-	return new(MockProjectQueriesRepository)
+func NewMockProjectRepository() *MockProjectRepository {
+	return new(MockProjectRepository)
 }
 
-type MockProjectQueriesRepository struct {
+type MockProjectRepository struct {
 	mock.Mock
 }
 
-func (mock *MockProjectQueriesRepository) GetProjectByID(projectID string) (Project, error) {
+func (mock *MockProjectRepository) GetProjectByID(projectID string) (Project, error) {
 	args := mock.Called(projectID)
 	return args.Get(0).(Project), nil
 }
-func (mock *MockProjectQueriesRepository) GetProjectMembers(projectID string) ([]ProjectMember, error) {
+func (mock *MockProjectRepository) GetProjectMembers(projectID string) ([]ProjectMember, error) {
 	return []ProjectMember{}, nil
 }
-func (mock *MockProjectQueriesRepository) GetProjectsOfUser(userID string) ([]Project, error) {
+func (mock *MockProjectRepository) GetProjectsOfUser(userID string) ([]Project, error) {
 	return []Project{}, nil
 }
-func (mock *MockProjectQueriesRepository) MemberIsInProject(projectID string, memberID string) (bool, error) {
+func (mock *MockProjectRepository) MemberIsInProject(projectID string, memberID string) (bool, error) {
 	return true, nil
+}
+
+func (mock *MockProjectRepository) CreateProject(name string, key string, creator auth.User) (Project, error) {
+	return Project{}, nil
+}
+func (mock *MockProjectRepository) AddMemberToProject(projectID string, userID string) error {
+	return nil
+}
+func (mock *MockProjectRepository) DeleteProjectByID(projectID string) error {
+	return nil
 }
