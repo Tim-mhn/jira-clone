@@ -17,7 +17,7 @@ var cachingService *InMemCachingService
 func GetCachingService() CachingService {
 	if cachingService == nil {
 		cachingService = new(InMemCachingService)
-		c := cache.New(5*time.Minute, 10*time.Minute)
+		c := cache.New(cache.DefaultExpiration, 10*time.Minute)
 		cachingService.cache = c
 	}
 	return cachingService
@@ -36,5 +36,5 @@ func (s *InMemCachingService) Invalidate(key string) {
 }
 
 func (s *InMemCachingService) Update(key string, data interface{}) {
-	s.cache.Set(key, data, 0)
+	s.cache.Set(key, data, cache.DefaultExpiration)
 }
