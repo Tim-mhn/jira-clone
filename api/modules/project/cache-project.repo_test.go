@@ -14,12 +14,40 @@ func TestGetProjectsOfUser(t *testing.T) {
 		cacheRepo, mockProjectRepo, mockCachingService := setupRepoAndMocks()
 		userID := "user-id-123"
 		mockCachingService.On("Get", mock.Anything).Return(nil, false)
+		mockCachingService.On("Update", mock.Anything, mock.Anything).Return(nil)
+
 		mockProjectRepo.On("GetProjectsOfUser", userID).Return([]Project{}, nil)
 
 		cacheRepo.GetProjectsOfUser(userID)
 
 		mockProjectRepo.AssertCalled(t, "GetProjectsOfUser", userID)
 
+	})
+
+	t.Run("it should set the cache if there are no cached results", func(t *testing.T) {
+		cacheRepo, mockProjectRepo, mockCachingService := setupRepoAndMocks()
+		userID := "user-id-123"
+		mockCachingService.On("Get", mock.Anything).Return(nil, false)
+		mockCachingService.On("Update", mock.Anything, mock.Anything).Return(nil)
+
+		mockProjectRepo.On("GetProjectsOfUser", userID).Return([]Project{}, nil)
+
+		userProjects, _ := cacheRepo.GetProjectsOfUser(userID)
+
+		mockCachingService.AssertCalled(t, "Update", mock.Anything, userProjects)
+	})
+
+	t.Run("it should not update the cache if there are no cached results and the repo returns an error", func(t *testing.T) {
+		cacheRepo, mockProjectRepo, mockCachingService := setupRepoAndMocks()
+		userID := "user-id-123"
+		mockCachingService.On("Get", mock.Anything).Return(nil, false)
+		mockCachingService.On("Update", mock.Anything, mock.Anything).Return(nil)
+
+		mockProjectRepo.On("GetProjectsOfUser", userID).Return([]Project{}, fmt.Errorf("error when retrieving project list"))
+
+		cacheRepo.GetProjectsOfUser(userID)
+
+		mockCachingService.AssertNotCalled(t, "Update", mock.Anything, mock.Anything)
 	})
 
 	t.Run("it should NOT call the ProjectRepo if is a valid cache", func(t *testing.T) {

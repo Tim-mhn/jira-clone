@@ -1,10 +1,13 @@
 package project
 
 import (
+	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/tim-mhn/figma-clone/caching"
 	"github.com/tim-mhn/figma-clone/modules/auth"
+	time_utils "github.com/tim-mhn/figma-clone/utils/time"
 )
 
 type CacheProjectRepository struct {
@@ -12,14 +15,40 @@ type CacheProjectRepository struct {
 	cachingService caching.CachingService
 }
 
+func NewProjectRepository(userRepo auth.UserRepository, conn *sql.DB) ProjectRepository {
+	dbProjectRepo := &_SQLProjectRepository{
+		conn:     conn,
+		userRepo: userRepo,
+	}
+
+	cachingService := caching.GetCachingService()
+
+	cacheProjectRepo := new(CacheProjectRepository)
+
+	cacheProjectRepo.repo = dbProjectRepo
+	cacheProjectRepo.cachingService = cachingService
+
+	return cacheProjectRepo
+
+}
 func (cacheRepo CacheProjectRepository) GetProjectsOfUser(userID string) ([]Project, error) {
 
+	time_utils.LogFunctionTime(time.Now(), "GetProjectsOfUser")
 	cachedProjects, foundFromCache := cacheRepo.getProjectListFromCache(userID)
 
 	if foundFromCache {
 		return cachedProjects, nil
 	}
-	return cacheRepo.repo.GetProjectsOfUser(userID)
+	projects, err := cacheRepo.repo.GetProjectsOfUser(userID)
+	if err == nil {
+		cacheRepo.updateProjectListCache(userID, projects)
+	}
+	return projects, err
+
+}
+
+func (cacheRepo CacheProjectRepository) updateProjectListCache(userID string, projects []Project) {
+	cacheRepo.cachingService.Update(userProjectsCacheKey(userID), projects)
 }
 
 func (cacheRepo CacheProjectRepository) getProjectListFromCache(userID string) ([]Project, bool) {
@@ -27,6 +56,7 @@ func (cacheRepo CacheProjectRepository) getProjectListFromCache(userID string) (
 
 	cachedProjects, foundFromCache := cacheRepo.cachingService.Get(cacheKey)
 
+	fmt.Printf("Found from cache ? %t", foundFromCache)
 	if foundFromCache {
 		return cachedProjects.([]Project), true
 	}

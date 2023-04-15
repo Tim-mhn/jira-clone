@@ -25,14 +25,6 @@ type _SQLProjectRepository struct {
 	userRepo auth.UserRepository
 }
 
-func NewProjectRepository(userRepo auth.UserRepository, conn *sql.DB) ProjectRepository {
-	return &_SQLProjectRepository{
-		conn:     conn,
-		userRepo: userRepo,
-	}
-
-}
-
 func (pm *_SQLProjectRepository) CreateProject(name string, key string, creator auth.User) (Project, error) {
 	query := fmt.Sprintf(`INSERT INTO project (name, key, creator_id) VALUES ('%s', '%s', '%s') RETURNING id`, name, key, creator.Id)
 
