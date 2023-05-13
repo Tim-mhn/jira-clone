@@ -9,33 +9,6 @@ import (
 	"github.com/tim-mhn/figma-clone/utils/primitives"
 )
 
-type MockSprintRepository struct {
-	mock.Mock
-}
-
-func (repo *MockSprintRepository) GetActiveSprintsOfProject(projectID string) ([]SprintInfo, error) {
-	return []SprintInfo{}, nil
-}
-
-func (repo *MockSprintRepository) CreateSprint(name string, projectID string) (string, error) {
-	return "", nil
-}
-func (repo *MockSprintRepository) DeleteSprint(sprintID string) error {
-	return nil
-}
-func (repo *MockSprintRepository) UpdateSprint(sprintID SprintID, updateSprint UpdateSprint) SprintError {
-	args := repo.Called(sprintID, updateSprint)
-	return args.Get(0).(SprintError)
-}
-func (repo *MockSprintRepository) UpdateCompletedStatus(sprintID string, completed bool) error {
-	return nil
-}
-
-func (repo *MockSprintRepository) GetSprintInfo(sprintID string) (SprintInfo, SprintError) {
-	args := repo.Called(sprintID)
-	return args.Get(0).(SprintInfo), NoSprintError()
-}
-
 func TestServiceUpdateSprint(t *testing.T) {
 	t.Run("it should return a SprintNotFound error if sprint is not returned by the repo", func(t *testing.T) {
 		service := new(SprintService)

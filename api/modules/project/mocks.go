@@ -1,25 +1,46 @@
 package project
 
-import "github.com/stretchr/testify/mock"
+import (
+	"github.com/stretchr/testify/mock"
+	"github.com/tim-mhn/figma-clone/modules/auth"
+	tests_utils "github.com/tim-mhn/figma-clone/utils/tests"
+)
 
-func NewMockProjectQueriesRepository() *MockProjectQueriesRepository {
-	return new(MockProjectQueriesRepository)
+func NewMockProjectRepository() *MockProjectRepository {
+	return new(MockProjectRepository)
 }
 
-type MockProjectQueriesRepository struct {
+type MockProjectRepository struct {
 	mock.Mock
 }
 
-func (mock *MockProjectQueriesRepository) GetProjectByID(projectID string) (Project, error) {
+func (mock *MockProjectRepository) GetProjectByID(projectID string) (Project, error) {
 	args := mock.Called(projectID)
 	return args.Get(0).(Project), nil
 }
-func (mock *MockProjectQueriesRepository) GetProjectMembers(projectID string) ([]ProjectMember, error) {
+func (mock *MockProjectRepository) GetProjectMembers(projectID string) ([]ProjectMember, error) {
 	return []ProjectMember{}, nil
 }
-func (mock *MockProjectQueriesRepository) GetProjectsOfUser(userID string) ([]Project, error) {
-	return []Project{}, nil
+func (mock *MockProjectRepository) GetProjectsOfUser(userID string) ([]Project, error) {
+	args := mock.Called(userID)
+	errorOrNil := tests_utils.CastToErrorIfNotNil(args.Get(1))
+	return args.Get(0).([]Project), errorOrNil
 }
-func (mock *MockProjectQueriesRepository) MemberIsInProject(projectID string, memberID string) (bool, error) {
+func (mock *MockProjectRepository) MemberIsInProject(projectID string, memberID string) (bool, error) {
 	return true, nil
+}
+
+func (mock *MockProjectRepository) CreateProject(name string, key string, creator auth.User) (Project, error) {
+
+	args := mock.Called("CreateProject")
+
+	errorOrNil := tests_utils.CastToErrorIfNotNil(args.Get(1))
+	return args.Get(0).(Project), errorOrNil
+}
+func (mock *MockProjectRepository) AddMemberToProject(projectID string, userID string) error {
+	args := mock.Called(projectID, userID)
+	return tests_utils.CastToErrorIfNotNil(args.Get(0))
+}
+func (mock *MockProjectRepository) DeleteProjectByID(projectID string) error {
+	return nil
 }

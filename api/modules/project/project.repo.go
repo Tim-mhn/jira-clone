@@ -11,24 +11,100 @@ import (
 	"github.com/tim-mhn/figma-clone/modules/auth"
 )
 
-type ProjectQueriesRepository interface {
+type ProjectRepository interface {
 	GetProjectByID(projectID string) (Project, error)
 	GetProjectMembers(projectID string) ([]ProjectMember, error)
 	GetProjectsOfUser(userID string) ([]Project, error)
 	MemberIsInProject(projectID string, memberID string) (bool, error)
+	CreateProject(name string, key string, creator auth.User) (Project, error)
+	AddMemberToProject(projectID string, userID string) error
+	DeleteProjectByID(projectID string) error
 }
-type _SQLProjectQueriesRepository struct {
-	conn *sql.DB
+type _SQLProjectRepository struct {
+	conn     *sql.DB
+	userRepo auth.UserRepository
 }
 
-func NewProjectQueriesRepository(conn *sql.DB) ProjectQueriesRepository {
-	return &_SQLProjectQueriesRepository{
-		conn: conn,
+func (pm *_SQLProjectRepository) CreateProject(name string, key string, creator auth.User) (Project, error) {
+	query := fmt.Sprintf(`INSERT INTO project (name, key, creator_id) VALUES ('%s', '%s', '%s') RETURNING id`, name, key, creator.Id)
+
+	var projectID string
+
+	rows, err := pm.conn.Query(query)
+
+	if err != nil {
+		return Project{}, err
 	}
 
+	defer rows.Close()
+
+	if rows.Next() {
+		err := rows.Scan(&projectID)
+
+		if err != nil {
+			fmt.Println(err.Error())
+			return Project{}, err
+		}
+
+	}
+
+	return Project{
+		Id:   projectID,
+		Name: name,
+		Key:  key,
+	}, nil
 }
 
-func (pm *_SQLProjectQueriesRepository) GetProjectByID(projectID string) (Project, error) {
+func (pm *_SQLProjectRepository) AddMemberToProject(projectID string, userID string) error {
+
+	_, getProjectErr := pm.GetProjectByID(projectID)
+
+	if getProjectErr != nil {
+		return getProjectErr
+	}
+
+	_, getUserErr := pm.userRepo.GetUserByID(userID)
+
+	if getUserErr.HasError {
+		return getUserErr.Source
+	}
+
+	isInProject, err := pm.MemberIsInProject(projectID, userID)
+
+	if err != nil {
+		return err
+	}
+
+	if isInProject {
+		return fmt.Errorf("member is already in project")
+	}
+
+	query := fmt.Sprintf(`INSERT INTO project_user (project_id, user_id) VALUES ('%s', '%s')`, projectID, userID)
+	rows, err := pm.conn.Query(query)
+
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	return nil
+
+}
+
+func (pm *_SQLProjectRepository) DeleteProjectByID(projectID string) error {
+
+	psql := database.GetPsqlQueryBuilder()
+	sql := psql.Update("project").Set("deleted", true).Where(sq.Eq{
+		"id": projectID,
+	})
+
+	_, err := sql.RunWith(pm.conn).Exec()
+
+	return err
+
+}
+
+func (pm *_SQLProjectRepository) GetProjectByID(projectID string) (Project, error) {
 	var project Project
 
 	sql := getProjectsQueryBuilder().
@@ -58,7 +134,7 @@ func (pm *_SQLProjectQueriesRepository) GetProjectByID(projectID string) (Projec
 
 }
 
-func (repo *_SQLProjectQueriesRepository) GetProjectMembers(projectID string) ([]ProjectMember, error) {
+func (repo *_SQLProjectRepository) GetProjectMembers(projectID string) ([]ProjectMember, error) {
 
 	builder := database.GetPsqlQueryBuilder()
 	query := builder.Select("user_id", `"user".name as username`, `"user".email as user_email`, "joined_on").
@@ -103,7 +179,7 @@ func (repo *_SQLProjectQueriesRepository) GetProjectMembers(projectID string) ([
 
 }
 
-func (pm *_SQLProjectQueriesRepository) GetProjectsOfUser(userID string) ([]Project, error) {
+func (pm *_SQLProjectRepository) GetProjectsOfUser(userID string) ([]Project, error) {
 
 	query := getProjectsQueryBuilder().
 		Where(sq.Eq{
@@ -132,7 +208,7 @@ func (pm *_SQLProjectQueriesRepository) GetProjectsOfUser(userID string) ([]Proj
 
 }
 
-func (pm *_SQLProjectQueriesRepository) MemberIsInProject(projectID string, memberID string) (bool, error) {
+func (pm *_SQLProjectRepository) MemberIsInProject(projectID string, memberID string) (bool, error) {
 
 	var resultsCount int
 	query := fmt.Sprintf(`SELECT COUNT(*) FROM "project_user" WHERE project_id='%s' AND user_id='%s' LIMIT 1`, projectID, memberID)

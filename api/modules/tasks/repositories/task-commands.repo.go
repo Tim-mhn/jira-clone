@@ -20,11 +20,11 @@ type TaskCommandsRepository interface {
 }
 type SQLTaskCommandsRepository struct {
 	um             auth.UserRepository
-	projectQueries project.ProjectQueriesRepository
+	projectQueries project.ProjectRepository
 	conn           *sql.DB
 }
 
-func NewSQLTaskCommandsRepository(um auth.UserRepository, projectQueries project.ProjectQueriesRepository, conn *sql.DB) *SQLTaskCommandsRepository {
+func NewSQLTaskCommandsRepository(um auth.UserRepository, projectQueries project.ProjectRepository, conn *sql.DB) *SQLTaskCommandsRepository {
 	taskRepo := SQLTaskCommandsRepository{}
 	taskRepo.um = um
 	taskRepo.projectQueries = projectQueries

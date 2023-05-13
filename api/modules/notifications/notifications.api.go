@@ -18,7 +18,7 @@ type NotificationsAPI interface {
 	SendTaskAssignationNotification(input SendAssignationNotificationInput) error
 }
 
-func NewNotificationsAPI(projectRepo project.ProjectQueriesRepository,
+func NewNotificationsAPI(projectRepo project.ProjectRepository,
 	taskQueries tasks_queries.ITasksQueriesService) NotificationsAPI {
 	return NotificationsAPIImpl{
 		projectRepo: projectRepo,
@@ -27,7 +27,7 @@ func NewNotificationsAPI(projectRepo project.ProjectQueriesRepository,
 }
 
 type NotificationsAPIImpl struct {
-	projectRepo project.ProjectQueriesRepository
+	projectRepo project.ProjectRepository
 	taskQueries tasks_queries.ITasksQueriesService
 }
 

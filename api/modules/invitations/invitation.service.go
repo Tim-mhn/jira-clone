@@ -11,11 +11,11 @@ import (
 
 type ProjectInvitationService struct {
 	repo        *ProjectInvitationRepository
-	projectRepo *project.ProjectCommandsRepository
+	projectRepo project.ProjectRepository
 	userService *auth.UserService
 }
 
-func NewProjectInvitationService(repo *ProjectInvitationRepository, projectRepo *project.ProjectCommandsRepository, userService *auth.UserService) *ProjectInvitationService {
+func NewProjectInvitationService(repo *ProjectInvitationRepository, projectRepo project.ProjectRepository, userService *auth.UserService) *ProjectInvitationService {
 	return &ProjectInvitationService{
 		repo:        repo,
 		projectRepo: projectRepo,
