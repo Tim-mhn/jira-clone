@@ -3,6 +3,8 @@ package invitations
 import (
 	"fmt"
 	"sync"
+
+	"github.com/tim-mhn/figma-clone/environments"
 )
 
 func SendProjectInvitationEmails(infoList InvitationEmailInfoList) error {
@@ -36,11 +38,13 @@ func SendProjectInvitationEmails(infoList InvitationEmailInfoList) error {
 }
 
 func buildEmailFromInvitationInfo(info InvitationEmailInfo) Email {
+	clientUrl := environments.GetConfig().ClientURL
+	invitationUrl := fmt.Sprintf(`%s/auth/sign-up/invite?token=%s`, clientUrl, info.Token)
 	return Email{
 		Recipient: info.Recipient,
 		Subject:   "[Tim Jira] Someone has invited you to join their project",
 		Content: fmt.Sprintf(`<p>You have been invited to join the project <strong>%s</strong></p>`+
 			`<p>Click on this button to accept the invitation and join the project<p>`+
-			`<button><a href="http://localhost:4200/auth/sign-up/invite?token=%s">Join</a></button> `, info.ProjectName, info.Token),
+			`<button><a href="%s">Join</a></button> `, info.ProjectName, invitationUrl),
 	}
 }
