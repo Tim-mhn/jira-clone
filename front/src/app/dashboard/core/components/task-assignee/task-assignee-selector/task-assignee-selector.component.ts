@@ -13,6 +13,7 @@ import { User } from '../../../../../auth/models/user';
 import { SubscriptionHandler } from '../../../../../shared/services/subscription-handler.service';
 import { UpdateTaskController } from '../../../controllers/update-task.controller';
 import { Task } from '../../../models/task';
+import { UNASSIGNED_TASK_ID_DTO } from '../../../dtos';
 
 @Component({
   selector: 'jira-task-assignee-selector',
@@ -36,7 +37,7 @@ export class TaskAssigneeSelectorComponent
     this.assigneeOptions = [
       {
         Email: '',
-        Id: null,
+        Id: UNASSIGNED_TASK_ID_DTO,
         Name: 'Unassigned',
         Icon: '',
       },

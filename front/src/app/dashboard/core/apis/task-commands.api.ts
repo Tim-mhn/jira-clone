@@ -33,9 +33,9 @@ export class TaskCommandsAPI {
   updateTask(_dto: PatchTaskDTO) {
     const endpoint = buildSingleTaskEndpoint(_dto);
     let body = {};
-    const dto = handleNullAssigneeId(_dto);
+    // const dto = handleNullAssigneeId(_dto);
 
-    const { projectId, taskId, ...patchDTO } = dto;
+    const { projectId, taskId, ...patchDTO } = _dto;
 
     if (patchDTO.points !== undefined)
       // eslint-disable-next-line radix
