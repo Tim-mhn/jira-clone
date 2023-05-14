@@ -24,7 +24,7 @@
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
     "@tim-mhn/common": "^1.5.0",
-    "@tim-mhn/ng-forms": "^0.8.2",
+    "@tim-mhn/ng-forms": "^0.8.3",
     "@tim-mhn/ng-ui": "^1.6.1",
     "eslint-config-airbnb": "^19.0.4",
     "iqair-tailwind": "^1.0.11",

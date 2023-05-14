@@ -8,7 +8,6 @@ import { prismaClient } from '../../database';
 export class DBTaskFollowersRepository implements TaskFollowersRepository {
   prisma = prismaClient;
 
-  @logMethod
   async getTaskFollowersIds(taskId: string): Promise<TaskFollowerId[]> {
     return (
       await this.prisma.taskFollowers.findMany({
@@ -22,7 +21,6 @@ export class DBTaskFollowersRepository implements TaskFollowersRepository {
     ).map(({ followerId }) => followerId);
   }
 
-  @logMethod
   async markUserAsFollowerOfTask(
     userId: string,
     taskId: string,
@@ -42,7 +40,6 @@ export class DBTaskFollowersRepository implements TaskFollowersRepository {
     });
   }
 
-  @logMethod
   async getTasksFollowedByUser(userId: string): Promise<TaskId[]> {
     return (
       await this.prisma.taskFollowers.findMany({

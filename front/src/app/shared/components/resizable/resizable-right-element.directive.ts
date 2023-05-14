@@ -1,6 +1,5 @@
 import { Directive, ElementRef, HostListener } from '@angular/core';
 import { Subject } from 'rxjs';
-import { logMethod } from '../../utils/log-method.decorator';
 
 @Directive({
   selector: '[resizableRightElement]',
@@ -18,7 +17,6 @@ export class ResizableRightElementDirective {
     this._mouseMoved$.next(event);
   }
 
-  @logMethod
   setWidth(width: number) {
     this.elementRef.nativeElement.style.width = `${width}px`;
   }
