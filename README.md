@@ -2,7 +2,7 @@
 # Jira Clone
 ###### A personal project to build a clone of the famous collaborative project-tracking platform [Jira](https://www.atlassian.com/software/jira)
 
-<b>Live on [https://tim-jira.live](https://tim-jira.live/)</b>
+<b>~Live on [https://tim-jira.live](https://tim-jira.live/)~</b>  (NOT LIVE ANYMORE)
 
 <hr>
 
